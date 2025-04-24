@@ -1,0 +1,164 @@
+<!-- start sidebar menu -->
+<div class="sidebar-container">
+    <div class="sidemenu-container navbar-collapse collapse fixed-menu ">
+        <div id="remove-scroll">
+            <ul class="sidemenu page-header-fixed  p-t-20" data-keep-expanded="false" data-auto-scroll="true"
+                data-slide-speed="200">
+
+
+                <li class="nav-item">
+                    <a href="{{ url('/home') }}" class="nav-link">
+                        <i class="fa fa-tachometer " style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Dashboard</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
+
+
+
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link nav-toggle">
+                        <i class="fa fa-user " style="font-size: 18px; color: gray;"></i>
+                        <span class="title">User Management</span>
+                        <span class="arrow"></span>
+
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="{{route('user.all')}}" class="nav-link">
+                                <span class="title">View Users</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('user.create')}}" class="nav-link">
+                                <span class="title">Add User</span>
+                            </a>
+                        </li>
+
+
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-toggle">
+                        <i class="fa fa-user-circle-o " style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Role & Permission</span>
+                        <span class="arrow"></span>
+
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="{{ route('roles') }}" class="nav-link">
+                                <span class="title">View Roles</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('roles.create') }}" class="nav-link">
+                                <span class="title">Add Role</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('permissions') }}" class="nav-link">
+                                <span class="title">View Permission</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('permissions.create') }}" class="nav-link">
+                                <span class="title">Add Permission</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('roles.managePermissions') }}" class="nav-link">
+                                <span class="title">Manage Permissions</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-toggle">
+                        <i class="fa fa-wrench" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Settings</span>
+                        <span class="arrow"></span>
+
+                    </a>
+                    <ul class="sub-menu">
+                        <li class="nav-item">
+                            <a href="{{ route('departments') }}" class="nav-link">
+                                <span class="title">Manage Departments</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('cases') }}" class="nav-link">
+                                <span class="title">Manage Cases</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('designations') }}" class="nav-link">
+                                <span class="title">Manage Designations</span>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin-units.index') }}">Administrative Units</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('subdivisions.index') }}">Subdivisions</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('police-stations.index') }}">Police Stations</a>
+                        </li>
+
+
+                    </ul>
+
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('casess.create') }}" class="nav-link">
+                        <i class="fa fa-caret-square-o-up" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Create Case</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('casess.index') }}" class="nav-link">
+                        <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Manage Cases</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a href="{{ route('user.changePassword') }}" class="nav-link">
+                        <i class="fa fa-key" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Change Password</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="{{ route('logout') }}"
+                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                        <i class="fa fa-sign-out" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Log Out</span>
+
+                    </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- end sidebar menu -->

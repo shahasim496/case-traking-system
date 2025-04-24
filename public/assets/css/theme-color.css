@@ -1,0 +1,335 @@
+/*
+ *  Document   : theme-color.css
+ *  Author     : MES
+ *  Description: stylesheet for change theme color, user can set any custom color for template, User have to just replace three classes
+ 	(header-white white-sidebar-color logo-indigo) with (custom-sidebar-color logo-custom header-custom) classes in template <body> tag 
+ 	and set bellow variable color as per desire. Thats It !!!!!!
+ */
+ 
+/* Custom Theme Color */
+.custom-sidebar-color .sidemenu-container {
+    background-color: var(--sidebar-color);
+}
+.custom-sidebar-color .sidemenu-container .sidemenu>li.active.open>a,
+.custom-sidebar-color .sidemenu-container .sidemenu>li.active>a,
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.active.open>a,
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.active>a {
+    background-color: #ffffff;
+    border-top-color: transparent;
+    color: var(--sidebar-font-color);
+}
+.custom-sidebar-color .sidemenu-container .sidemenu>li>a, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li>a{
+	color: #555;
+	border-bottom:none;
+	background-color: var(--sidebar-color);
+}
+.custom-sidebar-color .user-panel{
+	color: #444;
+}
+.custom-sidebar-color .txtOnline{
+	color: #444;
+}
+
+.custom-sidebar-color .sidemenu-container .sidemenu>li.open>a>.arrow.open:before, 
+.custom-sidebar-color .sidemenu-container .sidemenu>li.open>a>.arrow:before, 
+.custom-sidebar-color .sidemenu-container .sidemenu>li.open>a>i, 
+.custom-sidebar-color .sidemenu-container .sidemenu>li:hover>a>.arrow.open:before, 
+.custom-sidebar-color .sidemenu-container .sidemenu>li:hover>a>.arrow:before, 
+.custom-sidebar-color .sidemenu-container .sidemenu>li:hover>a>i, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a>.arrow.open:before, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a>.arrow:before, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a>i, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a>.arrow.open:before, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a>.arrow:before, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a>i{
+	color: var(--sidebar-font-color);
+}
+.custom-sidebar-color .sidemenu-container .sidemenu .sub-menu, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu{
+	    background-color: #F5F5F5;
+}
+.custom-sidebar-color .sidemenu-container .sidemenu .sub-menu>li>a, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li>a{
+	color : #444;
+}
+.custom-sidebar-color .sidemenu-container .sidemenu .sub-menu>li.active>a, 
+.custom-sidebar-color .sidemenu-container .sidemenu .sub-menu>li.open>a, 
+.custom-sidebar-color .sidemenu-container .sidemenu .sub-menu>li:hover>a, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li.active>a, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li.open>a, 
+.custom-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li:hover>a{
+	color: var(--sidebar-font-color);
+}
+.custom-sidebar-color .page-container{
+	background-color : #ffffff;
+}
+.selector-title{
+	margin-top: 0px !important; 
+}
+.custom-sidebar-color .sidemenu-hover-submenu li:hover a>.arrow{
+	    border-right: 8px solid var(--sidebar-font-color);
+}
+.custom-sidebar-color .sidemenu-hover-submenu li:hover>.sub-menu{
+	background-color: #F5F5F5;
+}
+.header-custom .page-header.navbar{
+	background-color: var(--header-color);
+}
+.header-custom form.search-form-opened .btn.submit {
+    color: #fff;
+}
+.header-custom .search-form-opened input[type="text"]{
+	color:#fff;
+}
+.header-custom form.search-form-opened {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 0;
+}
+.header-custom .page-header .search-form-opened .input-group .form-control::-moz-placeholder {
+    color: #efefef;
+    opacity: 1;
+}
+.header-custom .page-header .search-form-opened .input-group .form-control:-ms-input-placeholder {
+    color: #efefef;
+    opacity: 1;
+}
+.header-custom .page-header .search-form-opened .input-group .form-control::-webkit-input-placeholder {
+    color: #efefef;
+    opacity: 1;
+}
+.header-custom .page-header.navbar .top-menu .navbar-nav>li.dropdown-language>.dropdown-toggle>.langname, 
+.header-custom .page-header.navbar .top-menu .navbar-nav>li.dropdown-user>.dropdown-toggle>.username, 
+.header-custom .page-header.navbar .top-menu .navbar-nav>li.dropdown-user>.dropdown-toggle>i{
+	color: #fff;
+}
+.header-custom .page-header.navbar .top-menu .navbar-nav>li.dropdown .dropdown-toggle>i{
+	color: #fff;
+}
+.header-custom .language-switch a{
+	color: #fff;
+}
+.header-custom .menu-toggler i.icon-menu{
+	color: #606376;
+	font-size: 18px;
+}
+.header-custom .page-header.navbar .hor-menu .navbar-nav>li.active>a, 
+.header-custom .page-header.navbar .hor-menu .navbar-nav>li.current>a{
+	background-color: transparent;
+}
+.header-custom .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover{
+	background-color: transparent;
+}
+.header-custom .dropdown-menu>li.active:hover>a, 
+.header-custom .dropdown-menu>li.active>a, 
+.header-custom .dropdown-menu>li:hover>a{
+	background-color: transparent;
+}
+
+.header-custom .language-switch a.dropdown-toggle{
+	color:#fff;
+}
+.logo-custom .page-header.navbar .page-logo{
+	background: var(--logo-color);
+}
+
+
+/* White sidebar color */
+.white-sidebar-color .sidemenu-container {
+    background-color: #ffffff;
+}
+.white-sidebar-color .sidemenu-container .sidemenu>li.active.open>a,
+.white-sidebar-color .sidemenu-container .sidemenu>li.active>a,
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.active.open>a,
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.active>a {
+    background-color: #F4F6F9;
+    border-top-color: transparent;
+    color: #4680ff;
+}
+/* .white-sidebar-color .sidemenu-container .sidemenu>li>a{
+	color: #555;
+	border-bottom:none;
+	background-color: #ffffff;
+} */
+.white-sidebar-color .sidemenu-container .sidemenu>li.open>a, 
+.white-sidebar-color .sidemenu-container .sidemenu>li:hover>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a{
+	background-color: #F4F6F9;
+    border-top-color: transparent;
+    color: #4680ff;
+}
+.white-sidebar-color .user-panel,
+.white-sidebar-color .txtOnline,
+.white-sidebar-color .sidemenu-container .sidemenu>li>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li>a{
+	color: #444;
+}
+.white-sidebar-color .sidemenu-container .sidemenu>li.open>a>.arrow.open:before, 
+.white-sidebar-color .sidemenu-container .sidemenu>li.open>a>.arrow:before, 
+.white-sidebar-color .sidemenu-container .sidemenu>li.open>a>i, 
+.white-sidebar-color .sidemenu-container .sidemenu>li:hover>a>.arrow.open:before, 
+.white-sidebar-color .sidemenu-container .sidemenu>li:hover>a>.arrow:before, 
+.white-sidebar-color .sidemenu-container .sidemenu>li:hover>a>i, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a>.arrow.open:before, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a>.arrow:before, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li.open>a>i, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a>.arrow.open:before, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a>.arrow:before, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu>li:hover>a>i{
+	color: #4680ff;
+}
+.white-sidebar-color .sidemenu-container .sidemenu .sub-menu, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu{
+	    background-color: #F4F6F9;
+}
+.white-sidebar-color .sidemenu-container .sidemenu .sub-menu>li>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li>a{
+	color : #444;
+}
+.white-sidebar-color .sidemenu-container .sidemenu .sub-menu>li.active>a, 
+.white-sidebar-color .sidemenu-container .sidemenu .sub-menu>li.open>a, 
+.white-sidebar-color .sidemenu-container .sidemenu .sub-menu>li:hover>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li.active>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li.open>a, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu .sub-menu>li:hover>a{
+	color: #4680ff;
+}
+.white-sidebar-color .page-container{
+	background-color : #ffffff;
+}
+.selector-title{
+	margin-top: 0px !important; 
+}
+.white-sidebar-color .sidemenu-hover-submenu li:hover a>.arrow{
+	    border-right: 8px solid #4680ff;
+}
+.white-sidebar-color .sidemenu-hover-submenu li:hover>.sub-menu{
+	background-color: #F5F5F5;
+}
+.white-sidebar-color .sidemenu-container .sidemenu>li.active>a>i,
+.white-sidebar-color .sidemenu-container .sidemenu li.active>a>.arrow.open:before, 
+.white-sidebar-color .sidemenu-container .sidemenu li.active>a>.arrow:before, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu li.active>a>.arrow.open:before, 
+.white-sidebar-color .sidemenu-closed.sidemenu-container-fixed .sidemenu-container:hover .sidemenu li.active>a>.arrow:before{
+	color: #4680ff;
+}
+.white-sidebar-color .menu-heading {
+    color: #52545b;
+}
+/***************** Logo Theme **********************/
+.logo-white .page-header.navbar .page-logo{
+	background: #ffffff;
+}
+.logo-white .page-logo a{
+	color: #000;
+	
+}
+.logo-dark .page-header.navbar .page-logo{
+	background: #3daf98;
+}
+.logo-blue .page-header.navbar .page-logo{
+	background: #1880c9;
+}
+.logo-indigo .page-header.navbar .page-logo{
+	background: #6673FC;
+}
+.logo-cyan .page-header.navbar .page-logo{
+	background: #4ABAD2;
+}
+.logo-red .page-header.navbar .page-logo{
+	background: #E44F56
+}
+.logo-green .page-header.navbar .page-logo{
+	background: #3FCC7E;
+}
+
+
+
+/*************** Header Theme ******************/
+/* Header White */
+.header-white .page-header.navbar{
+	background-color: #1CBB75;
+}
+.header-white form.search-form-opened {
+    float: left;
+    width: 100%;
+    max-width: 200px;
+    background-color: transparent;
+    color: #fff;
+    border-radius: 30px;
+    margin: 12px 0 0 10px;
+    border: 1px solid #bdbdbd;
+}
+.header-white .page-header.navbar .top-menu .navbar-nav>li.dropdown-language>.dropdown-toggle>.langname, 
+.header-white .page-header.navbar .top-menu .navbar-nav>li.dropdown-user>.dropdown-toggle>.username, 
+.header-white .page-header.navbar .top-menu .navbar-nav>li.dropdown-user>.dropdown-toggle>i{
+	color: #606376;
+}
+.header-white .page-header.navbar .top-menu .navbar-nav>li.dropdown .dropdown-toggle>i{
+	color: #606376;
+}
+.header-white .language-switch a{
+	color: #000;
+}
+.header-white .menu-toggler i.fa-bars{
+	color: #606376;
+	font-size: 18px;
+}
+
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.mega-menu-dropdown>.dropdown-menu .mega-menu-content .mega-menu-submenu li>h3,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li>a {
+    color: #555;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li>a>i {
+    color: #555;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.open>a,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li:hover>a,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li>a:hover {
+    color: #555;
+    background: none !important;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.open>a>i,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li:hover>a>i,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li>a:hover>i {
+    color: #555;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.active>a,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.current>a {
+    color: #4680ff;
+    background-color: transparent;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.active>a>i,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.current>a>i {
+    color: #4680ff;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li>a, 
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li>a>i{
+	color: #444;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu {
+    box-shadow: 5px 5px rgba(63, 79, 98, .2);
+    background: #F5F5F5;
+}
+/* .header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li>a,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li>a>i {
+    color: #444 !important;
+} */
+.header-white .page-header.navbar .hor-menu .navbar-nav>li.mega-menu-dropdown>.dropdown-menu .mega-menu-content .mega-menu-submenu li>a:hover{
+	text-decoration: none;
+    color: #46a2ff;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li:hover>a {
+    color: #000000;
+}
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li.active>a,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li.active>a:hover,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li.current>a,
+.header-white .page-header.navbar .hor-menu .navbar-nav>li .dropdown-menu li.current>a:hover {
+    color: #46a2ff;
+    background: transparent;
+}
+.header-white #headerSettingButton {
+    color: #555 ;
+}
