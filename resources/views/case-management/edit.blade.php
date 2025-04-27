@@ -21,7 +21,7 @@
         <h4>Edit Case</h4>
     </div>
     <div class="card-body">
-    @if(auth()->user()->hasRole('Super Admin') || auth()->user()->can('edit case details'))
+        @if(auth()->user()->hasRole('Super Admin') || auth()->user()->can('edit case details'))
         <form action="{{ route('casess.update', $case->CaseID) }}" method="POST">
             @csrf
             @method('PUT') <!-- Use PUT method for updating -->
@@ -32,7 +32,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="case_type">Case Type</label>
-                        <select name="case_type" id="case_type" class="form-control" >
+                        <select name="case_type" id="case_type" class="form-control">
                             <option value="">Select</option>
                             @foreach($caseTypes as $caseType)
                             <option value="{{ $caseType->id }}" {{ $case->CaseType == $caseType->id ? 'selected' : '' }}>
@@ -45,7 +45,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="officer">Select Officer</label>
-                        <select name="officer" id="officer" class="form-control" >
+                        <select name="officer" id="officer" class="form-control">
                             <option value="">Select</option>
                             @foreach($officers as $officer)
                             <option value="{{ $officer->id }}" {{ $case->OfficerID == $officer->id ? 'selected' : '' }}>
@@ -58,7 +58,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="case_status">Case Status</label>
-                        <select name="case_status" id="case_status" class="form-control" >
+                        <select name="case_status" id="case_status" class="form-control">
                             <option value="">Select</option>
                             <option value="Awating Verification" {{ $case->CaseStatus == 'Awating Verification' ? 'selected' : '' }}>Awating Verification</option>
                             <option value="In Progress" {{ $case->CaseStatus == 'In Progress' ? 'selected' : '' }}>In Progress</option>
@@ -69,7 +69,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="department">Department</label>
-                        <select name="department" id="department" class="form-control" >
+                        <select name="department" id="department" class="form-control">
                             <option value="">Select</option>
                             @foreach($departments as $department)
                             <option value="{{ $department->id }}" {{ $case->CaseDepartmentID == $department->id ? 'selected' : '' }}>
@@ -84,7 +84,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="administrative_unit">Administrative Unit</label>
-                        <select name="administrative_unit" id="administrative_unit" class="form-control" >
+                        <select name="administrative_unit" id="administrative_unit" class="form-control">
                             <option value="">Select</option>
                             @foreach($administrativeUnits as $unit)
                             <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
@@ -97,7 +97,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="subdivision">Subdivision</label>
-                        <select name="subdivision" id="subdivision" class="form-control" >
+                        <select name="subdivision" id="subdivision" class="form-control">
                             <option value="">Select</option>
                             @foreach($subdivisions as $subdivision)
                             <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
@@ -110,7 +110,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="police_station">Police Station</label>
-                        <select name="police_station" id="police_station" class="form-control" >
+                        <select name="police_station" id="police_station" class="form-control">
                             <option value="">Select</option>
                             @foreach($policeStations as $station)
                             <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
@@ -138,31 +138,31 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="complainant_name">Complainant Name</label>
-                        <input type="text" name="complainant_name" id="complainant_name" class="form-control" value="{{ old('complainant_name', $complainant->ComplainantName) }}" placeholder="Type here" >
+                        <input type="text" name="complainant_name" id="complainant_name" class="form-control" value="{{ old('complainant_name', $complainant->ComplainantName) }}" placeholder="Type here">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="complainant_contact">Complainant Contact</label>
-                        <input type="text" name="complainant_contact" id="complainant_contact" class="form-control" value="{{ old('complainant_contact', $complainant->ComplainantContact) }}" placeholder="Type here" >
+                        <input type="text" name="complainant_contact" id="complainant_contact" class="form-control" value="{{ old('complainant_contact', $complainant->ComplainantContact) }}" placeholder="Type here">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="complainant_id_number">ID Number</label>
-                        <input type="text" name="complainant_id_number" id="complainant_id_number" class="form-control" value="{{ old('complainant_id_number', $complainant->ComplainantID) }}" placeholder="Type here" >
+                        <input type="text" name="complainant_id_number" id="complainant_id_number" class="form-control" value="{{ old('complainant_id_number', $complainant->ComplainantID) }}" placeholder="Type here">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="complainant_dob">DOB</label>
-                        <input type="date" name="complainant_dob" id="complainant_dob" class="form-control" value="{{ old('complainant_dob', $complainant->ComplainantDateOfBirth) }}" >
+                        <input type="date" name="complainant_dob" id="complainant_dob" class="form-control" value="{{ old('complainant_dob', $complainant->ComplainantDateOfBirth) }}">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="complainant_gender">Gender</label>
-                        <select name="complainant_gender" id="complainant_gender" class="form-control" >
+                        <select name="complainant_gender" id="complainant_gender" class="form-control">
                             <option value="">Select</option>
                             <option value="male" {{ $complainant->ComplainantGenderType == 'male' ? 'selected' : '' }}>Male</option>
                             <option value="female" {{ $complainant->ComplainantGenderType == 'female' ? 'selected' : '' }}>Female</option>
@@ -173,13 +173,13 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="complainant_address">Address</label>
-                        <textarea name="complainant_address" id="complainant_address" class="form-control" rows="2" >{{ old('complainant_address', $complainant->ComplainantAddress) }}</textarea>
+                        <textarea name="complainant_address" id="complainant_address" class="form-control" rows="2">{{ old('complainant_address', $complainant->ComplainantAddress) }}</textarea>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="complainant_relation">Relation</label>
-                        <input type="text" name="complainant_relation" id="complainant_relation" class="form-control" value="{{ old('complainant_relation', $complainant->ComplainantRelation) }}" placeholder="Type here" >
+                        <input type="text" name="complainant_relation" id="complainant_relation" class="form-control" value="{{ old('complainant_relation', $complainant->ComplainantRelation) }}" placeholder="Type here">
                     </div>
                 </div>
             </div>
@@ -190,31 +190,31 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="accused_name">Accused Name</label>
-                        <input type="text" name="accused_name" id="accused_name" class="form-control" value="{{ old('accused_name', $accused->AccusedName) }}" placeholder="Type here" >
+                        <input type="text" name="accused_name" id="accused_name" class="form-control" value="{{ old('accused_name', $accused->AccusedName) }}" placeholder="Type here">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="accused_contact">Accused Contact</label>
-                        <input type="text" name="accused_contact" id="accused_contact" class="form-control" value="{{ old('accused_contact', $accused->AccusedContact) }}" placeholder="Type here" >
+                        <input type="text" name="accused_contact" id="accused_contact" class="form-control" value="{{ old('accused_contact', $accused->AccusedContact) }}" placeholder="Type here">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="accused_id_number">ID Number</label>
-                        <input type="text" name="accused_id_number" id="accused_id_number" class="form-control" value="{{ old('accused_id_number', $accused->AccusedID) }}" placeholder="Type here" >
+                        <input type="text" name="accused_id_number" id="accused_id_number" class="form-control" value="{{ old('accused_id_number', $accused->AccusedID) }}" placeholder="Type here">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="accused_dob">DOB</label>
-                        <input type="date" name="accused_dob" id="accused_dob" class="form-control" value="{{ old('accused_dob', $accused->AccusedDateOfBirth) }}" >
+                        <input type="date" name="accused_dob" id="accused_dob" class="form-control" value="{{ old('accused_dob', $accused->AccusedDateOfBirth) }}">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="accused_gender">Gender</label>
-                        <select name="accused_gender" id="accused_gender" class="form-control" >
+                        <select name="accused_gender" id="accused_gender" class="form-control">
                             <option value="">Select</option>
                             <option value="male" {{ $accused->AccusedGenderType == 'male' ? 'selected' : '' }}>Male</option>
                             <option value="female" {{ $accused->AccusedGenderType == 'female' ? 'selected' : '' }}>Female</option>
@@ -225,13 +225,13 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="accused_address">Address</label>
-                        <textarea name="accused_address" id="accused_address" class="form-control" rows="2" >{{ old('accused_address', $accused->AccusedAddress) }}</textarea>
+                        <textarea name="accused_address" id="accused_address" class="form-control" rows="2">{{ old('accused_address', $accused->AccusedAddress) }}</textarea>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="accused_relation">Relation</label>
-                        <input type="text" name="accused_relation" id="accused_relation" class="form-control" value="{{ old('accused_relation', $accused->AccusedRelation) }}" placeholder="Type here" >
+                        <input type="text" name="accused_relation" id="accused_relation" class="form-control" value="{{ old('accused_relation', $accused->AccusedRelation) }}" placeholder="Type here">
                     </div>
                 </div>
             </div>
@@ -241,7 +241,7 @@
                 <a href="{{ route('casess.index') }}" class="btn btn-secondary">Back</a>
                 <button type="submit" class="btn btn-primary">Update</button>
             </div>
-            
+
         </form>
         @else
         <form action="{{ route('casess.update', $case->CaseID) }}" method="POST">
@@ -463,7 +463,7 @@
                 <a href="{{ route('casess.index') }}" class="btn btn-secondary">Back</a>
             </div>
         </form>
-@endif
+        @endif
     </div>
 </div>
 
@@ -527,6 +527,8 @@
 </div>
 @endif
 
+
+@if(auth()->user()->can('edit case details'))
 <!-- Evidence Section -->
 <div class="card mt-4">
     <div class="card-header">
@@ -732,499 +734,544 @@
             </tbody>
         </table>
         <div class="container">
-    <!-- <div class="d-flex justify-content-center">
+            <!-- <div class="d-flex justify-content-center">
         {{ $taskLogs->links() }}
     </div> -->
-</div>
-</div>
+        </div>
 
-<!-- Take Action Section -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h4>Take Action</h4>
     </div>
-    <div class="card-body">
-        <form action="#" method="POST">
-            @csrf
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="change_status">Change Status</label>
-                        <select name="change_status" id="change_status" class="form-control">
-                            <option value="">Select</option>
-                            <option value="open">Open</option>
-                            <option value="closed">Closed</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="take_action">Take Action</label>
-                        <select name="take_action" id="take_action" class="form-control">
-                            <option value="">Select</option>
-                            <option value="approve">Approve</option>
-                            <option value="reject">Reject</option>
-                        </select>
-                    </div>
-                </div>
 
-                        <!-- units -->
-                    <!-- admininstratin -->
+    @endif
+    <!-- Take Action Section -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Take Action</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('cases.takeAction', $case->CaseID) }}" method="POST">
+                @csrf
+                <div class="row">
+
+                    @if(auth()->user()->hasRole('Case Officer'))
                     <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="administrative_unit">Administrative Unit</label>
-                        <select name="administrative_unit" id="administrative_unit" class="form-control" >
-                            <option value="">Select</option>
-                            @foreach($administrativeUnits as $unit)
-                            <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
-                                {{ $unit->name }}
-                            </option>
-                            @endforeach
-                        </select>
+                        <div class="form-group">
+                            <label for="change_status">Change Status</label>
+                            <select name="change_status" id="change_status" class="form-control">
+                                <option value="">Select</option>
+                                @if(auth()->user()->hasRole('Case Officer'))
+                                <option value="open">Open</option>
+
+                                <option value="closed">Closed</option>
+                                @endif
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="subdivision">Subdivision</label>
-                        <select name="subdivision" id="subdivision" class="form-control" >
-                            <option value="">Select</option>
-                            @foreach($subdivisions as $subdivision)
-                            <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
-                                {{ $subdivision->name }}
-                            </option>
-                            @endforeach
-                        </select>
+                    @endif
+
+
+                    <!-- administrative units -->
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="administrative_unit">Administrative Unit</label>
+                            <select name="administrative_unit" id="administrative_unit1" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($administrativeUnits as $unit)
+                                <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
+                                    {{ $unit->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="police_station">Police Station</label>
-                        <select name="police_station" id="police_station" class="form-control" >
-                            <option value="">Select</option>
-                            @foreach($policeStations as $station)
-                            <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
-                                {{ $station->name }}
-                            </option>
-                            @endforeach
-                        </select>
+                    <!-- sub divisons -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="subdivision">Subdivision</label>
+                            <select name="subdivision" id="subdivision1" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($subdivisions as $subdivision)
+                                <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
+                                    {{ $subdivision->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="forward_to">Forward To</label>
-                        <select name="forward_to" id="forward_to" class="form-control">
-                            <option value="">Select</option>
-                            <option value="department1">Department 1</option>
-                            <option value="department2">Department 2</option>
-                        </select>
+                    <!-- police stations -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="police_station">Police Station</label>
+                            <select name="police_station" id="police_station1" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($policeStations as $station)
+                                <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
+                                    {{ $station->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-                <!-- unitss -->
-                 
-          
 
-        
-
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="case_description_action">Case Description</label>
-                        <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="forward_to">Forward To</label>
+                            <select name="forward_to" id="forward_to" class="form-control">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
                     </div>
+
+
+
+
+
+
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="case_description_action">Case Description</label>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                        </div>
+                    </div>
+
                 </div>
-                 
+
+                <!-- Submit Button -->
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- end the actions and manage sections -->
+
+    <!-- Add Document Modal -->
+    <div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="addDocModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('documents.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addDocModalLabel">Add Investigation Document</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Document Name -->
+                        <div class="form-group">
+                            <label for="doc_name">Document Name</label>
+                            <input type="text" name="doc_name" id="doc_name" class="form-control" placeholder="Enter document name" required>
+                        </div>
+                        <!-- Document Description -->
+                        <div class="form-group">
+                            <label for="doc_description">Description</label>
+                            <textarea name="doc_description" id="doc_description" class="form-control" rows="3" placeholder="Enter description" required></textarea>
+                        </div>
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label for="doc_file">Upload File</label>
+                            <input type="file" name="doc_file" id="doc_file" class="form-control-file" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Document</button>
+                    </div>
+                </form>
             </div>
+        </div>
+    </div>
 
-            <!-- Submit Button -->
-            <div class="text-right">
-                <button type="submit" class="btn btn-primary">Submit</button>
+    <!-- Add Court Proceeding Modal -->
+    <div class="modal fade" id="addCourtProceedingModal" tabindex="-1" role="dialog" aria-labelledby="addCourtProceedingModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('court-proceedings.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCourtProceedingModalLabel">Add Court Proceeding</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Proceeding Name -->
+                        <div class="form-group">
+                            <label for="proceeding_name">Proceeding Name</label>
+                            <input type="text" name="proceeding_name" id="proceeding_name" class="form-control" placeholder="Enter proceeding name" required>
+                        </div>
+                        <!-- Proceeding Description -->
+                        <div class="form-group">
+                            <label for="proceeding_description">Description</label>
+                            <textarea name="proceeding_description" id="proceeding_description" class="form-control" rows="3" placeholder="Enter description" required></textarea>
+                        </div>
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label for="proceeding_file">Upload File</label>
+                            <input type="file" name="proceeding_file" id="proceeding_file" class="form-control-file" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Proceeding</button>
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-</div>
-
-<!-- Add Document Modal -->
-<div class="modal fade" id="addDocModal" tabindex="-1" role="dialog" aria-labelledby="addDocModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="{{ route('documents.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addDocModalLabel">Add Investigation Document</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Document Name -->
-                    <div class="form-group">
-                        <label for="doc_name">Document Name</label>
-                        <input type="text" name="doc_name" id="doc_name" class="form-control" placeholder="Enter document name" required>
-                    </div>
-                    <!-- Document Description -->
-                    <div class="form-group">
-                        <label for="doc_description">Description</label>
-                        <textarea name="doc_description" id="doc_description" class="form-control" rows="3" placeholder="Enter description" required></textarea>
-                    </div>
-                    <!-- File Upload -->
-                    <div class="form-group">
-                        <label for="doc_file">Upload File</label>
-                        <input type="file" name="doc_file" id="doc_file" class="form-control-file" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Document</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 
-<!-- Add Court Proceeding Modal -->
-<div class="modal fade" id="addCourtProceedingModal" tabindex="-1" role="dialog" aria-labelledby="addCourtProceedingModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="{{ route('court-proceedings.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCourtProceedingModalLabel">Add Court Proceeding</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Proceeding Name -->
-                    <div class="form-group">
-                        <label for="proceeding_name">Proceeding Name</label>
-                        <input type="text" name="proceeding_name" id="proceeding_name" class="form-control" placeholder="Enter proceeding name" required>
+    <!-- Edit Court Proceeding Modal -->
+    <div class="modal fade" id="editCourtProceedingModal" tabindex="-1" role="dialog" aria-labelledby="editCourtProceedingModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="editCourtProceedingForm" action="" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editCourtProceedingModalLabel">Edit Court Proceeding</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <!-- Proceeding Description -->
-                    <div class="form-group">
-                        <label for="proceeding_description">Description</label>
-                        <textarea name="proceeding_description" id="proceeding_description" class="form-control" rows="3" placeholder="Enter description" required></textarea>
+                    <div class="modal-body">
+                        <!-- Proceeding Name -->
+                        <div class="form-group">
+                            <label for="edit_proceeding_name">Proceeding Name</label>
+                            <input type="text" name="proceeding_name" id="edit_proceeding_name" class="form-control" required>
+                        </div>
+                        <!-- Proceeding Description -->
+                        <div class="form-group">
+                            <label for="edit_proceeding_description">Description</label>
+                            <textarea name="proceeding_description" id="edit_proceeding_description" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label for="edit_proceeding_file">Upload File (Optional)</label>
+                            <input type="file" name="proceeding_file" id="edit_proceeding_file" class="form-control-file">
+                        </div>
                     </div>
-                    <!-- File Upload -->
-                    <div class="form-group">
-                        <label for="proceeding_file">Upload File</label>
-                        <input type="file" name="proceeding_file" id="proceeding_file" class="form-control-file" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Proceeding</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Proceeding</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Edit Court Proceeding Modal -->
-<div class="modal fade" id="editCourtProceedingModal" tabindex="-1" role="dialog" aria-labelledby="editCourtProceedingModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="editCourtProceedingForm" action="" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editCourtProceedingModalLabel">Edit Court Proceeding</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Proceeding Name -->
-                    <div class="form-group">
-                        <label for="edit_proceeding_name">Proceeding Name</label>
-                        <input type="text" name="proceeding_name" id="edit_proceeding_name" class="form-control" required>
+    <!-- Add Evidence Modal -->
+    <div class="modal fade" id="addEvidenceModal" tabindex="-1" role="dialog" aria-labelledby="addEvidenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('evidences.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addEvidenceModalLabel">Add Evidence</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <!-- Proceeding Description -->
-                    <div class="form-group">
-                        <label for="edit_proceeding_description">Description</label>
-                        <textarea name="proceeding_description" id="edit_proceeding_description" class="form-control" rows="3" required></textarea>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="type">Evidence Type</label>
+                            <input type="text" name="type" id="type" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" name="date" id="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="collected_by">Collected By</label>
+                            <input type="text" name="collected_by" id="collected_by" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="file">Upload File</label>
+                            <input type="file" name="file" id="file" class="form-control-file" required>
+                        </div>
                     </div>
-                    <!-- File Upload -->
-                    <div class="form-group">
-                        <label for="edit_proceeding_file">Upload File (Optional)</label>
-                        <input type="file" name="proceeding_file" id="edit_proceeding_file" class="form-control-file">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Evidence</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Proceeding</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Add Evidence Modal -->
-<div class="modal fade" id="addEvidenceModal" tabindex="-1" role="dialog" aria-labelledby="addEvidenceModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="{{ route('evidences.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addEvidenceModalLabel">Add Evidence</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="type">Evidence Type</label>
-                        <input type="text" name="type" id="type" class="form-control" required>
+    <!-- Edit Evidence Modal -->
+    <div class="modal fade" id="editEvidenceModal" tabindex="-1" role="dialog" aria-labelledby="editEvidenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="editEvidenceForm" action="" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editEvidenceModalLabel">Edit Evidence</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" name="date" id="date" class="form-control" required>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="edit_type">Evidence Type</label>
+                            <input type="text" name="type" id="edit_type" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_date">Date</label>
+                            <input type="date" name="date" id="edit_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_collected_by">Collected By</label>
+                            <input type="text" name="collected_by" id="edit_collected_by" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_file">Upload File (Optional)</label>
+                            <input type="file" name="file" id="edit_file" class="form-control-file">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="collected_by">Collected By</label>
-                        <input type="text" name="collected_by" id="collected_by" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Evidence</button>
                     </div>
-                    <div class="form-group">
-                        <label for="file">Upload File</label>
-                        <input type="file" name="file" id="file" class="form-control-file" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Evidence</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Edit Evidence Modal -->
-<div class="modal fade" id="editEvidenceModal" tabindex="-1" role="dialog" aria-labelledby="editEvidenceModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="editEvidenceForm" action="" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editEvidenceModalLabel">Edit Evidence</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="edit_type">Evidence Type</label>
-                        <input type="text" name="type" id="edit_type" class="form-control" required>
+    <!-- Add Witness Modal -->
+    <div class="modal fade" id="addWitnessModal" tabindex="-1" role="dialog" aria-labelledby="addWitnessModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('witnesses.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addWitnessModalLabel">Add Witness</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_date">Date</label>
-                        <input type="date" name="date" id="edit_date" class="form-control" required>
+                    <div class="modal-body">
+                        <!-- Witness Name -->
+                        <div class="form-group">
+                            <label for="witness_name">Name</label>
+                            <input type="text" name="name" id="witness_name" class="form-control" required>
+                        </div>
+                        <!-- Witness Address -->
+                        <div class="form-group">
+                            <label for="witness_address">Address</label>
+                            <textarea name="address" id="witness_address" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <!-- Witness National ID -->
+                        <div class="form-group">
+                            <label for="witness_national_id">National ID</label>
+                            <input type="text" name="national_id" id="witness_national_id" class="form-control" required>
+                        </div>
+                        <!-- Witness Files -->
+                        <div class="form-group">
+                            <label for="witness_files">Upload Files (Documents or Videos)</label>
+                            <input type="file" name="files[]" id="witness_files" class="form-control-file" multiple required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_collected_by">Collected By</label>
-                        <input type="text" name="collected_by" id="edit_collected_by" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Witness</button>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_file">Upload File (Optional)</label>
-                        <input type="file" name="file" id="edit_file" class="form-control-file">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Evidence</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Add Witness Modal -->
-<div class="modal fade" id="addWitnessModal" tabindex="-1" role="dialog" aria-labelledby="addWitnessModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="{{ route('witnesses.store', ['case_id' => $case->CaseID]) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addWitnessModalLabel">Add Witness</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Witness Name -->
-                    <div class="form-group">
-                        <label for="witness_name">Name</label>
-                        <input type="text" name="name" id="witness_name" class="form-control" required>
+    <!-- Edit Witness Modal -->
+    <div class="modal fade" id="editWitnessModal" tabindex="-1" role="dialog" aria-labelledby="editWitnessModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="editWitnessForm" action="" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editWitnessModalLabel">Edit Witness</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <!-- Witness Address -->
-                    <div class="form-group">
-                        <label for="witness_address">Address</label>
-                        <textarea name="address" id="witness_address" class="form-control" rows="3" required></textarea>
+                    <div class="modal-body">
+                        <!-- Witness Name -->
+                        <div class="form-group">
+                            <label for="edit_witness_name">Name</label>
+                            <input type="text" name="name" id="edit_witness_name" class="form-control" required>
+                        </div>
+                        <!-- Witness Address -->
+                        <div class="form-group">
+                            <label for="edit_witness_address">Address</label>
+                            <textarea name="address" id="edit_witness_address" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <!-- Witness National ID -->
+                        <div class="form-group">
+                            <label for="edit_witness_national_id">National ID</label>
+                            <input type="text" name="national_id" id="edit_witness_national_id" class="form-control" required>
+                        </div>
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label for="edit_witness_files">Upload Files (Documents or Videos)</label>
+                            <input type="file" name="files[]" id="edit_witness_files" class="form-control-file" multiple>
+                        </div>
                     </div>
-                    <!-- Witness National ID -->
-                    <div class="form-group">
-                        <label for="witness_national_id">National ID</label>
-                        <input type="text" name="national_id" id="witness_national_id" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Witness</button>
                     </div>
-                    <!-- Witness Files -->
-                    <div class="form-group">
-                        <label for="witness_files">Upload Files (Documents or Videos)</label>
-                        <input type="file" name="files[]" id="witness_files" class="form-control-file" multiple required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Witness</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Edit Witness Modal -->
-<div class="modal fade" id="editWitnessModal" tabindex="-1" role="dialog" aria-labelledby="editWitnessModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="editWitnessForm" action="" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editWitnessModalLabel">Edit Witness</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Witness Name -->
-                    <div class="form-group">
-                        <label for="edit_witness_name">Name</label>
-                        <input type="text" name="name" id="edit_witness_name" class="form-control" required>
-                    </div>
-                    <!-- Witness Address -->
-                    <div class="form-group">
-                        <label for="edit_witness_address">Address</label>
-                        <textarea name="address" id="edit_witness_address" class="form-control" rows="3" required></textarea>
-                    </div>
-                    <!-- Witness National ID -->
-                    <div class="form-group">
-                        <label for="edit_witness_national_id">National ID</label>
-                        <input type="text" name="national_id" id="edit_witness_national_id" class="form-control" required>
-                    </div>
-                    <!-- File Upload -->
-                    <div class="form-group">
-                        <label for="edit_witness_files">Upload Files (Documents or Videos)</label>
-                        <input type="file" name="files[]" id="edit_witness_files" class="form-control-file" multiple>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Witness</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 
-<script>
-    $('#editCourtProceedingModal').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var id = button.data('id'); // Extract proceeding ID
-        var name = button.data('name'); // Extract proceeding name
-        var description = button.data('description'); // Extract proceeding description
 
-        var modal = $(this);
-        modal.find('#edit_proceeding_name').val(name); // Set the proceeding name
-        modal.find('#edit_proceeding_description').val(description); // Set the proceeding description
+    <script>
+        $('#editCourtProceedingModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var id = button.data('id'); // Extract proceeding ID
+            var name = button.data('name'); // Extract proceeding name
+            var description = button.data('description'); // Extract proceeding description
 
-        // Update the form action dynamically with the proceeding ID
-        var formAction = "{{ route('court-proceedings.update', ':id') }}".replace(':id', id);
-        modal.find('#editCourtProceedingForm').attr('action', formAction);
-    });
-</script>
+            var modal = $(this);
+            modal.find('#edit_proceeding_name').val(name); // Set the proceeding name
+            modal.find('#edit_proceeding_description').val(description); // Set the proceeding description
 
-<script>
-    $('#editEvidenceModal').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var id = button.data('id'); // Extract evidence ID
-        var type = button.data('type'); // Extract evidence type
-        var date = button.data('date'); // Extract evidence date
-        var collectedBy = button.data('collected-by'); // Extract collected by
-
-        var modal = $(this);
-        modal.find('#edit_type').val(type); // Set evidence type
-        modal.find('#edit_date').val(date); // Set evidence date
-        modal.find('#edit_collected_by').val(collectedBy); // Set collected by
-
-        // Update the form action dynamically with the evidence ID
-        var formAction = "{{ route('evidences.update', ':id') }}".replace(':id', id);
-        modal.find('#editEvidenceForm').attr('action', formAction);
-    });
-</script>
-
-<script>
-    $('#editWitnessModal').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var id = button.data('id'); // Extract witness ID
-        var name = button.data('name'); // Extract witness name
-        var address = button.data('address'); // Extract witness address
-        var nationalId = button.data('national-id'); // Extract witness national ID
-
-        var modal = $(this);
-        modal.find('#edit_witness_name').val(name); // Set witness name
-        modal.find('#edit_witness_address').val(address); // Set witness address
-        modal.find('#edit_witness_national_id').val(nationalId); // Set witness national ID
-
-        // Update the form action dynamically with the witness ID
-        var formAction = "{{ route('witnesses.update', ':id') }}".replace(':id', id);
-        modal.find('#editWitnessForm').attr('action', formAction);
-    });
-</script>
-
-<script>
-    $(document).ready(function() {
-        // Populate Subdivisions when an Administrative Unit is selected
-        $('#administrative_unit').on('change', function() {
-            var unitId = $(this).val();
-            $('#subdivision').empty().append('<option value="">Select</option>');
-            $('#police_station').empty().append('<option value="">Select</option>');
-
-            if (unitId) {
-                $.ajax({
-                    url: '/get-subdivisions/' + unitId,
-                    type: 'GET',
-                    success: function(data) {
-                        $.each(data, function(key, value) {
-                            $('#subdivision').append('<option value="' + value.id + '">' + value.name + '</option>');
-                        });
-                    }
-                });
-            }
+            // Update the form action dynamically with the proceeding ID
+            var formAction = "{{ route('court-proceedings.update', ':id') }}".replace(':id', id);
+            modal.find('#editCourtProceedingForm').attr('action', formAction);
         });
+    </script>
 
-        // Populate Police Stations when a Subdivision is selected
-        $('#subdivision').on('change', function() {
-            var subdivisionId = $(this).val();
-            $('#police_station').empty().append('<option value="">Select</option>');
+    <script>
+        $('#editEvidenceModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var id = button.data('id'); // Extract evidence ID
+            var type = button.data('type'); // Extract evidence type
+            var date = button.data('date'); // Extract evidence date
+            var collectedBy = button.data('collected-by'); // Extract collected by
 
-            if (subdivisionId) {
-                $.ajax({
-                    url: '/get-police-stations/' + subdivisionId,
-                    type: 'GET',
-                    success: function(data) {
-                        $.each(data, function(key, value) {
-                            $('#police_station').append('<option value="' + value.id + '">' + value.name + '</option>');
-                        });
-                    }
-                });
-            }
+            var modal = $(this);
+            modal.find('#edit_type').val(type); // Set evidence type
+            modal.find('#edit_date').val(date); // Set evidence date
+            modal.find('#edit_collected_by').val(collectedBy); // Set collected by
+
+            // Update the form action dynamically with the evidence ID
+            var formAction = "{{ route('evidences.update', ':id') }}".replace(':id', id);
+            modal.find('#editEvidenceForm').attr('action', formAction);
         });
-    });
-</script>
+    </script>
 
-@endsection
+    <script>
+        $('#editWitnessModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var id = button.data('id'); // Extract witness ID
+            var name = button.data('name'); // Extract witness name
+            var address = button.data('address'); // Extract witness address
+            var nationalId = button.data('national-id'); // Extract witness national ID
+
+            var modal = $(this);
+            modal.find('#edit_witness_name').val(name); // Set witness name
+            modal.find('#edit_witness_address').val(address); // Set witness address
+            modal.find('#edit_witness_national_id').val(nationalId); // Set witness national ID
+
+            // Update the form action dynamically with the witness ID
+            var formAction = "{{ route('witnesses.update', ':id') }}".replace(':id', id);
+            modal.find('#editWitnessForm').attr('action', formAction);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Populate Subdivisions when an Administrative Unit is selected
+            $('#administrative_unit').on('change', function() {
+                var unitId = $(this).val();
+                $('#subdivision').empty().append('<option value="">Select</option>');
+                $('#police_station').empty().append('<option value="">Select</option>');
+
+                if (unitId) {
+                    $.ajax({
+                        url: '/get-subdivisions/' + unitId,
+                        type: 'GET',
+                        success: function(data) {
+                            $.each(data, function(key, value) {
+                                $('#subdivision').append('<option value="' + value.id + '">' + value.name + '</option>');
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Populate Police Stations when a Subdivision is selected
+            $('#subdivision').on('change', function() {
+                var subdivisionId = $(this).val();
+                $('#police_station').empty().append('<option value="">Select</option>');
+
+                if (subdivisionId) {
+                    $.ajax({
+                        url: '/get-police-stations/' + subdivisionId,
+                        type: 'GET',
+                        success: function(data) {
+                            $.each(data, function(key, value) {
+                                $('#police_station').append('<option value="' + value.id + '">' + value.name + '</option>');
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+
+
+
+    <script>
+        $(document).ready(function() {
+            var administrativeUnit = document.getElementById('administrative_unit1')?.value || 'Not Selected';
+            var subdivision = document.getElementById('subdivision1')?.value || 'Not Selected';
+            var policeStation = document.getElementById('police_station1')?.value || 'Not Selected';
+
+            $.ajax({
+                url: "{{ route('get.case.officers') }}", // Replace with your route name
+                type: "GET",
+                data: {
+                    administrative_unit_id: administrativeUnit,
+                    subdivision_id: subdivision,
+                    police_station_id: policeStation,
+                },
+                success: function(data) {
+                    if (data.length > 0) {
+
+                        // Populate the Forward To dropdown with the fetched data
+                        $.each(data, function(key, officer) {
+                            $('#forward_to').append('<option value="' + officer.id + '">' + officer.name + '</option>');
+                        });
+                    } else {
+
+                        $('#forward_to').append('<option value="">No officers available</option>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching officers:', error);
+
+                },
+            });
+        });
+    </script>
+
+
+
+
+
+    @endsection

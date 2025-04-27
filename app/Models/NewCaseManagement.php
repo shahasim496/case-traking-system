@@ -26,7 +26,7 @@ class NewCaseManagement extends Model
     protected $fillable = [
         'CaseID',
         'CaseDepartmentName',
-        'CaseDepartmentID',  
+        'CaseDepartmentID',
         'CaseType',
         'CaseCreationDate',
         'CaseStatus',
@@ -34,7 +34,7 @@ class NewCaseManagement extends Model
         'OfficerID',
         'OfficerName',
         'OfficerRank',
-
+        'LastOfficerID',
         'administrative_unit_id',
         'subdivision_id',
         'police_station_id',

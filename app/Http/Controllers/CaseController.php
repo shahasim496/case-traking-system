@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use DB;
@@ -6,6 +7,7 @@ use App\Models\User;
 use App\Models\TaskLog;
 use App\Models\Witness;
 use App\Models\CaseType;
+use App\Models\CaseUser;
 use App\Models\Evidence;
 use App\Models\Department;
 use App\Models\Subdivision;
@@ -31,20 +33,20 @@ class CaseController extends Controller
             $query->where('name', 'Police Officer / Help Desk Officer'); // Assuming 'Officer' is the role name
         })->get();
 
-    
+
         // Fetch departments
         $departments = Department::all();
         $administrativeUnits = AdministrativeUnit::all();
-      
 
-        return view('case-management.createcase', compact('caseTypes', 'officers', 'departments','administrativeUnits'));
+
+        return view('case-management.createcase', compact('caseTypes', 'officers', 'departments', 'administrativeUnits'));
     }
 
     public function index()
     {
         // Fetch all cases ordered by the latest created_at
         $cases = NewCaseManagement::orderBy('created_at', 'desc')->get();
-        
+
 
         // Pass cases to the view
         return view('case-management.index', compact('cases'));
@@ -81,13 +83,13 @@ class CaseController extends Controller
             // Debug relationships
             $department = Department::find($request->department);
             if (!$department) {
-             
+
                 return redirect()->route('casess.index')->with('false', 'Department not found.');
             }
 
             $officer = User::find($request->officer);
             if (!$officer) {
-        
+
                 return redirect()->route('casess.index')->with('false', 'Officer not found.');
             }
 
@@ -108,7 +110,7 @@ class CaseController extends Controller
 
             // Debug CaseID
             if (!$case->CaseID) {
-               
+
                 return redirect()->route('casess.index')->with('false', 'CaseID not generated.');
             }
 
@@ -150,12 +152,15 @@ class CaseController extends Controller
             ]);
 
 
+            CaseUser::create([
+                'case_id' => $case->CaseID,
+                'user_id' => auth()->id(),
+            ]);
 
             return redirect()->route('casess.index')->with('success', 'Case added successfully.');
         } catch (\Exception $e) {
-           
+
             return redirect()->route('casess.index')->with('false', $e->getMessage());
-            
         }
     }
 
@@ -163,7 +168,7 @@ class CaseController extends Controller
     {
         // Fetch the case details by ID
         $case = NewCaseManagement::findOrFail($id);
-     
+
 
         // Fetch related complainant and accused details
         $complainant = ComplainantDetail::where('CaseID', $id)->first();
@@ -173,7 +178,7 @@ class CaseController extends Controller
         $caseTypes = CaseType::all(); // Fetch all case types
         $departments = Department::all(); // Fetch all departments
         $officers = User::all(); // Fetch all officers
-   
+
         // Fetch documents related to the case
         $documents = InvestigationDocument::where('case_id', $id)->get();
 
@@ -182,14 +187,28 @@ class CaseController extends Controller
         $witnesses = Witness::where('case_id', $id)->with('files')->get();
 
         $administrativeUnits = AdministrativeUnit::all();
-    $subdivisions = Subdivision::where('administrative_unit_id', $case->administrative_unit_id)->get();
-    $policeStations = PoliceStation::where('subdivision_id', $case->subdivision_id)->get();
-    $taskLogs = TaskLog::where('case_id', $case->CaseID)->orderBy('date', 'desc')->paginate(10);
+        $subdivisions = Subdivision::where('administrative_unit_id', $case->administrative_unit_id)->get();
+        $policeStations = PoliceStation::where('subdivision_id', $case->subdivision_id)->get();
+        $taskLogs = TaskLog::where('case_id', $case->CaseID)->orderBy('date', 'desc')->paginate(10);
 
 
         // Pass data to the view
-        return view('case-management.edit', compact('case', 'complainant', 'accused', 'caseTypes', 'departments', 
-        'officers', 'documents', 'courtProceedings','evidences','witnesses','administrativeUnits','subdivisions','policeStations','taskLogs'));
+        return view('case-management.edit', compact(
+            'case',
+            'complainant',
+            'accused',
+            'caseTypes',
+            'departments',
+            'officers',
+            'documents',
+            'courtProceedings',
+            'evidences',
+            'witnesses',
+            'administrativeUnits',
+            'subdivisions',
+            'policeStations',
+            'taskLogs'
+        ));
     }
 
     public function destroy($id)
@@ -200,7 +219,7 @@ class CaseController extends Controller
         // Delete the case
         $case->delete();
 
-        
+
 
         // Redirect back with a success message
         return redirect()->route('casess.index')->with('success', 'Case deleted successfully.');
@@ -304,5 +323,126 @@ class CaseController extends Controller
     }
 
 
+    public function getCaseOfficers(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
 
+        // Fetch officers based on the hierarchy
+        $query = User::role('Case Officer'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+
+
+    public function takeAction(Request $request, $id)
+    {
+
+        if ($request->change_status) {
+
+ 
+            try {
+                
+                // Validate the request
+                $request->validate([
+                    'change_status' => 'required',
+                    'case_description_action' => 'nullable|string',
+                ]);
+                // Fetch the case by ID
+                $case = NewCaseManagement::findOrFail($id);
+
+                // Update the case status and description
+                $case->CaseStatus = $request->change_status;
+                $case->CaseDescription = $request->case_description_action;
+
+                // Save the changes
+                $case->save();
+
+
+                // Log the update action
+                TaskLog::create([
+                    'case_id' => $case->CaseID,
+                    'officer_id' => auth()->id(), // Authenticated user's ID
+                    'officer_name' => auth()->user()->name, // Authenticated user's name
+                    'officer_rank' => auth()->user()->designation->name ?? 'N/A', // Assuming a relationship exists
+                    'department' => auth()->user()->department->name ?? 'N/A', // Assuming a relationship exists
+                    'date' => now(), // Current date and time
+                    'description' => 'Case status updated by officer', // Static description
+                    'action_taken' => 'updated', // Static action
+                ]);
+
+
+                // Redirect back with a success message
+                return redirect()->back()->with('success', 'Case status updated successfully.');
+            } catch (\Exception $e) {
+                // Redirect back with an error message
+                return redirect()->back()->with('error', 'Failed to update case status: ' . $e->getMessage());
+            }
+        } else {
+            try {
+                // Validate the request
+                $request->validate([
+                    'forward_to' => 'required|integer|exists:users,id',
+                    'case_description_action' => 'nullable|string',
+                ]);
+
+                // Fetch the case by ID
+                $case = NewCaseManagement::findOrFail($id);
+
+                // Update the LastOfficerID with the current OfficerID
+                $case->LastOfficerID = $case->OfficerID;
+
+                // Update the OfficerID with the selected Forward To officer
+                $case->OfficerID = $request->forward_to;
+                $case->CaseDescription = $request->case_description_action;
+
+                // Save the changes
+                $case->save();
+
+                CaseUser::create([
+                    'case_id' => $case->CaseID,
+                    'user_id' =>  $request->forward_to,
+                ]);
+
+
+                // Log the update action
+                TaskLog::create([
+                    'case_id' => $case->CaseID,
+                    'officer_id' => auth()->id(), // Authenticated user's ID
+                    'officer_name' => auth()->user()->name, // Authenticated user's name
+                    'officer_rank' => auth()->user()->designation->name ?? 'N/A', // Assuming a relationship exists
+                    'department' => auth()->user()->department->name ?? 'N/A', // Assuming a relationship exists
+                    'date' => now(), // Current date and time
+                    'description' => 'Case forwarded by officer', // Static description
+                    'action_taken' => 'updated', // Static action
+                ]);
+
+
+                // Redirect back with a success message
+                return redirect()->back()->with('success', 'Case forwarded successfully.');
+            } catch (\Exception $e) {
+                // Redirect back with an error message
+                return redirect()->back()->with('error', 'Failed to forward case: ' . $e->getMessage());
+            }
+        }
+    }
 }

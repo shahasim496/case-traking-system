@@ -214,6 +214,13 @@ Route::get('/get-police-stations/{subdivisionId}', [AdministrativeUnitController
 Route::resource('admin-units', AdministrativeUnitController::class);
 Route::resource('subdivisions', SubdivisionController::class);
 Route::resource('police-stations', PoliceStationController::class);
+
+
+
+
+Route::get('/get-case-officers', [App\Http\Controllers\CaseController::class, 'getCaseOfficers'])->name('get.case.officers');
+
+Route::post('/cases/{id}/take-action', [App\Http\Controllers\CaseController::class, 'takeAction'])->name('cases.takeAction');
     
 });
 

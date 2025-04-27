@@ -10,12 +10,14 @@
     <title>Case Management System</title>
     <link rel="apple-touch-icon" href="/images/Mask Group 17.svg">
     <link rel="shortcut icon" type="image/x-icon" href="/images/Mask Group 17.svg">
+  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    
 
 
     @include('layouts.css')
@@ -85,6 +87,9 @@
     @include('layouts.js')
     @yield('jsfile')
 
+    
+ 
+
     <script>
 
         $(function () {
@@ -144,7 +149,7 @@
 
     </script>
 
-    </body>
+   </body>
     <!-- END: Body-->
 
     </html>

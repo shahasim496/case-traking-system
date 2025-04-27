@@ -22,6 +22,7 @@ class CreateNewCaseManagementTable extends Migration
             $table->string('CaseStatus', 50);
             $table->string('CaseDescription', 50);  
             $table->string('OfficerID', 100);
+            $table->string('LastOfficerID', 100)->default('0')->nullable();
             $table->string('OfficerName', 100);
             $table->integer('OfficerRank');
             $table->integer('administrative_unit_id');
