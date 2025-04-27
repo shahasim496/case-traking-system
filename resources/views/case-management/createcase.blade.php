@@ -32,16 +32,14 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="officer">Select Officer</label>
-                        <select name="officer" id="officer" class="form-control" required>
-                            <option value="">Select</option>
-                            @foreach($officers as $officer)
-                            <option value="{{ $officer->id }}">{{ $officer->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+    <div class="form-group">
+        <label for="officer">Select Officer</label>
+        <select name="officer" id="officer" class="form-control" disabled>
+            <option value="{{ auth()->user()->id }}" selected>{{ auth()->user()->name }}</option>
+        </select>
+        <input type="hidden" name="officer" value="{{ auth()->user()->id }}">
+    </div>
+</div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="case_status">Case Status</label>

@@ -21,6 +21,229 @@
         <h4>Edit Case</h4>
     </div>
     <div class="card-body">
+    @if(auth()->user()->hasRole('Super Admin') || auth()->user()->can('edit case details'))
+        <form action="{{ route('casess.update', $case->CaseID) }}" method="POST">
+            @csrf
+            @method('PUT') <!-- Use PUT method for updating -->
+
+            <!-- Case Details -->
+            <h5>Case Details</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="case_type">Case Type</label>
+                        <select name="case_type" id="case_type" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($caseTypes as $caseType)
+                            <option value="{{ $caseType->id }}" {{ $case->CaseType == $caseType->id ? 'selected' : '' }}>
+                                {{ $caseType->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="officer">Select Officer</label>
+                        <select name="officer" id="officer" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($officers as $officer)
+                            <option value="{{ $officer->id }}" {{ $case->OfficerID == $officer->id ? 'selected' : '' }}>
+                                {{ $officer->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="case_status">Case Status</label>
+                        <select name="case_status" id="case_status" class="form-control" >
+                            <option value="">Select</option>
+                            <option value="Awating Verification" {{ $case->CaseStatus == 'Awating Verification' ? 'selected' : '' }}>Awating Verification</option>
+                            <option value="In Progress" {{ $case->CaseStatus == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="Closed" {{ $case->CaseStatus == 'Closed' ? 'selected' : '' }}>Closed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select name="department" id="department" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($departments as $department)
+                            <option value="{{ $department->id }}" {{ $case->CaseDepartmentID == $department->id ? 'selected' : '' }}>
+                                {{ $department->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- admininstratin -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="administrative_unit">Administrative Unit</label>
+                        <select name="administrative_unit" id="administrative_unit" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($administrativeUnits as $unit)
+                            <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
+                                {{ $unit->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="subdivision">Subdivision</label>
+                        <select name="subdivision" id="subdivision" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($subdivisions as $subdivision)
+                            <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
+                                {{ $subdivision->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="police_station">Police Station</label>
+                        <select name="police_station" id="police_station" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($policeStations as $station)
+                            <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
+                                {{ $station->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+
+
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="case_description">Case Description</label>
+                        <textarea name="case_description" id="case_description" class="form-control" rows="3">{{ old('case_description', $case->CaseDescription) }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complainant Details -->
+            <h5>Complainant Details</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="complainant_name">Complainant Name</label>
+                        <input type="text" name="complainant_name" id="complainant_name" class="form-control" value="{{ old('complainant_name', $complainant->ComplainantName) }}" placeholder="Type here" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="complainant_contact">Complainant Contact</label>
+                        <input type="text" name="complainant_contact" id="complainant_contact" class="form-control" value="{{ old('complainant_contact', $complainant->ComplainantContact) }}" placeholder="Type here" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="complainant_id_number">ID Number</label>
+                        <input type="text" name="complainant_id_number" id="complainant_id_number" class="form-control" value="{{ old('complainant_id_number', $complainant->ComplainantID) }}" placeholder="Type here" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="complainant_dob">DOB</label>
+                        <input type="date" name="complainant_dob" id="complainant_dob" class="form-control" value="{{ old('complainant_dob', $complainant->ComplainantDateOfBirth) }}" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="complainant_gender">Gender</label>
+                        <select name="complainant_gender" id="complainant_gender" class="form-control" >
+                            <option value="">Select</option>
+                            <option value="male" {{ $complainant->ComplainantGenderType == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ $complainant->ComplainantGenderType == 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="other" {{ $complainant->ComplainantGenderType == 'other' ? 'selected' : '' }}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="complainant_address">Address</label>
+                        <textarea name="complainant_address" id="complainant_address" class="form-control" rows="2" >{{ old('complainant_address', $complainant->ComplainantAddress) }}</textarea>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="complainant_relation">Relation</label>
+                        <input type="text" name="complainant_relation" id="complainant_relation" class="form-control" value="{{ old('complainant_relation', $complainant->ComplainantRelation) }}" placeholder="Type here" >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accused Details -->
+            <h5>Accused Details</h5>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="accused_name">Accused Name</label>
+                        <input type="text" name="accused_name" id="accused_name" class="form-control" value="{{ old('accused_name', $accused->AccusedName) }}" placeholder="Type here" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="accused_contact">Accused Contact</label>
+                        <input type="text" name="accused_contact" id="accused_contact" class="form-control" value="{{ old('accused_contact', $accused->AccusedContact) }}" placeholder="Type here" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="accused_id_number">ID Number</label>
+                        <input type="text" name="accused_id_number" id="accused_id_number" class="form-control" value="{{ old('accused_id_number', $accused->AccusedID) }}" placeholder="Type here" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="accused_dob">DOB</label>
+                        <input type="date" name="accused_dob" id="accused_dob" class="form-control" value="{{ old('accused_dob', $accused->AccusedDateOfBirth) }}" >
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="accused_gender">Gender</label>
+                        <select name="accused_gender" id="accused_gender" class="form-control" >
+                            <option value="">Select</option>
+                            <option value="male" {{ $accused->AccusedGenderType == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ $accused->AccusedGenderType == 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="other" {{ $accused->AccusedGenderType == 'other' ? 'selected' : '' }}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="accused_address">Address</label>
+                        <textarea name="accused_address" id="accused_address" class="form-control" rows="2" >{{ old('accused_address', $accused->AccusedAddress) }}</textarea>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="accused_relation">Relation</label>
+                        <input type="text" name="accused_relation" id="accused_relation" class="form-control" value="{{ old('accused_relation', $accused->AccusedRelation) }}" placeholder="Type here" >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-right">
+                <a href="{{ route('casess.index') }}" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+            
+        </form>
+        @else
         <form action="{{ route('casess.update', $case->CaseID) }}" method="POST">
             @csrf
             @method('PUT') <!-- Use PUT method for updating -->
@@ -44,7 +267,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="officer">Select Officer</label>
-                        <select name="officer" id="officer" class="form-control">
+                        <select name="officer" id="officer" class="form-control" disabled>
                             <option value="">Select</option>
                             @foreach($officers as $officer)
                             <option value="{{ $officer->id }}" {{ $case->OfficerID == $officer->id ? 'selected' : '' }}>
@@ -83,7 +306,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="administrative_unit">Administrative Unit</label>
-                        <select name="administrative_unit" id="administrative_unit" class="form-control" required>
+                        <select name="administrative_unit" id="administrative_unit" class="form-control" disabled>
                             <option value="">Select</option>
                             @foreach($administrativeUnits as $unit)
                             <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
@@ -96,7 +319,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="subdivision">Subdivision</label>
-                        <select name="subdivision" id="subdivision" class="form-control" required>
+                        <select name="subdivision" id="subdivision" class="form-control" disabled>
                             <option value="">Select</option>
                             @foreach($subdivisions as $subdivision)
                             <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
@@ -109,7 +332,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="police_station">Police Station</label>
-                        <select name="police_station" id="police_station" class="form-control" required>
+                        <select name="police_station" id="police_station" class="form-control" disabled>
                             <option value="">Select</option>
                             @foreach($policeStations as $station)
                             <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
@@ -240,15 +463,19 @@
                 <a href="{{ route('casess.index') }}" class="btn btn-secondary">Back</a>
             </div>
         </form>
+@endif
     </div>
 </div>
 
 
 <!-- Investigation Documents Section -->
+@if(auth()->user()->can('view investigation documents'))
 <div class="card mt-4">
     <div class="card-header">
         <h4>Investigation Documents</h4>
+        @if(auth()->user()->can('add investigation documents'))
         <button type="button" class="btn btn-primary float-right" id="add-doc" data-toggle="modal" data-target="#addDocModal">Add Doc</button>
+        @endif
     </div>
     <div class="card-body">
         <table class="table table-bordered">
@@ -268,6 +495,9 @@
                         <!-- View Button -->
                         <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" class="btn btn-link">View</a>
 
+
+                        @if(auth()->user()->can('manage investigation documents'))
+
                         <!-- Edit Button -->
                         <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editDocModal"
                             data-id="{{ $document->id }}"
@@ -282,6 +512,8 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
+
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -293,6 +525,7 @@
         </table>
     </div>
 </div>
+@endif
 
 <!-- Evidence Section -->
 <div class="card mt-4">
@@ -376,7 +609,7 @@
                                 {{ $file->file_name }} ({{ $file->file_type }})
                             </a>
                             <!-- Delete File Button -->
-                            <form action="{{ route('witness-filess.destroy', $file->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('witness-files.destroy', $file->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm ml-2">
@@ -534,6 +767,51 @@
                         </select>
                     </div>
                 </div>
+
+                        <!-- units -->
+                    <!-- admininstratin -->
+                    <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="administrative_unit">Administrative Unit</label>
+                        <select name="administrative_unit" id="administrative_unit" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($administrativeUnits as $unit)
+                            <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
+                                {{ $unit->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="subdivision">Subdivision</label>
+                        <select name="subdivision" id="subdivision" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($subdivisions as $subdivision)
+                            <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
+                                {{ $subdivision->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="police_station">Police Station</label>
+                        <select name="police_station" id="police_station" class="form-control" >
+                            <option value="">Select</option>
+                            @foreach($policeStations as $station)
+                            <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
+                                {{ $station->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+
+
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="forward_to">Forward To</label>
@@ -544,12 +822,20 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- unitss -->
+                 
+          
+
+        
+
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="case_description_action">Case Description</label>
                         <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
                     </div>
                 </div>
+                 
             </div>
 
             <!-- Submit Button -->

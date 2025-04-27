@@ -142,6 +142,14 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('user.edit', ['id' => auth()->user()->id]) }}" class="nav-link">
+                        <i class="fa fa-user-circle" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Edit Profile</span>
+                    </a>
+                </li>
+
+
 
                 <li>
                     <a href="{{ route('logout') }}"

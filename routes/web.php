@@ -121,14 +121,17 @@ Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned']], function
     Route::put('/update/{id}', [App\Http\Controllers\RoleController::class, 'update'])->name('roles.update');
     Route::get('/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete');
     Route::delete('/roles/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete');
-});
 
-Route::group(['prefix' => 'roles', 'middleware' => ['auth']], function () {
+
     Route::get('/assign-permissions/{id}', [App\Http\Controllers\RoleController::class, 'assignPermissions'])->name('roles.assignPermissions');
     Route::post('/assign-permissions/{id}', [App\Http\Controllers\RoleController::class, 'storeAssignedPermissions'])->name('roles.storeAssignedPermissions');
     Route::get('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'managePermissions'])->name('roles.managePermissions');
     Route::post('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'storeAssignedPermissions'])->name('roles.storeAssignedPermissions');
+
+
 });
+
+
 
 Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions');

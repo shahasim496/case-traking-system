@@ -163,6 +163,7 @@ class CaseController extends Controller
     {
         // Fetch the case details by ID
         $case = NewCaseManagement::findOrFail($id);
+     
 
         // Fetch related complainant and accused details
         $complainant = ComplainantDetail::where('CaseID', $id)->first();
@@ -172,7 +173,7 @@ class CaseController extends Controller
         $caseTypes = CaseType::all(); // Fetch all case types
         $departments = Department::all(); // Fetch all departments
         $officers = User::all(); // Fetch all officers
-
+   
         // Fetch documents related to the case
         $documents = InvestigationDocument::where('case_id', $id)->get();
 
@@ -205,29 +206,103 @@ class CaseController extends Controller
         return redirect()->route('casess.index')->with('success', 'Case deleted successfully.');
     }
 
-    public function storeTaskLog(Request $request, $caseId)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'officer_id' => 'required|exists:users,id',
-            'officer_name' => 'required|string|max:255',
-            'officer_rank' => 'required|string|max:255',
-            'department' => 'required|string|max:255',
-            'date' => 'required|date',
-            'forwarded_to' => 'nullable|string|max:255',
-            'action_taken' => 'required|string',
-        ]);
+        try {
+            // Validate the request data
+            $request->validate([
+                'case_type' => 'required|string|max:50',
+                'case_status' => 'required|string|max:50',
+                'department' => 'required|integer|exists:departments,id',
+                'case_description' => 'nullable|string',
+                'administrative_unit' => 'required|integer|exists:administrative_units,id',
+                'subdivision' => 'required|integer|exists:subdivisions,id',
+                'police_station' => 'required|integer|exists:police_stations,id',
+                'complainant_name' => 'required|string|max:50',
+                'complainant_contact' => 'required|string|max:50',
+                'complainant_id_number' => 'required|string|max:50',
+                'complainant_dob' => 'required|date',
+                'complainant_gender' => 'required|string|max:50',
+                'complainant_address' => 'nullable|string|max:100',
+                'complainant_relation' => 'nullable|string|max:50',
+                'accused_name' => 'required|string|max:50',
+                'accused_contact' => 'required|string|max:50',
+                'accused_id_number' => 'required|string|max:50',
+                'accused_dob' => 'required|date',
+                'accused_gender' => 'required|string|max:50',
+                'accused_address' => 'nullable|string|max:100',
+                'accused_relation' => 'nullable|string|max:50',
+            ]);
 
-        TaskLog::create([
-            'case_id' => $caseId,
-            'officer_id' => $request->officer_id,
-            'officer_name' => $request->officer_name,
-            'officer_rank' => $request->officer_rank,
-            'department' => $request->department,
-            'date' => $request->date,
-            'forwarded_to' => $request->forwarded_to,
-            'action_taken' => $request->action_taken,
-        ]);
+            // Fetch the case by ID
+            $case = NewCaseManagement::findOrFail($id);
 
-        return redirect()->back()->with('success', 'Task log added successfully.');
+            // Update the case details
+            $department = Department::findOrFail($request->department);
+            $officer = User::findOrFail($request->officer);
+
+            $case->update([
+                'CaseType' => $request->case_type,
+                'CaseStatus' => $request->case_status,
+                'CaseDescription' => $request->case_description,
+                'CaseDepartmentID' => $request->department,
+                'CaseDepartmentName' => $department->name,
+                'OfficerID' => $request->officer,
+                'OfficerName' => $officer->name,
+                'OfficerRank' => $officer->designation_id,
+                'administrative_unit_id' => $request->administrative_unit,
+                'subdivision_id' => $request->subdivision,
+                'police_station_id' => $request->police_station,
+            ]);
+
+            // Update complainant details
+            $complainant = ComplainantDetail::where('CaseID', $id)->first();
+            if ($complainant) {
+                $complainant->update([
+                    'ComplainantName' => $request->complainant_name,
+                    'ComplainantContact' => $request->complainant_contact,
+                    'ComplainantID' => $request->complainant_id_number,
+                    'ComplainantDateOfBirth' => $request->complainant_dob,
+                    'ComplainantGenderType' => $request->complainant_gender,
+                    'ComplainantAddress' => $request->complainant_address,
+                    'ComplainantOtherDetails' => $request->complainant_relation,
+                ]);
+            }
+
+            // Update accused details
+            $accused = AccusedDetail::where('CaseID', $id)->first();
+            if ($accused) {
+                $accused->update([
+                    'AccusedName' => $request->accused_name,
+                    'AccusedContact' => $request->accused_contact,
+                    'AccusedID' => $request->accused_id_number,
+                    'AccusedDateOfBirth' => $request->accused_dob,
+                    'AccusedGenderType' => $request->accused_gender,
+                    'AccusedAddress' => $request->accused_address,
+                    'AccusedOtherDetails' => $request->accused_relation,
+                ]);
+            }
+
+            // Log the update action
+            TaskLog::create([
+                'case_id' => $case->CaseID,
+                'officer_id' => auth()->id(), // Authenticated user's ID
+                'officer_name' => auth()->user()->name, // Authenticated user's name
+                'officer_rank' => auth()->user()->designation->name ?? 'N/A', // Assuming a relationship exists
+                'department' => auth()->user()->department->name ?? 'N/A', // Assuming a relationship exists
+                'date' => now(), // Current date and time
+                'description' => 'Case updated by officer', // Static description
+                'action_taken' => 'updated', // Static action
+            ]);
+
+            // Redirect back with a success message
+            return redirect()->route('casess.index')->with('success', 'Case updated successfully.');
+        } catch (\Exception $e) {
+            // Redirect back with an error message
+            return redirect()->route('casess.index')->with('error', $e->getMessage());
+        }
     }
+
+
+
 }
