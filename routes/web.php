@@ -91,7 +91,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
 
 
 
-Route::group(['prefix' => 'departments', 'middleware' => ['auth', 'banned', 'role:SuperAdmin']], function () {
+Route::group(['prefix' => 'departments', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
     Route::get('/getDepartments', [App\Http\Controllers\DepartmentController::class, 'getDepartments'])->name('departments.getDepartments');
     Route::get('/create', [App\Http\Controllers\DepartmentController::class, 'create'])->name('departments.create');

@@ -8,7 +8,7 @@
             <div class="out-div">
             <h1 class="heading">Verify Account</h1>
             <p>We  have  sent  a  verification code on your email
-account yourname@your mail.com. Please enter
+account  Please enter
 verification code below. </p>
             </div>
            <form class="form-signin"method="POST" action="{{ route('verifyUserCode') }}">

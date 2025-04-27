@@ -31,6 +31,9 @@ class User extends Authenticatable
         'phone',
         'department_id',
         'designation_id',
+        'administrative_unit_id',
+        'subdivision_id',
+        'police_station_id'
     ];
 
     /**

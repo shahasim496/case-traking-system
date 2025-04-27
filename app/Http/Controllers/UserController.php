@@ -2,40 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use DB;
 
-use Yajra\DataTables\Facades\DataTables;
+use Auth;
 
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-use App\Http\Requests\UserRegisterRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Requests\UserProfileRequest;
-use App\Http\Requests\UpdateUserProfileRequest;
-use App\Http\Requests\UpdatePasswordRequest;
-use App\Http\Requests\OfficerUserRequest;
-use App\Http\Requests\GenOfficerRequest;
-
+use Excel;
 use App\Models\User;
-use App\Models\User_Profile;
-use App\Models\Forget_Password;
-use App\Models\Application;
-use App\Models\Province;
+
+use App\Models\Grade;
 use App\Models\Tehsil;
 use App\Models\District;
-use App\Models\Designation;
-use App\Models\Group_Service;
-use App\Models\Grade;
-use App\Models\Officer_Profile;
-use App\Models\OfficerUser;
-
-use App\Exports\OfficerExport;
+use App\Models\Province;
 use App\Models\Department;
+use App\Models\Application;
+use App\Models\Designation;
+
+use App\Models\OfficerUser;
+use App\Models\Subdivision;
 use Illuminate\Support\Str;
-use Auth;
-use DB;
-use Excel;
+use App\Models\User_Profile;
+use Illuminate\Http\Request;
+use App\Models\Group_Service;
+use App\Models\PoliceStation;
+use App\Exports\OfficerExport;
+use App\Models\Forget_Password;
+use App\Models\Officer_Profile;
+use App\Models\AdministrativeUnit;
+use Spatie\Permission\Models\Role;
+
+use App\Http\Requests\GenOfficerRequest;
+use App\Http\Requests\UpdateUserRequest;
+use Spatie\Permission\Models\Permission;
+use Yajra\DataTables\Facades\DataTables;
+use App\Http\Requests\OfficerUserRequest;
+use App\Http\Requests\UserProfileRequest;
+use App\Http\Requests\UserRegisterRequest;
+use App\Http\Requests\UpdatePasswordRequest;
+use App\Http\Requests\UpdateUserProfileRequest;
 
 class UserController extends Controller
 {
@@ -171,13 +174,16 @@ class UserController extends Controller
 
         // Fetch all designations
         $designations = Designation::all();
+        $administrativeUnits = AdministrativeUnit::all(); // Fetch all administrative units
+        $subdivisions = Subdivision::all(); // Fetch all subdivisions
+        $policeStations = PoliceStation::all(); // Fetch all police stations
 
 
         $roles = Role::where('name', '!=', 'SuperAdmin')->get();
 
 
 
-        return view('users.add_user', compact('departments', 'designations', 'roles'));
+        return view('users.add_user', compact('departments', 'designations', 'roles', 'administrativeUnits', 'subdivisions', 'policeStations'));
     } //end of function
 
 
@@ -185,8 +191,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-      
-        $request->validate([
+        $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
@@ -194,6 +199,9 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'department_id' => 'required|integer',
             'designation_id' => 'required|integer',
+            'administrative_unit_id' => 'required|exists:administrative_units,id',
+            'subdivision_id' => 'nullable|exists:subdivisions,id',
+            'police_station_id' => 'nullable|exists:police_stations,id',
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
         ]);
@@ -210,6 +218,9 @@ class UserController extends Controller
                 'phone' => $request->phone,
                 'department_id' => $request->department_id,
                 'designation_id' => $request->designation_id,
+                'administrative_unit_id' => $validatedData['administrative_unit_id'],
+                'subdivision_id' => $validatedData['subdivision_id'], // Nullable
+                'police_station_id' => $validatedData['police_station_id'], // Nullable
             ]);
 
             // Assign multiple roles to the user
@@ -223,8 +234,6 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Something went wrong. Please try again.')->withInput();
         }
     }
-
- 
 
     public function updatePassword(UpdatePasswordRequest $request, $id)
     {
@@ -399,21 +408,33 @@ class UserController extends Controller
 
     public function edit($id)
     {
-
-        $user = User::find($id);
-
-        $roles = Role::all();
+        $user = User::findOrFail($id);
         $departments = Department::all();
         $designations = Designation::all();
-
+        $administrativeUnits = AdministrativeUnit::all();
+        $subdivisions = Subdivision::all();
+        $policeStations = PoliceStation::all();
+        $roles = Role::all();
         $userRoles = $user->roles->pluck('name')->toArray();
 
-        return view('users.edit_user', compact(['user', 'roles', 'departments', 'userRoles', 'designations']));
+        // Debug the user data
+
+
+        return view('users.edit_user', compact(
+            'user',
+            'departments',
+            'designations',
+            'administrativeUnits',
+            'subdivisions',
+            'policeStations',
+            'roles',
+            'userRoles'
+        ));
     } //end of function
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validatedData=$request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
@@ -421,6 +442,9 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'department_id' => 'required',
             'designation_id' => 'required',
+            'administrative_unit_id' => 'required|exists:administrative_units,id',
+            'subdivision_id' => 'nullable|exists:subdivisions,id',
+            'police_station_id' => 'nullable|exists:police_stations,id',
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
         ]);
@@ -439,6 +463,9 @@ class UserController extends Controller
                 'phone' => $request->phone,
                 'department_id' => $request->department_id,
                 'designation_id' => $request->designation_id,
+                'administrative_unit_id' => $validatedData['administrative_unit_id'],
+                'subdivision_id' => $validatedData['subdivision_id'], // Nullable
+                'police_station_id' => $validatedData['police_station_id'], // Nullable
             ]);
 
             // Sync roles for the user

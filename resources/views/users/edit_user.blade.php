@@ -104,6 +104,54 @@
                     @endif
                 </div>
 
+                <!-- Administrative Unit -->
+                <div class="col-lg-6">
+                    <label class="label-font">Administrative Unit</label>
+                    <select name="administrative_unit_id" id="administrative_unit_id" class="form-control mb-3" required>
+                        <option value="">Select Administrative Unit</option>
+                        @foreach($administrativeUnits as $unit)
+                            <option value="{{ $unit->id }}" {{ old('administrative_unit_id', $user->administrative_unit_id) == $unit->id ? 'selected' : '' }}>
+                                {{ $unit->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('administrative_unit_id'))
+                        <span class="text-danger">{{ $errors->first('administrative_unit_id') }}</span>
+                    @endif
+                </div>
+
+                <!-- Subdivision -->
+                <div class="col-lg-6">
+                    <label class="label-font">Subdivision (Optional)</label>
+                    <select name="subdivision_id" id="subdivision_id" class="form-control mb-3">
+                        <option value="">Select Subdivision</option>
+                        @foreach($subdivisions as $subdivision)
+                            <option value="{{ $subdivision->id }}" {{ old('subdivision_id', $user->subdivision_id) == $subdivision->id ? 'selected' : '' }}>
+                                {{ $subdivision->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('subdivision_id'))
+                        <span class="text-danger">{{ $errors->first('subdivision_id') }}</span>
+                    @endif
+                </div>
+
+                <!-- Police Station -->
+                <div class="col-lg-6">
+                    <label class="label-font">Police Station (Optional)</label>
+                    <select name="police_station_id" id="police_station_id" class="form-control mb-3">
+                        <option value="">Select Police Station</option>
+                        @foreach($policeStations as $station)
+                            <option value="{{ $station->id }}" {{ old('police_station_id', $user->police_station_id) == $station->id ? 'selected' : '' }}>
+                                {{ $station->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('police_station_id'))
+                        <span class="text-danger">{{ $errors->first('police_station_id') }}</span>
+                    @endif
+                </div>
+
                 <!-- User Roles -->
                 <div class="col-lg-6">
                     <label class="label-font">User Roles</label>
