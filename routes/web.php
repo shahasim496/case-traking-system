@@ -3,10 +3,11 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TaskLogController;
 use App\Http\Controllers\SubdivisionController;
 use App\Http\Controllers\WitnessFileController;
-use App\Http\Controllers\PoliceStationController;
 
+use App\Http\Controllers\PoliceStationController;
 use App\Http\Controllers\CourtProceedingController;
 use App\Http\Controllers\RoleAndPermissionController;
 use App\Http\Controllers\AdministrativeUnitController;
@@ -219,8 +220,18 @@ Route::resource('police-stations', PoliceStationController::class);
 
 
 Route::get('/get-case-officers', [App\Http\Controllers\CaseController::class, 'getCaseOfficers'])->name('get.case.officers');
+Route::get('/get-case-investigation-officers', [App\Http\Controllers\CaseController::class, 'getinvestigationOfficers'])->name('get.case.investigation.officers');
+Route::get('/get-case-senior-investigation-officers', [App\Http\Controllers\CaseController::class, 'getseniorinvestigationOfficers'])->name('get.case.senior.investigation.officers');
+Route::get('/get-station-sergeants', [App\Http\Controllers\CaseController::class, 'getStationSergeants'])->name('get.station.sergeants');
 
+Route::get('/get-subdivisional-officer', [App\Http\Controllers\CaseController::class, 'getSubdivisionalOfficer'])->name('get.subdivisionalofficer');
+
+Route::get('/get-commanders', [App\Http\Controllers\CaseController::class, 'getCommanders'])->name('get.commanders');
+
+Route::get('/get-dpp-pca', [App\Http\Controllers\CaseController::class, 'getDppPca'])->name('get.dpp.pca');
 Route::post('/cases/{id}/take-action', [App\Http\Controllers\CaseController::class, 'takeAction'])->name('cases.takeAction');
+
+Route::get('/task-logs/{case_id}', [TaskLogController::class, 'index'])->name('taskLogs.index');
     
 });
 

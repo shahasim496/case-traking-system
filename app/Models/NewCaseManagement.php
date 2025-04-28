@@ -39,4 +39,15 @@ class NewCaseManagement extends Model
         'subdivision_id',
         'police_station_id',
     ];
+
+
+    public function caseUsers()
+{
+    return $this->hasMany(CaseUser::class, 'case_id', 'CaseID');
+}
+
+public function case()
+    {
+        return $this->belongsTo(NewCaseManagement::class, 'case_id', 'CaseID');
+    }
 }

@@ -44,8 +44,23 @@ class CaseController extends Controller
 
     public function index()
     {
-        // Fetch all cases ordered by the latest created_at
-        $cases = NewCaseManagement::orderBy('created_at', 'desc')->get();
+
+     
+      
+        if (auth()->user()->hasRole('SuperAdmin')) {
+
+          
+            // Super Admin can see all cases
+            $cases = NewCaseManagement::orderBy('created_at', 'desc')->get();
+        } else {
+           
+            // Other users can only see cases where their ID is in the CaseUsers table
+            $cases = NewCaseManagement::whereHas('caseUsers', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->orderBy('created_at', 'desc')->get();
+        }
+
+     
 
 
         // Pass cases to the view
@@ -168,6 +183,7 @@ class CaseController extends Controller
     {
         // Fetch the case details by ID
         $case = NewCaseManagement::findOrFail($id);
+      
 
 
         // Fetch related complainant and accused details
@@ -189,7 +205,7 @@ class CaseController extends Controller
         $administrativeUnits = AdministrativeUnit::all();
         $subdivisions = Subdivision::where('administrative_unit_id', $case->administrative_unit_id)->get();
         $policeStations = PoliceStation::where('subdivision_id', $case->subdivision_id)->get();
-        $taskLogs = TaskLog::where('case_id', $case->CaseID)->orderBy('date', 'desc')->paginate(10);
+        $taskLogs = TaskLog::where('case_id', $case->CaseID)->orderBy('date', 'desc')->paginate(5);
 
 
         // Pass data to the view
@@ -352,12 +368,187 @@ class CaseController extends Controller
         return response()->json($officers);
     }
 
+    public function getinvestigationOfficers(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
+
+        // Fetch officers based on the hierarchy
+        $query = User::role('Investigation Officer'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+    public function getseniorinvestigationOfficers(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
+
+        // Fetch officers based on the hierarchy
+        $query = User::role('Senior Investigation Officer / Inspector'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+    public function getStationSergeants(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
+
+        // Fetch officers based on the hierarchy
+        $query = User::role('Station Sergeant'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+    public function getSubdivisionalOfficer(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
+
+        // Fetch officers based on the hierarchy
+        $query = User::role('Sub-Divisional Officer'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+
+    public function getCommanders(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
+
+        // Fetch officers based on the hierarchy
+        $query = User::role('Commander of Division'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+    public function getDppPca(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
+
+        // Fetch officers based on the hierarchy
+        $query = User::role('DPP / PCA'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
 
 
     public function takeAction(Request $request, $id)
     {
 
-        if ($request->change_status) {
+        if ($request->change_status == 'closed' || $request->change_status == 'Case Resolved – Released') {
 
  
             try {
@@ -397,7 +588,62 @@ class CaseController extends Controller
                 // Redirect back with an error message
                 return redirect()->back()->with('error', 'Failed to update case status: ' . $e->getMessage());
             }
-        } else {
+        } else if($request->change_status=='open' ||$request->change_status=='Approved'  ||$request->change_status=='CaseApproved - Charged'   ) {
+
+     
+            try {
+                // Validate the request
+                $request->validate([
+                    'forward_to' => 'required|integer|exists:users,id',
+                    'case_description_action' => 'nullable|string',
+                ]);
+
+                // Fetch the case by ID
+                $case = NewCaseManagement::findOrFail($id);
+                $case->CaseStatus = $request->change_status;
+                // Update the LastOfficerID with the current OfficerID
+                $case->LastOfficerID = $case->OfficerID;
+                $forwardedOfficer = User::findOrFail($request->forward_to);
+
+                // Update the OfficerID with the selected Forward To officer
+                $case->OfficerID = $forwardedOfficer->id; // Update OfficerID with the forwarded officer's ID
+                $case->OfficerName = $forwardedOfficer->name;
+                $case->CaseDescription = $request->case_description_action;
+
+                // Save the changes
+                $case->save();
+                CaseUser::firstOrCreate(
+                    [
+                        'case_id' => $case->CaseID,
+                        'user_id' => $request->forward_to,
+                    ],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+
+                // Log the update action
+                TaskLog::create([
+                    'case_id' => $case->CaseID,
+                    'officer_id' => auth()->id(), // Authenticated user's ID
+                    'officer_name' => auth()->user()->name, // Authenticated user's name
+                    'officer_rank' => auth()->user()->designation->name ?? 'N/A', // Assuming a relationship exists
+                    'department' => auth()->user()->department->name ?? 'N/A', // Assuming a relationship exists
+                    'date' => now(), // Current date and time
+                    'description' => 'Case forwarded by officer', // Static description
+                    'action_taken' => 'updated', // Static action
+                ]);
+
+
+                // Redirect back with a success message
+                return redirect()->back()->with('success', 'Case forwarded successfully.');
+            } catch (\Exception $e) {
+                // Redirect back with an error message
+                return redirect()->back()->with('error', 'Failed to forward case: ' . $e->getMessage());
+            }
+
+        }else{
             try {
                 // Validate the request
                 $request->validate([
@@ -410,18 +656,26 @@ class CaseController extends Controller
 
                 // Update the LastOfficerID with the current OfficerID
                 $case->LastOfficerID = $case->OfficerID;
+                $forwardedOfficer = User::findOrFail($request->forward_to);
 
                 // Update the OfficerID with the selected Forward To officer
-                $case->OfficerID = $request->forward_to;
+                $case->OfficerID = $forwardedOfficer->id; // Update OfficerID with the forwarded officer's ID
+                $case->OfficerName = $forwardedOfficer->name;
                 $case->CaseDescription = $request->case_description_action;
 
                 // Save the changes
                 $case->save();
 
-                CaseUser::create([
-                    'case_id' => $case->CaseID,
-                    'user_id' =>  $request->forward_to,
-                ]);
+                CaseUser::firstOrCreate(
+                    [
+                        'case_id' => $case->CaseID,
+                        'user_id' => $request->forward_to,
+                    ],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
 
 
                 // Log the update action

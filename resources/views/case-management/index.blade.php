@@ -15,7 +15,7 @@
                 <tr>
                     <th>#</th>
                     <th>Case ID</th>
-                    <th>Case Type</th>
+                 
                     <th>Case Status</th>
                     <th>Department</th>
                     <th>Assigned Officer</th>
@@ -28,7 +28,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $case->CaseID }}</td>
-                        <td>{{ $case->CaseType }}</td>
+                
                         <td>{{ $case->CaseStatus }}</td>
                         <td>{{ $case->CaseDepartmentName }}</td>
                         <td>{{ $case->OfficerName }}</td>
