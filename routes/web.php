@@ -232,7 +232,14 @@ Route::get('/get-dpp-pca', [App\Http\Controllers\CaseController::class, 'getDppP
 Route::post('/cases/{id}/take-action', [App\Http\Controllers\CaseController::class, 'takeAction'])->name('cases.takeAction');
 
 Route::get('/task-logs/{case_id}', [TaskLogController::class, 'index'])->name('taskLogs.index');
+
+Route::get('/get-help-desk-users/{caseId}', [App\Http\Controllers\CaseController::class, 'getHelpDeskUsers'])->name('get.help.desk.users');
+
+
+Route::get('/get-legal-team-officers', [App\Http\Controllers\CaseController::class, 'getLegalTeamOfficers'])->name('get.legal.team.officers');
     
+
+Route::get('/cases/{case}/pdf', [App\Http\Controllers\CaseController::class, 'generatePdf'])->name('cases.pdf');
 });
 
 

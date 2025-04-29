@@ -49,7 +49,8 @@ class PermissionSeeder extends Seeder
             'manage user',
             'manage role and permissions',
             'manage settings',
-            'manage case'
+            'manage case',
+            'create case'
             
         ];
 

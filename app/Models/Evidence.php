@@ -14,7 +14,7 @@ class Evidence extends Model
      *
      * @var string
      */
-    protected $table ='Evidences';
+    protected $table ='evidences';
 
     /**
      * The attributes that are mass assignable.

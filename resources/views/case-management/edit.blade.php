@@ -19,6 +19,11 @@
 <div class="card">
     <div class="card-header">
         <h4>Edit Case</h4>
+        <!-- @if($case->CaseStatus == 'CaseApproved - Charged')
+    <div class="text-right mt-3">
+        <a href="{{ route('cases.pdf', $case->CaseID) }}" class="btn btn-success">Download Case Details (PDF)</a>
+    </div>
+@endif -->
     </div>
     <div class="card-body">
         @if(auth()->user()->hasRole('Super Admin') || auth()->user()->can('edit case details'))
@@ -59,6 +64,7 @@
 
                 <div class="col-md-3">
     <div class="form-group">
+        
         <label for="case_status">Case Status</label>
         <select name="case_status" id="case_status" class="form-control">
             <option value="Reopen" {{ $case->CaseStatus == 'Reopen' ? 'selected' : '' }}>Reopen</option>
@@ -775,7 +781,99 @@
     </div>
 
 
-    @if(auth()->user()->hasRole('Police Officer / Help Desk Officer'))
+    @if(auth()->user()->hasRole('Police Officer / Help Desk Officer') && $case->CaseStatus == 'CaseApproved - Charged')
+    <!-- Take Action Section for help desk -->
+    <div class="card mt-4">
+        <div class="card-header">
+            
+ 
+
+            <h4>Take Action</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('cases.takeAction', $case->CaseID) }}" method="POST">
+                @csrf
+                <div class="row">
+
+                  
+
+
+                    <!-- administrative units -->
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="administrative_unit">Administrative Unit</label>
+                            <select name="administrative_unit" id="administrative_unit9" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($administrativeUnits as $unit)
+                                <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
+                                    {{ $unit->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <!-- sub divisons -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="subdivision">Subdivision</label>
+                            <select name="subdivision" id="subdivision9" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($subdivisions as $subdivision)
+                                <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
+                                    {{ $subdivision->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- police stations -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="police_station">Police Station</label>
+                            <select name="police_station" id="police_station9" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($policeStations as $station)
+                                <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
+                                    {{ $station->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="forward_to">Forward To legal officer</label>
+                            <select name="forward_to" id="forward_to8" class="form-control">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="case_description_action">Case Description</label>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
+    @elseif(auth()->user()->hasRole('Police Officer / Help Desk Officer'))
     <!-- Take Action Section for help desk -->
     <div class="card mt-4">
         <div class="card-header">
@@ -966,7 +1064,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
                         </div>
                     </div>
 
@@ -1055,7 +1153,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
                         </div>
                     </div>
 
@@ -1160,7 +1258,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
                         </div>
                     </div>
 
@@ -1264,7 +1362,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
                         </div>
                     </div>
 
@@ -1368,114 +1466,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Submit Button -->
-                <div class="text-right">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    @endif
-
-
-    
-
-
-
-    @if(auth()->user()->hasRole('DPP / PCA'))
-    <!-- Take Action  Section for case officer -->
-    <div class="card mt-4">
-        <div class="card-header">
-            <h4>Take Action</h4>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('cases.takeAction', $case->CaseID) }}" method="POST">
-                @csrf
-                <div class="row">
-
-                   
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="change_status">Change Status</label>
-                            <select name="change_status" id="change_status" class="form-control" required>
-                                <option value="">Select</option>
-                         
-                                <option value="Case Resolved – Released">Case Resolved – Released</option>
-                                <option value="CaseApproved - Charged ">CaseApproved - Charged </option>
-                              
-                            </select>
-                        </div>
-                    </div>
-                
-
-
-                    <!-- administrative units -->
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="administrative_unit">Administrative Unit</label>
-                            <select name="administrative_unit" id="administrative_unit7" class="form-control" disabled>
-                                <option value="">Select</option>
-                                @foreach($administrativeUnits as $unit)
-                                <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
-                                    {{ $unit->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <!-- sub divisons -->
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="subdivision">Subdivision</label>
-                            <select name="subdivision" id="subdivision7" class="form-control" disabled>
-                                <option value="">Select</option>
-                                @foreach($subdivisions as $subdivision)
-                                <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
-                                    {{ $subdivision->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- police stations -->
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="police_station">Police Station</label>
-                            <select name="police_station" id="police_station7" class="form-control" disabled>
-                                <option value="">Select</option>
-                                @foreach($policeStations as $station)
-                                <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
-                                    {{ $station->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="forward_to">Forward To</label>
-                            <select name="forward_to" id="forward_to6" class="form-control">
-                                <option value="">Select</option>
-                            </select>
-                        </div>
-                    </div>
-
-
-
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
                         </div>
                     </div>
 
@@ -1579,7 +1570,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="case_description_action">Case Description</label>
-                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here"></textarea>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
                         </div>
                     </div>
 
@@ -1593,6 +1584,111 @@
         </div>
     </div>
     @endif
+
+
+    
+    @if(auth()->user()->hasRole('DPP / PCA'))
+    <!-- Take Action  Section for case officer -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Take Action</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('cases.takeAction', $case->CaseID) }}" method="POST">
+                @csrf
+                <div class="row">
+
+                   
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="change_status">Change Status</label>
+                            <select name="change_status" id="change_status" class="form-control" required>
+                                <option value="">Select</option>
+                         
+                                <option value="Case Resolved – Released">Case Resolved – Released</option>
+                                <option value="CaseApproved - Charged">CaseApproved - Charged </option>
+                              
+                            </select>
+                        </div>
+                    </div>
+                
+
+
+                    <!-- administrative units -->
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="administrative_unit">Administrative Unit</label>
+                            <select name="administrative_unit" id="administrative_unit8" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($administrativeUnits as $unit)
+                                <option value="{{ $unit->id }}" {{ $case->administrative_unit_id == $unit->id ? 'selected' : '' }}>
+                                    {{ $unit->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <!-- sub divisons -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="subdivision">Subdivision</label>
+                            <select name="subdivision" id="subdivision8" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($subdivisions as $subdivision)
+                                <option value="{{ $subdivision->id }}" {{ $case->subdivision_id == $subdivision->id ? 'selected' : '' }}>
+                                    {{ $subdivision->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- police stations -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="police_station">Police Station</label>
+                            <select name="police_station" id="police_station8" class="form-control" disabled>
+                                <option value="">Select</option>
+                                @foreach($policeStations as $station)
+                                <option value="{{ $station->id }}" {{ $case->police_station_id == $station->id ? 'selected' : '' }}>
+                                    {{ $station->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="forward_to">Forward To</label>
+                            <select name="forward_to" id="forward_to7" class="form-control">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="case_description_action">Case Description</label>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
 
 
 
@@ -2367,6 +2463,72 @@
     });
 });
 </script>
+
+
+<!-- manage commander of dpp/css case -->
+
+<script>
+$(document).ready(function () {
+    var caseId = "{{ $case->CaseID }}"; // Get the case ID dynamically
+
+    // Fetch Help Desk users
+    $.ajax({
+        url: "{{ route('get.help.desk.users', ':caseId') }}".replace(':caseId', caseId),
+        type: "GET",
+        success: function (data) {
+            if (data.length > 0) {
+                // Populate the Forward To dropdown
+                $.each(data, function (key, user) {
+                    $('#forward_to7').append('<option value="' + user.id + '">' + user.name + '</option>');
+                });
+            } else {
+                $('#forward_to7').append('<option value="">No Help Desk users available</option>');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching Help Desk users:', error);
+        },
+    });
+});
+</script>
+
+<!-- manage approved case -->
+ <script>
+    $(document).ready(function () {
+    // Fetch Legal Team Officers based on Administrative Unit, Subdivision, and Police Station
+    var administrativeUnit = $('#administrative_unit9').val() || 'Not Selected';
+    var subdivision = $('#subdivision9').val() || 'Not Selected';
+    var policeStation = $('#police_station9').val() || 'Not Selected';
+
+
+    // Clear the Forward To dropdown
+    $('#forward_to8').empty().append('<option value="">Select</option>');
+
+    // Fetch Legal Team Officers
+    $.ajax({
+        url: "{{ route('get.legal.team.officers') }}", // Replace with your route name
+        type: "GET",
+        data: {
+            administrative_unit_id: administrativeUnit,
+            subdivision_id: subdivision,
+            police_station_id: policeStation,
+        },
+        success: function (data) {
+            if (data.length > 0) {
+                // Populate the Forward To dropdown with Legal Team Officers
+                $.each(data, function (key, officer) {
+                    $('#forward_to8').append('<option value="' + officer.id + '">' + officer.name + '</option>');
+                });
+            } else {
+                $('#forward_to8').append('<option value="">No officers available</option>');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching officers:', error);
+        },
+    });
+});
+ </script>
 
 
 

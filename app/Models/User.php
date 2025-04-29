@@ -88,6 +88,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Application', 'from_user_id', 'id');
     }
 
+    public function caseUsers()
+    {
+        return $this->hasMany(CaseUser::class, 'user_id');
+    }
+
     /**
      * The attributes that should be cast to native types.
      *

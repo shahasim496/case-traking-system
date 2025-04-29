@@ -16,7 +16,7 @@
 
 
 
-
+                @if(auth()->user()->can('manage user'))
 <!-- manage user -->
 
                 <li class="nav-item">
@@ -41,14 +41,11 @@
 
                     </ul>
                 </li>
+                @endif
+                
+                @if(auth()->user()->can('manage role and permissions'))
 <!-- manage role and permissions -->
                 <li class="nav-item">
-
-
-
-
-<!-- manage settings -->
-                
                     <a class="nav-link nav-toggle">
                         <i class="fa fa-user-circle-o " style="font-size: 18px; color: gray;"></i>
                         <span class="title">Role & Permission</span>
@@ -83,7 +80,11 @@
                             </a>
                         </li>
                     </ul>
+                    @endif
 
+
+                    @if(auth()->user()->can('manage settings'))
+<!-- manage settings -->
                 <li class="nav-item">
                     <a class="nav-link nav-toggle">
                         <i class="fa fa-wrench" style="font-size: 18px; color: gray;"></i>
@@ -124,6 +125,10 @@
                     </ul>
 
                 </li>
+
+                @endif
+
+                @if(auth()->user()->can('create case'))
 <!-- manage case -->
                 <li class="nav-item">
                     <a href="{{ route('casess.create') }}" class="nav-link">
@@ -132,6 +137,8 @@
                         <span class="selected"></span>
                     </a>
                 </li>
+                @endif
+                @if(auth()->user()->can('manage case'))
                 <li class="nav-item">
                     <a href="{{ route('casess.index') }}" class="nav-link">
                         <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
@@ -139,7 +146,7 @@
                         <span class="selected"></span>
                     </a>
                 </li>
-
+@endif
 
 <!-- change password -->
                 <li class="nav-item">

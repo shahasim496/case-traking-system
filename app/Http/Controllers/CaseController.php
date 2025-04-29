@@ -16,6 +16,7 @@ use App\Models\AccusedDetail;
 use App\Models\PoliceStation;
 use App\Models\CaseManagement;
 use App\Models\CourtProceeding;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ComplainantDetail;
 use App\Models\NewCaseManagement;
 use App\Models\AdministrativeUnit;
@@ -543,7 +544,50 @@ class CaseController extends Controller
         return response()->json($officers);
     }
 
+    public function getLegalTeamOfficers(Request $request)
+    {
+        $administrativeUnitId = $request->administrative_unit_id;
+        $subdivisionId = $request->subdivision_id;
+        $policeStationId = $request->police_station_id;
 
+        // Fetch officers based on the hierarchy
+        $query = User::role('Legal Team Officer'); // Assuming 'Case Officer' is the role name
+
+        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Police Station, Subdivision, and Administrative Unit
+            $query->where('police_station_id', $policeStationId)
+                ->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
+            // Match by Subdivision and Administrative Unit
+            $query->where('subdivision_id', $subdivisionId)
+                ->where('administrative_unit_id', $administrativeUnitId);
+        } elseif (!empty($administrativeUnitId)) {
+            // Match by Administrative Unit only
+            $query->where('administrative_unit_id', $administrativeUnitId);
+        }
+
+        // Fetch the officers
+        $officers = $query->get(['id', 'name']);
+
+        return response()->json($officers);
+    }
+
+    public function getHelpDeskUsers($caseId)
+    {
+        // Fetch users from case_users table where role is 'Help Desk'
+        $helpDeskUsers = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Police Officer / Help Desk Officer'); // Role name
+        })
+        ->whereHas('caseUsers', function ($query) use ($caseId) {
+            $query->where('case_id', $caseId);
+        })
+        ->get(['id', 'name']);
+
+       
+    
+        return response()->json($helpDeskUsers);
+    }
 
     public function takeAction(Request $request, $id)
     {
@@ -698,5 +742,19 @@ class CaseController extends Controller
                 return redirect()->back()->with('error', 'Failed to forward case: ' . $e->getMessage());
             }
         }
+    }
+
+
+
+    public function generatePdf($caseId)
+    {
+        // Fetch the case details
+        $case =NewCaseManagement ::with(['officer', 'department', 'administrativeUnit', 'subdivision', 'policeStation'])->findOrFail($caseId);
+
+        // Pass the case details to the PDF view
+        $pdf = Pdf::loadView('pdf.case-details', compact('case'));
+
+        // Return the generated PDF
+        return $pdf->download('case-details.pdf');
     }
 }
