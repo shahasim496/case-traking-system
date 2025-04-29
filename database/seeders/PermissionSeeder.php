@@ -44,6 +44,12 @@ class PermissionSeeder extends Seeder
             'edit court proceedings',
             'delete court proceedings',
             'manage court proceedings',
+
+            // dashboard
+            'manage user',
+            'manage role and permissions',
+            'manage settings'
+            
         ];
 
         // Create permissions

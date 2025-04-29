@@ -17,7 +17,7 @@
 
 
 
-
+<!-- manage user -->
 
                 <li class="nav-item">
                     <a class="nav-link nav-toggle">
@@ -41,8 +41,14 @@
 
                     </ul>
                 </li>
-
+<!-- manage role and permissions -->
                 <li class="nav-item">
+
+
+
+
+<!-- manage settings -->
+                
                     <a class="nav-link nav-toggle">
                         <i class="fa fa-user-circle-o " style="font-size: 18px; color: gray;"></i>
                         <span class="title">Role & Permission</span>
@@ -85,6 +91,8 @@
                         <span class="arrow"></span>
 
                     </a>
+
+                  
                     <ul class="sub-menu">
                         <li class="nav-item">
                             <a href="{{ route('departments') }}" class="nav-link">
@@ -116,7 +124,7 @@
                     </ul>
 
                 </li>
-
+<!-- manage case -->
                 <li class="nav-item">
                     <a href="{{ route('casess.create') }}" class="nav-link">
                         <i class="fa fa-caret-square-o-up" style="font-size: 18px; color: gray;"></i>
@@ -133,7 +141,7 @@
                 </li>
 
 
-
+<!-- change password -->
                 <li class="nav-item">
                     <a href="{{ route('user.changePassword') }}" class="nav-link">
                         <i class="fa fa-key" style="font-size: 18px; color: gray;"></i>
@@ -142,12 +150,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('user.edit', ['id' => auth()->user()->id]) }}" class="nav-link">
-                        <i class="fa fa-user-circle" style="font-size: 18px; color: gray;"></i>
-                        <span class="title">Edit Profile</span>
-                    </a>
-                </li>
+             
 
 
 
