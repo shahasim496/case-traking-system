@@ -48,7 +48,8 @@ class PermissionSeeder extends Seeder
             // dashboard
             'manage user',
             'manage role and permissions',
-            'manage settings'
+            'manage settings',
+            'manage case'
             
         ];
 
