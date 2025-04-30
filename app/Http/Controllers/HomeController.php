@@ -41,10 +41,27 @@ class HomeController extends Controller
 
     public function admin_dashboard()
     {
+        // Fetch total cases
+        $totalCases = \App\Models\NewCaseManagement::count();
+    
+        // Fetch pending cases
+        $pendingCases = \App\Models\NewCaseManagement::where('CaseStatus', 'Awating Verification')->count();
+    
+        // Fetch resolved cases
+        $resolvedCases = \App\Models\NewCaseManagement::where('CaseStatus', 'Case Resolved – Released')->count();
+        $case_to_court = \App\Models\NewCaseManagement::where('CaseStatus', 'CaseApproved - Charged ')->count();
+        // Fetch total users
+        $totalUsers = \App\Models\User::count();
+    
+        // Calculate percentages
+        $pendingPercentage = $totalCases > 0 ? round(($pendingCases / $totalCases) * 100, 2) : 0;
+        $resolvedPercentage = $totalCases > 0 ? round(($resolvedCases / $totalCases) * 100, 2) : 0;
+        $case_to_court_percentage = $totalCases > 0 ? round(($case_to_court / $totalCases) * 100, 2) : 0;
 
-// return $group_total;
-        return view('dashboard.admin');
-    }//end of function
+    
+        // Pass the data to the view
+        return view('dashboard.admin', compact('totalCases', 'pendingCases', 'resolvedCases', 'totalUsers', 'pendingPercentage', 'resolvedPercentage', 'case_to_court', 'case_to_court_percentage'));
+    }
 
     public function getGroupWiseReport($group_id, $user_id = -1)
     {

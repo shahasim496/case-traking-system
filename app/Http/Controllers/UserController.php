@@ -30,6 +30,7 @@ use App\Models\Officer_Profile;
 use App\Models\AdministrativeUnit;
 use Spatie\Permission\Models\Role;
 
+use App\Notifications\UserNotification;
 use App\Http\Requests\GenOfficerRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Spatie\Permission\Models\Permission;
@@ -208,6 +209,8 @@ class UserController extends Controller
 
         DB::beginTransaction();
 
+        
+
         try {
             // Create the user
             $user = User::create([
@@ -225,6 +228,9 @@ class UserController extends Controller
 
             // Assign multiple roles to the user
             $user->assignRole($request->roles);
+
+            // Send email to the created user
+        \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $request->password));
 
             DB::commit();
 
@@ -468,8 +474,14 @@ class UserController extends Controller
                 'police_station_id' => $validatedData['police_station_id'], // Nullable
             ]);
 
+            // $message = "Dear {$user->name}, your profile has been updated successfully.";
+            // $user->notify(new UserNotification($message));
+
             // Sync roles for the user
             $user->syncRoles($request->roles);
+
+              // Send email to the updated user
+        \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user,$request->password));
 
             DB::commit();
 

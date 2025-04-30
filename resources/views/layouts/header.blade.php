@@ -29,54 +29,50 @@
                 <ul class="nav navbar-nav pull-right">
                     <!-- start manage user dropdown -->
         
-                    <!-- start notification dropdown -->
-                    <li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
-                        <a href="javascript:;" class="dropdown-toggle p-0  img-text" data-toggle="dropdown" data-hover="dropdown"
-                            data-close-others="true">
-                            <!-- <i class="fa fa-bell-o"></i> -->
-                            <!-- <img src="{{asset('/assets/img/Bell.png')}}" alt=""> -->
-                            <!-- <span class="badge headerBadgeColor1"> {{Auth::user()->unreadNotifications->count()}} </span> -->
-                        </a>
-                        <ul class="dropdown-menu animated swing">
-                            <li class="external">
-                                <h3><span class="bold">Notifications</span></h3>
-                                <span class="notification-label purple-bgcolor">New {{Auth::user()->unreadNotifications->count()}}</span>
-                            </li>
-                            <li>
-                                <ul class="dropdown-menu-list small-slimscroll-style" data-handle-color="#637283">
-                                @if(count($user_notifications) > 0)
-                        @foreach($user_notifications as $un=>$noti)
-                        <li>
-                        <a href="javascript:;">
-                            <span class="notification-icon circle blue-bgcolor"><img alt="" src="{{asset('assets/img/ic_bell.png')}}"></span>
+                    <!-- Start Notification Dropdown -->
+<li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
+    <a href="javascript:;" class="dropdown-toggle p-0 img-text" data-toggle="dropdown" data-hover="dropdown"
+        data-close-others="true">
+        <img src="{{ asset('/assets/img/Bell.png') }}" alt="">
+        <span class="badge headerBadgeColor1" id="notification-count">
+            {{ Auth::user()->unreadNotifications->count() }}
+        </span>
+    </a>
+    <ul class="dropdown-menu animated swing">
+        <li class="external">
+            <h3><span class="bold">Notifications</span></h3>
+            <span class="notification-label purple-bgcolor">
+                New <span id="new-notification-count">{{ Auth::user()->unreadNotifications->count() }}</span>
+            </span>
+        </li>
+        <li>
+            <ul class="dropdown-menu-list small-slimscroll-style" data-handle-color="#637283">
+                <!-- Unread Notifications -->
+                @foreach(Auth::user()->unreadNotifications as $notification)
+                    <li>
+                        <a href="javascript:;" onclick="markAsRead('{{ $notification->id }}')">
                             <span class="details">
-                                <b>{{$noti->data['title']}}</b>
-                                <p>{{$noti->data['description']}}</p>
-                                <span class="time">{{date("jS F, Y",strtotime($noti->data['notification_date']))}}</span>
+                                <strong>{{ $notification->data['message'] }}</strong>
                             </span>
                         </a>
-                        </li>
-                        @endforeach
-
-                        @else
-
-                        <li>
-                        <a href="javascript:;">
-                            <span class="notification-icon circle blue-bgcolor"><img alt="" src="{{asset('assets/img/ic_bell.png')}}"></span>
-                            <span class="details">
-                                <b></b>
-                                <p>No notification found.<p>
-                            </span>
-                        </a>
-                        </li>
-
-                        @endif
-
-                                </ul>
-                            </li>
-                        </ul>
                     </li>
-                    <!-- end notification dropdown -->
+                @endforeach
+
+                <!-- Read Notifications -->
+                @foreach(Auth::user()->readNotifications as $notification)
+                    <li>
+                        <a href="javascript:;">
+                            <span class="details">
+                                {{ $notification->data['message'] }}
+                            </span>
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </li>
+    </ul>
+</li>
+<!-- End Notification Dropdown -->
                     <!-- start manage user dropdown -->
                     <li class="dropdown dropdown-user pt-0" >
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
@@ -113,4 +109,30 @@
         </div>
     </div>
     <!-- end header -->
+<script>
+    function markAsRead(notificationId) {
+        fetch(`/notifications/${notificationId}/mark-as-read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the notification count
+                document.getElementById('notification-count').innerText = data.unreadCount;
+                document.getElementById('new-notification-count').innerText = data.unreadCount;
+
+                // Optionally, remove the notification from the unread list
+                const notificationElement = document.querySelector(`a[onclick="markAsRead('${notificationId}')"]`);
+                if (notificationElement) {
+                    notificationElement.closest('li').remove();
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 

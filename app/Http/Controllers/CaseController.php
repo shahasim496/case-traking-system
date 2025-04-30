@@ -592,7 +592,10 @@ class CaseController extends Controller
     public function takeAction(Request $request, $id)
     {
 
-        if ($request->change_status == 'closed' || $request->change_status == 'Case Resolved – Released') {
+        if ($request->change_status == 'closed' ||
+         $request->change_status == 'Case Resolved – Released'||
+         $request->change_status == 'Case Resolved - Convicted' ||
+         $request->change_status == 'Case Closed on Court Order'  ) {
 
  
             try {

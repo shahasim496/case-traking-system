@@ -7,7 +7,7 @@
 <div class="card">
     <div class="card-header">
         <h4>Cases</h4>
-        <a href="{{ route('casess.create') }}" class="btn btn-primary float-right">Add New Case</a>
+        <!-- <a href="{{ route('casess.create') }}" class="btn btn-primary float-right">Add New Case</a> -->
     </div>
     <div class="card-body">
         <table id="casesTable" class="table table-bordered table-striped">

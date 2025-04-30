@@ -7,6 +7,7 @@ use App\Http\Controllers\TaskLogController;
 use App\Http\Controllers\SubdivisionController;
 use App\Http\Controllers\WitnessFileController;
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PoliceStationController;
 use App\Http\Controllers\CourtProceedingController;
 use App\Http\Controllers\RoleAndPermissionController;
@@ -240,6 +241,11 @@ Route::get('/get-legal-team-officers', [App\Http\Controllers\CaseController::cla
     
 
 Route::get('/cases/{case}/pdf', [App\Http\Controllers\CaseController::class, 'generatePdf'])->name('cases.pdf');
+
+
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 });
 
 
