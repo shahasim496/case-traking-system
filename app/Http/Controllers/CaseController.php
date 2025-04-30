@@ -21,6 +21,7 @@ use App\Models\ComplainantDetail;
 use App\Models\NewCaseManagement;
 use App\Models\AdministrativeUnit;
 use App\Models\InvestigationDocument;
+use App\Notifications\UserNotification;
 
 class CaseController extends Controller
 {
@@ -657,6 +658,10 @@ class CaseController extends Controller
                 $case->OfficerName = $forwardedOfficer->name;
                 $case->CaseDescription = $request->case_description_action;
 
+                $user=User::findOrFail($case->OfficerID);
+            $message = "Dear {$case->OfficerName}, case {$case->CaseID}, is assinged to you successfully.";
+            $user->notify(new UserNotification($message));
+
                 // Save the changes
                 $case->save();
                 CaseUser::firstOrCreate(
@@ -710,8 +715,13 @@ class CaseController extends Controller
                 $case->OfficerName = $forwardedOfficer->name;
                 $case->CaseDescription = $request->case_description_action;
 
+                $user=User::findOrFail($case->OfficerID);
+
                 // Save the changes
                 $case->save();
+
+                 $message = "Dear {$case->OfficerName}, case {$case->CaseID}, is assinged to you successfully.";
+                 $user->notify(new UserNotification($message));
 
                 CaseUser::firstOrCreate(
                     [
