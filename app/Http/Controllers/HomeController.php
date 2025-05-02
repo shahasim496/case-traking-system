@@ -46,12 +46,14 @@ class HomeController extends Controller
     
         // Fetch pending cases
         $pendingCases = \App\Models\NewCaseManagement::where('CaseStatus', 'Awating Verification')->count();
+        $ClosedCases = \App\Models\NewCaseManagement::where('CaseStatus', 'Closed')->count();
     
         // Fetch resolved cases
         $resolvedCases = \App\Models\NewCaseManagement::where('CaseStatus', 'Case Resolved – Released')->count();
         $case_to_court = \App\Models\NewCaseManagement::where('CaseStatus', 'CaseApproved - Charged ')->count();
         // Fetch total users
         $totalUsers = \App\Models\User::count();
+        $Cases = \App\Models\NewCaseManagement::all();
     
         // Calculate percentages
         $pendingPercentage = $totalCases > 0 ? round(($pendingCases / $totalCases) * 100, 2) : 0;
@@ -60,7 +62,7 @@ class HomeController extends Controller
 
     
         // Pass the data to the view
-        return view('dashboard.admin', compact('totalCases', 'pendingCases', 'resolvedCases', 'totalUsers', 'pendingPercentage', 'resolvedPercentage', 'case_to_court', 'case_to_court_percentage'));
+        return view('dashboard.admin', compact('totalCases', 'pendingCases', 'resolvedCases', 'totalUsers', 'pendingPercentage', 'resolvedPercentage', 'case_to_court', 'case_to_court_percentage','ClosedCases','Cases'));
     }
 
     public function getGroupWiseReport($group_id, $user_id = -1)

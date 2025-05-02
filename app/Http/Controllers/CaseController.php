@@ -44,26 +44,31 @@ class CaseController extends Controller
         return view('case-management.createcase', compact('caseTypes', 'officers', 'departments', 'administrativeUnits'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $query = NewCaseManagement::query();
 
-     
-      
+        // Check if the user is a SuperAdmin
         if (auth()->user()->hasRole('SuperAdmin')) {
-
-          
-            // Super Admin can see all cases
-            $cases = NewCaseManagement::orderBy('created_at', 'desc')->get();
+            // SuperAdmin can see all cases
+            $query = $query->orderBy('created_at', 'desc');
         } else {
-           
             // Other users can only see cases where their ID is in the CaseUsers table
-            $cases = NewCaseManagement::whereHas('caseUsers', function ($query) {
-                $query->where('user_id', auth()->id());
-            })->orderBy('created_at', 'desc')->get();
+            $query = $query->whereHas('caseUsers', function ($subQuery) {
+                $subQuery->where('user_id', auth()->id());
+            })->orderBy('created_at', 'desc');
         }
 
-     
+        // Apply filter for case status if provided
+        if ($request->has('status') && $request->status != '') {
+            $query->where('CaseStatus', $request->status);
+        }
 
+        // Get the number of items per page from the request, default to 10
+        $perPage = $request->get('per_page', 10);
+
+        // Paginate the results dynamically
+        $cases = $query->paginate($perPage);
 
         // Pass cases to the view
         return view('case-management.index', compact('cases'));

@@ -38,7 +38,7 @@
              <div class="container ">
                  <div class="row for-set " >
                      <div class="col-lg-6 col-md-6 d-none d-lg-block border-right pt-5">
-                     <img src="/assets/img/login/Ministry-Logo.png" alt="" style="width: 320px; height: auto;">
+                     <!-- <img src="/assets/img/login/Ministry-Logo.png" alt="" style="width: 320px; height: auto;"> -->
                      </div>
                      <div class="col-lg-6 col-md-12 col-12 ">
                         @yield('content')

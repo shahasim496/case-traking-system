@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" href="/images/Mask Group 17.svg">
     <link rel="shortcut icon" type="image/x-icon" href="/images/Mask Group 17.svg">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     
     @include('layouts.css')
     @yield('cssfile')

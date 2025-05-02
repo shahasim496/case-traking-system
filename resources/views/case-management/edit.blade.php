@@ -1740,6 +1740,62 @@
     @endif
 
 
+    @if(auth()->user()->hasRole('SuperAdmin'))
+    <!-- Take Action  Section for case officer -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Take Action</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('cases.takeAction', $case->CaseID) }}" method="POST">
+                @csrf
+                <div class="row">
+
+                   
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="change_status">Change Status</label>
+                            <select name="change_status" id="change_status" class="form-control" required>
+                                <option value="">Select</option>
+                                <option value="open">Open</option>
+                                <option value="closed">Closed</option>
+                                <option value="Approved">Approved</option>                     
+                                <option value="Further information">Further information</option>
+                                <option value="Case Resolved – Released">Case Resolved – Released</option>
+                                <option value="CaseApproved - Charged">CaseApproved - Charged </option>
+                                <option value="Case Resolved – Released">Case Resolved – Released</option>
+                                <option value="Case Resolved - Convicted">Case Resolved - Convicted</option>
+                                <option value="Case Closed on Court Order">Case Closed on Court Order</option>
+                              
+                            </select>
+                        </div>
+                    </div>
+                
+
+
+             
+
+
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="case_description_action">Case Description</label>
+                            <textarea name="case_description_action" id="case_description_action" class="form-control" rows="3" placeholder="Type here" required></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
+
 
 
 
