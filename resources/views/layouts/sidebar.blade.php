@@ -1,9 +1,14 @@
 <!-- start sidebar menu -->
 <div class="sidebar-container">
-    <div class="sidemenu-container navbar-collapse collapse fixed-menu ">
+    <div class="sidemenu-container navbar-collapse collapse fixed-menu " style="position:
+     fixed; top: 0; left: 0; height: 100%; overflow-y: auto; background-color: #fff; z-index: 1000;">
         <div id="remove-scroll">
             <ul class="sidemenu page-header-fixed  p-t-20" data-keep-expanded="false" data-auto-scroll="true"
                 data-slide-speed="200">
+
+                <!-- <li class="nav-item text-center mb-4">
+                    <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" style="margin-top: 40px;" width="100" height="100">
+                </li> -->
 
 
                 <li class="nav-item">

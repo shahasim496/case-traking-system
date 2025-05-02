@@ -73,9 +73,9 @@
                 <div class="icon icon-blue">
                     <i class="fas fa-users"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Total Inmates</h5>
-                <h2>10</h2> <!-- Replace with your data -->
-                <p>2 Critical</p> <!-- Replace with your data -->
+                <h5 style="display: flex; justify-content: center;">Total Users</h5>
+                <h2>{{$totalUsers }}</h2> <!-- Replace with your data -->
+       
             </div>
 
             <!-- Active Assessments -->
@@ -83,9 +83,9 @@
                 <div class="icon icon-green">
                     <i class="fas fa-clipboard-check"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Active Assessments</h5>
-                <h2>5</h2> <!-- Replace with your data -->
-                <p>1 Emergency</p> <!-- Replace with your data -->
+                <h5 style="display: flex; justify-content: center;">Resolved Cases</h5>
+                <h2>{{ $resolvedCases}}</h2> <!-- Replace with your data -->
+                
             </div>
 
             <!-- Critical Cases -->
@@ -93,9 +93,9 @@
                 <div class="icon icon-yellow">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Critical Cases</h5>
-                <h2>3</h2> <!-- Replace with your data -->
-                <p>1 Needs Attention</p> <!-- Replace with your data -->
+                <h5 style="display: flex; justify-content: center;">Closed Cases</h5>
+                <h2>{{ $ClosedCases}}</h2> <!-- Replace with your data -->
+              
             </div>
 
             <!-- Active Medications -->
@@ -103,9 +103,9 @@
                 <div class="icon icon-purple">
                     <i class="fas fa-capsules"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Active Medications</h5>
-                <h2>8</h2> <!-- Replace with your data -->
-                <p>Total: 8</p> <!-- Replace with your data -->
+                <h5 style="display: flex; justify-content: center;">Pending Cases</h5>
+                <h2>{{$pendingCases}}</h2> <!-- Replace with your data -->
+                
             </div>
 
             <!-- Recent Incidents -->
@@ -113,9 +113,9 @@
                 <div class="icon icon-red">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Recent Incidents</h5>
-                <h2>12</h2> <!-- Replace with your data -->
-                <p>Total: 12</p> <!-- Replace with your data -->
+                <h5 style="display: flex; justify-content: center;">Court Cases</h5>
+                <h2>{{   $case_to_court}}</h2> <!-- Replace with your data -->
+              
             </div>
 
             <!-- Total Programs -->
@@ -123,9 +123,9 @@
                 <div class="icon icon-blue">
                     <i class="fas fa-list-alt"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Total Programs</h5>
-                <h2>6</h2> <!-- Replace with your data -->
-                <p>Total: 6</p> <!-- Replace with your data -->
+                <h5 style="display: flex; justify-content: center;">Cases</h5>
+                <h2>{{$totalCases}}</h2> <!-- Replace with your data -->
+             
             </div>
         </div>
 
