@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title','Change Password')
-@section('breadcrumb','Change Password')
+
 
 @section('content')
 

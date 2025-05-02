@@ -1,7 +1,7 @@
 resources\views\cases\index.blade.php
 @extends('layouts.main')
 @section('title', 'Cases')
-@section('breadcrumb', 'Cases')
+
 
 @section('content')
 <div class="card">

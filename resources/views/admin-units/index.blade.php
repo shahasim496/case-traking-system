@@ -1,7 +1,7 @@
 
 @extends('layouts.main')
 @section('title','Add Posting')
-@section('breadcrumb','Add Posting')
+
 
 
 @section('content')

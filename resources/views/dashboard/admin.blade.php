@@ -1,6 +1,6 @@
 @extends('layouts.admin_main')
 @section('title', 'Dashboard')
-@section('breadcrumb', 'Dashboard')
+
 
 @section('content')
 <div class="page-content-wrapper homepage">

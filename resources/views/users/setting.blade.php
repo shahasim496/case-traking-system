@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title','Dashboard')
-@section('breadcrumb','Settings')
+
 @section('content')
 
 <div class="row affix-row">

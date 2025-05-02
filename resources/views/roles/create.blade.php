@@ -1,6 +1,5 @@
 @extends('layouts.main')
 @section('title', 'Create Role')
-@section('breadcrumb', 'Create Role')
 
 @section('content')
 <div class="card">

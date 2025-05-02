@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title','Add Posting')
-@section('breadcrumb','Add Posting')
+
 @section('content')
 <div class="card">
     <div class="card-header">

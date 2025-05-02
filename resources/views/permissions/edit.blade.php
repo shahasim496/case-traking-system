@@ -1,6 +1,5 @@
 @extends('layouts.main')
 @section('title', 'Edit Permission')
-@section('breadcrumb', 'Edit Permission')
 
 @section('content')
 <div class="card">

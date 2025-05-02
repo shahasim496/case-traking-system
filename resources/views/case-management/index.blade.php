@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('title', 'Cases')
-@section('breadcrumb', 'Cases')
+
 
 @section('content')
 <div class="card">

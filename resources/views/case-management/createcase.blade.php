@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('title', 'Create Case')
-@section('breadcrumb', 'Create Case')
+
 
 @section('content')
 
