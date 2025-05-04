@@ -351,29 +351,40 @@ class CaseController extends Controller
         $administrativeUnitId = $request->administrative_unit_id;
         $subdivisionId = $request->subdivision_id;
         $policeStationId = $request->police_station_id;
-
-        // Fetch officers based on the hierarchy
-        $query = User::role('Case Officer'); // Assuming 'Case Officer' is the role name
-
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+    
+        // Validate required fields
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Case Officer')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Case Officer')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Case Officer')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
+    
 
     public function getinvestigationOfficers(Request $request)
     {
@@ -381,26 +392,37 @@ class CaseController extends Controller
         $subdivisionId = $request->subdivision_id;
         $policeStationId = $request->police_station_id;
 
-        // Fetch officers based on the hierarchy
-        $query = User::role('Investigation Officer'); // Assuming 'Case Officer' is the role name
+       
 
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Investigation Officer')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Investigation Officer')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Investigation Officer')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
 
@@ -410,26 +432,37 @@ class CaseController extends Controller
         $subdivisionId = $request->subdivision_id;
         $policeStationId = $request->police_station_id;
 
-        // Fetch officers based on the hierarchy
-        $query = User::role('Senior Investigation Officer / Inspector'); // Assuming 'Case Officer' is the role name
+      
 
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Senior Investigation Officer / Inspector')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Senior Investigation Officer / Inspector')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Senior Investigation Officer / Inspector')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
 
@@ -440,25 +473,37 @@ class CaseController extends Controller
         $policeStationId = $request->police_station_id;
 
         // Fetch officers based on the hierarchy
-        $query = User::role('Station Sergeant'); // Assuming 'Case Officer' is the role name
+    
 
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Station Sergeant')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Station Sergeant')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Station Sergeant')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
 
@@ -469,25 +514,36 @@ class CaseController extends Controller
         $policeStationId = $request->police_station_id;
 
         // Fetch officers based on the hierarchy
-        $query = User::role('Sub-Divisional Officer'); // Assuming 'Case Officer' is the role name
-
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+      
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Sub-Divisional Officer')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Sub-Divisional Officer')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Sub-Divisional Officer')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
 
@@ -498,28 +554,40 @@ class CaseController extends Controller
         $subdivisionId = $request->subdivision_id;
         $policeStationId = $request->police_station_id;
 
-        // Fetch officers based on the hierarchy
-        $query = User::role('Commander of Division'); // Assuming 'Case Officer' is the role name
+       
 
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Commander of Division')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Commander of Division')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Commander of Division')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
-    }
+
+          }
 
     public function getDppPca(Request $request)
     {
@@ -527,26 +595,37 @@ class CaseController extends Controller
         $subdivisionId = $request->subdivision_id;
         $policeStationId = $request->police_station_id;
 
-        // Fetch officers based on the hierarchy
-        $query = User::role('DPP / PCA'); // Assuming 'Case Officer' is the role name
+        
 
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('DPP / PCA')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('DPP / PCA')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('DPP / PCA')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
 
@@ -559,23 +638,35 @@ class CaseController extends Controller
         // Fetch officers based on the hierarchy
         $query = User::role('Legal Team Officer'); // Assuming 'Case Officer' is the role name
 
-        if (!empty($policeStationId) && !empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Police Station, Subdivision, and Administrative Unit
-            $query->where('police_station_id', $policeStationId)
+        if (empty($administrativeUnitId) || empty($subdivisionId) || empty($policeStationId)) {
+            return response()->json(['error' => 'All parameters are required.'], 400);
+        }
+    
+        // Step 1: Try matching all three
+        $query = User::role('Legal Team Officer')
+            ->where('police_station_id', $policeStationId)
+            ->where('subdivision_id', $subdivisionId)
+            ->where('administrative_unit_id', $administrativeUnitId);
+    
+        $officers = $query->get(['id', 'name']);
+    
+        // Step 2: If none found, relax to subdivision + administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Legal Team Officer')
                 ->where('subdivision_id', $subdivisionId)
                 ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($subdivisionId) && !empty($administrativeUnitId)) {
-            // Match by Subdivision and Administrative Unit
-            $query->where('subdivision_id', $subdivisionId)
-                ->where('administrative_unit_id', $administrativeUnitId);
-        } elseif (!empty($administrativeUnitId)) {
-            // Match by Administrative Unit only
-            $query->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
         }
-
-        // Fetch the officers
-        $officers = $query->get(['id', 'name']);
-
+    
+        // Step 3: If still none, relax to just administrative unit
+        if ($officers->isEmpty()) {
+            $query = User::role('Legal Team Officer')
+                ->where('administrative_unit_id', $administrativeUnitId);
+    
+            $officers = $query->get(['id', 'name']);
+        }
+    
         return response()->json($officers);
     }
 
@@ -775,4 +866,21 @@ class CaseController extends Controller
         // Return the generated PDF
         return $pdf->download('case-details.pdf');
     }
+
+
+
+    public function getSubdivisions(Request $request)
+{
+    $subdivisions = Subdivision::where('administrative_unit_id', $request->administrative_unit_id)->get(['id', 'name']);
+    return response()->json(['subdivisions' => $subdivisions]);
+}
+
+public function getPoliceStations(Request $request)
+{
+    $policeStations = PoliceStation::where('subdivision_id', $request->subdivision_id)->get(['id', 'name']);
+    return response()->json(['policeStations' => $policeStations]);
+}
+
+
+
 }

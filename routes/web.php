@@ -2,11 +2,12 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskLogController;
 use App\Http\Controllers\SubdivisionController;
-use App\Http\Controllers\WitnessFileController;
 
+use App\Http\Controllers\WitnessFileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PoliceStationController;
 use App\Http\Controllers\CourtProceedingController;
@@ -241,6 +242,10 @@ Route::get('/get-legal-team-officers', [App\Http\Controllers\CaseController::cla
     
 
 Route::get('/cases/{case}/pdf', [App\Http\Controllers\CaseController::class, 'generatePdf'])->name('cases.pdf');
+
+
+Route::get('/get-subdivisions', [CaseController::class, 'getSubdivisions'])->name('getSubdivisions');
+Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])->name('getPoliceStations');
 
 
 

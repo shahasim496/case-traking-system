@@ -181,9 +181,56 @@
 @endsection
 
 @section('jsfile')
+<script>
+    $(document).ready(function () {
+        // Handle Administrative Unit change
+        $('#administrative_unit_id').on('change', function () {
+            let administrativeUnitId = $(this).val();
 
+            // Clear existing options
+            $('#subdivision_id').html('<option value="">Select Subdivision</option>');
+            $('#police_station_id').html('<option value="">Select Police Station</option>');
 
+            if (administrativeUnitId) {
+                // Fetch subdivisions
+                $.ajax({
+                    url: '{{ route("getSubdivisions") }}',
+                    type: 'GET',
+                    data: { administrative_unit_id: administrativeUnitId },
+                    success: function (data) {
+                        if (data.subdivisions) {
+                            $.each(data.subdivisions, function (key, value) {
+                                $('#subdivision_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                            });
+                        }
+                    }
+                });
+            }
+        });
 
+        // Handle Subdivision change
+        $('#subdivision_id').on('change', function () {
+            let subdivisionId = $(this).val();
 
+            // Clear existing options
+            $('#police_station_id').html('<option value="">Select Police Station</option>');
 
+            if (subdivisionId) {
+                // Fetch police stations
+                $.ajax({
+                    url: '{{ route("getPoliceStations") }}',
+                    type: 'GET',
+                    data: { subdivision_id: subdivisionId },
+                    success: function (data) {
+                        if (data.policeStations) {
+                            $.each(data.policeStations, function (key, value) {
+                                $('#police_station_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
 @endsection
