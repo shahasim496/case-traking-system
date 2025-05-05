@@ -19,11 +19,11 @@
 <div class="card">
     <div class="card-header">
         <h4>Edit Case</h4>
-        <!-- @if($case->CaseStatus == 'CaseApproved - Charged')
+        @if($case->CaseStatus == 'CaseApproved - Charged')
     <div class="text-right mt-3">
         <a href="{{ route('cases.pdf', $case->CaseID) }}" class="btn btn-success">Download Case Details (PDF)</a>
     </div>
-@endif -->
+@endif
     </div>
     <div class="card-body">
         @if(auth()->user()->hasRole('Super Admin') || auth()->user()->can('edit case details'))
@@ -1770,7 +1770,14 @@
                             </select>
                         </div>
                     </div>
-                
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="forward_to">Forward To</label>
+                            <select name="forward_to" id="forward_to7" class="form-control"required>
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
 
 
              

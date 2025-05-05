@@ -6,9 +6,11 @@
             <ul class="sidemenu page-header-fixed  p-t-20" data-keep-expanded="false" data-auto-scroll="true"
                 data-slide-speed="200">
 
-                <!-- <li class="nav-item text-center mb-4">
-                    <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" style="margin-top: 40px;" width="100" height="100">
-                </li> -->
+            
+
+                <li class="nav-item text-center mb-4">
+                <!-- <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="sidebar-logo" style="margin-top: 40px;"> -->
+                </li>
 
 
                 <li class="nav-item">

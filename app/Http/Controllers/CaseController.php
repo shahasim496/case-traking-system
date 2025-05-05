@@ -858,13 +858,19 @@ class CaseController extends Controller
     public function generatePdf($caseId)
     {
         // Fetch the case details
-        $case =NewCaseManagement ::with(['officer', 'department', 'administrativeUnit', 'subdivision', 'policeStation'])->findOrFail($caseId);
+        $case = NewCaseManagement::where('CaseID', $caseId)->first();
 
-        // Pass the case details to the PDF view
-        $pdf = Pdf::loadView('pdf.case-details', compact('case'));
+        // Fetch the complainant details
+        $complainant = ComplainantDetail::where('CaseID', $caseId)->first();
+
+        // Fetch the accused details
+        $accused = AccusedDetail::where('CaseID', $caseId)->first();
+
+        // Pass the data to the PDF view
+        $pdf = Pdf::loadView('pdf.case-details', compact('case', 'complainant', 'accused'));
 
         // Return the generated PDF
-        return $pdf->download('case-details.pdf');
+        return $pdf->download($caseId.'case-details.pdf');
     }
 
 
