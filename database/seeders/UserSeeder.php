@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Special Task Force'],
             'designation_id' => $designations['Commissioner of Police'],
-            'administrative_unit_id' => 1, // Set to 1
+      
         ]);
         $user->assignRole('SuperAdmin');
 
@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Community Policing'],
             'designation_id' => $designations['Inspector'],
-            'administrative_unit_id' => 1, // Set to 1
+         
         ]);
         $user->assignRole('Admin');
 
@@ -74,7 +74,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Rapid Response Unit'],
             'designation_id' => $designations['Sergeant'],
-            'administrative_unit_id' => 1, // Set to 1
+     
         ]);
         $user->assignRole('Police Officer / Help Desk Officer');
 
@@ -85,7 +85,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Cyber Crimes'],
             'designation_id' => $designations['Assistant Superintendent'],
-            'administrative_unit_id' => 1, // Set to 1
+        
         ]);
         $user->assignRole('Case Officer');
 
@@ -96,7 +96,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Homicide Unit'],
             'designation_id' => $designations['Inspector'],
-            'administrative_unit_id' => 1, // Set to 1
+         
         ]);
         $user->assignRole('Investigation Officer');
 
@@ -107,7 +107,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Homicide Unit'],
             'designation_id' => $designations['Senior Superintendent'],
-            'administrative_unit_id' => 1, // Set to 1
+       
         ]);
         $user->assignRole('Senior Investigation Officer / Inspector');
 
@@ -118,7 +118,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Property Crimes'],
             'designation_id' => $designations['Sergeant'],
-            'administrative_unit_id' => 1, // Set to 1
+        
         ]);
         $user->assignRole('Station Sergeant');
 
@@ -129,7 +129,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Special Task Force'],
             'designation_id' => $designations['Deputy Superintendent'],
-            'administrative_unit_id' => 1, // Set to 1
+       
         ]);
         $user->assignRole('Sub-Divisional Officer');
 
@@ -140,7 +140,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Special Task Force'],
             'designation_id' => $designations['Commissioner of Police'],
-            'administrative_unit_id' => 1, // Set to 1
+     
         ]);
         $user->assignRole('Commander of Division');
 
@@ -151,7 +151,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Legal Team'] ?? null,
             'designation_id' => $designations['Assistant Commissioner'] ?? null,
-            'administrative_unit_id' => 1, // Set to 1
+  
         ]);
         $user->assignRole('DPP / PCA');
 
@@ -162,7 +162,7 @@ class UserSeeder extends Seeder
             'password' => '1234567890', // Plain string password
             'department_id' => $departments['Narcotics'],
             'designation_id' => $designations['Constable'],
-            'administrative_unit_id' => 1, // Set to 1
+            
         ]);
         $user->assignRole('Legal Team Officer');
     }

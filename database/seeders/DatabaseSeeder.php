@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             CaseTypeSeeder::class,
             DesignationSeeder::class,
-            AdministrativeUnitSeeder::class,
+        
             UserSeeder::class,
         ]);
     }

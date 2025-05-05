@@ -175,16 +175,14 @@ class UserController extends Controller
 
         // Fetch all designations
         $designations = Designation::all();
-        $administrativeUnits = AdministrativeUnit::all(); // Fetch all administrative units
-        $subdivisions = Subdivision::all(); // Fetch all subdivisions
-        $policeStations = PoliceStation::all(); // Fetch all police stations
+       
 
 
         $roles = Role::where('name', '!=', 'SuperAdmin')->get();
 
 
 
-        return view('users.add_user', compact('departments', 'designations', 'roles', 'administrativeUnits', 'subdivisions', 'policeStations'));
+        return view('users.add_user', compact('departments', 'designations', 'roles'));
     } //end of function
 
 
@@ -200,9 +198,7 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'department_id' => 'required|integer',
             'designation_id' => 'required|integer',
-            'administrative_unit_id' => 'required|exists:administrative_units,id',
-            'subdivision_id' => 'nullable|exists:subdivisions,id',
-            'police_station_id' => 'nullable|exists:police_stations,id',
+           
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
         ]);
@@ -221,9 +217,7 @@ class UserController extends Controller
                 'phone' => $request->phone,
                 'department_id' => $request->department_id,
                 'designation_id' => $request->designation_id,
-                'administrative_unit_id' => $validatedData['administrative_unit_id'],
-                'subdivision_id' => $validatedData['subdivision_id'], // Nullable
-                'police_station_id' => $validatedData['police_station_id'], // Nullable
+               
             ]);
 
             // Assign multiple roles to the user
@@ -417,9 +411,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $departments = Department::all();
         $designations = Designation::all();
-        $administrativeUnits = AdministrativeUnit::all();
-        $subdivisions = Subdivision::all();
-        $policeStations = PoliceStation::all();
+       
         $roles = Role::all();
         $userRoles = $user->roles->pluck('name')->toArray();
 
@@ -430,9 +422,6 @@ class UserController extends Controller
             'user',
             'departments',
             'designations',
-            'administrativeUnits',
-            'subdivisions',
-            'policeStations',
             'roles',
             'userRoles'
         ));
@@ -448,9 +437,7 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'department_id' => 'required',
             'designation_id' => 'required',
-            'administrative_unit_id' => 'required|exists:administrative_units,id',
-            'subdivision_id' => 'nullable|exists:subdivisions,id',
-            'police_station_id' => 'nullable|exists:police_stations,id',
+            
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
         ]);
@@ -469,9 +456,7 @@ class UserController extends Controller
                 'phone' => $request->phone,
                 'department_id' => $request->department_id,
                 'designation_id' => $request->designation_id,
-                'administrative_unit_id' => $validatedData['administrative_unit_id'],
-                'subdivision_id' => $validatedData['subdivision_id'], // Nullable
-                'police_station_id' => $validatedData['police_station_id'], // Nullable
+                
             ]);
 
             // $message = "Dear {$user->name}, your profile has been updated successfully.";

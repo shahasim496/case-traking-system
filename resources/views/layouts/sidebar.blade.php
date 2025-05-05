@@ -107,26 +107,14 @@
                                 <span class="title">Manage Departments</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('cases') }}" class="nav-link">
-                                <span class="title">Manage Cases</span>
-                            </a>
-                        </li>
+                       
                         <li class="nav-item">
                             <a href="{{ route('designations') }}" class="nav-link">
                                 <span class="title">Manage Designations</span>
 
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('admin-units.index') }}">Administrative Units</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('subdivisions.index') }}">Subdivisions</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('police-stations.index') }}">Police Stations</a>
-                        </li>
+                       
 
 
                     </ul>
@@ -135,25 +123,7 @@
 
                 @endif
 
-                @if(auth()->user()->can('create case'))
-<!-- manage case -->
-                <li class="nav-item">
-                    <a href="{{ route('casess.create') }}" class="nav-link">
-                        <i class="fa fa-caret-square-o-up" style="font-size: 18px; color: gray;"></i>
-                        <span class="title">Create Case</span>
-                        <span class="selected"></span>
-                    </a>
-                </li>
-                @endif
-                @if(auth()->user()->can('manage case'))
-                <li class="nav-item">
-                    <a href="{{ route('casess.index') }}" class="nav-link">
-                        <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
-                        <span class="title">Manage Cases</span>
-                        <span class="selected"></span>
-                    </a>
-                </li>
-@endif
+
 
 <!-- change password -->
                 <li class="nav-item">

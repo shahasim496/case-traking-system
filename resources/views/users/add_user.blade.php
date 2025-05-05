@@ -97,52 +97,9 @@
                     </div>
 
                     <!-- Administrative Unit -->
-                    <div class="col-lg-6 mb-4">
-                        <label class="label-font">Administrative Unit</label>
-                        <select name="administrative_unit_id" id="administrative_unit_id" class="form-control" required>
-                            <option value="">Select Administrative Unit</option>
-                            @foreach($administrativeUnits as $unit)
-                                <option value="{{ $unit->id }}" {{ old('administrative_unit_id') == $unit->id ? 'selected' : '' }}>
-                                    {{ $unit->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('administrative_unit_id'))
-                            <span class="text-danger">{{ $errors->first('administrative_unit_id') }}</span>
-                        @endif
-                    </div>
+                    
 
-                    <!-- Subdivision -->
-                    <div class="col-lg-6 mb-4">
-                        <label class="label-font">Subdivision (Optional)</label>
-                        <select name="subdivision_id" id="subdivision_id" class="form-control">
-                            <option value="">Select Subdivision</option>
-                            @foreach($subdivisions as $subdivision)
-                                <option value="{{ $subdivision->id }}" {{ old('subdivision_id') == $subdivision->id ? 'selected' : '' }}>
-                                    {{ $subdivision->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('subdivision_id'))
-                            <span class="text-danger">{{ $errors->first('subdivision_id') }}</span>
-                        @endif
-                    </div>
-
-                    <!-- Police Station -->
-                    <div class="col-lg-6 mb-4">
-                        <label class="label-font">Police Station (Optional)</label>
-                        <select name="police_station_id" id="police_station_id" class="form-control">
-                            <option value="">Select Police Station</option>
-                            @foreach($policeStations as $station)
-                                <option value="{{ $station->id }}" {{ old('police_station_id') == $station->id ? 'selected' : '' }}>
-                                    {{ $station->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('police_station_id'))
-                            <span class="text-danger">{{ $errors->first('police_station_id') }}</span>
-                        @endif
-                    </div>
+                 
 
                     <!-- User Role -->
                     <div class="col-lg-6 mb-4">
@@ -174,56 +131,5 @@
 @endsection
 
 @section('jsfile')
-<script>
-    $(document).ready(function () {
-        // Handle Administrative Unit change
-        $('#administrative_unit_id').on('change', function () {
-            let administrativeUnitId = $(this).val();
 
-            // Clear existing options
-            $('#subdivision_id').html('<option value="">Select Subdivision</option>');
-            $('#police_station_id').html('<option value="">Select Police Station</option>');
-
-            if (administrativeUnitId) {
-                // Fetch subdivisions
-                $.ajax({
-                    url: '{{ route("getSubdivisions") }}',
-                    type: 'GET',
-                    data: { administrative_unit_id: administrativeUnitId },
-                    success: function (data) {
-                        if (data.subdivisions) {
-                            $.each(data.subdivisions, function (key, value) {
-                                $('#subdivision_id').append('<option value="' + value.id + '">' + value.name + '</option>');
-                            });
-                        }
-                    }
-                });
-            }
-        });
-
-        // Handle Subdivision change
-        $('#subdivision_id').on('change', function () {
-            let subdivisionId = $(this).val();
-
-            // Clear existing options
-            $('#police_station_id').html('<option value="">Select Police Station</option>');
-
-            if (subdivisionId) {
-                // Fetch police stations
-                $.ajax({
-                    url: '{{ route("getPoliceStations") }}',
-                    type: 'GET',
-                    data: { subdivision_id: subdivisionId },
-                    success: function (data) {
-                        if (data.policeStations) {
-                            $.each(data.policeStations, function (key, value) {
-                                $('#police_station_id').append('<option value="' + value.id + '">' + value.name + '</option>');
-                            });
-                        }
-                    }
-                });
-            }
-        });
-    });
-</script>
 @endsection
