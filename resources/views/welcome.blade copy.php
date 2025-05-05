@@ -5,7 +5,7 @@
 <head>
 	<base href="">
 	<meta charset="utf-8" />
-	<title>Case Management System</title>
+	<title>Evidence Management System</title>
 	<meta name="description" content="Standard HTML" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link href="{{asset('assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
