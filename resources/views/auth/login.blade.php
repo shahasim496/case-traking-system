@@ -16,7 +16,7 @@
   <!-- Login Card -->
   <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
     <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Sign In</h2>
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Evidence Management System</h2>
       <form class="form-signin" method="POST" action="{{ route('login') }}">
         @csrf
 
