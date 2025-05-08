@@ -15,10 +15,11 @@ class CreateEvidencesTable extends Migration
             $table->date('date'); // Date of evidence collection
             $table->string('collected_by'); // Collected by
             $table->string('file_path'); // File path for the uploaded evidence
+
             $table->timestamps();
 
             // Foreign key constraint
-            $table->foreign('case_id')->references('CaseID')->on('new_case_management')->onDelete('cascade');
+           
         });
     }
 

@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\TaskLog;
 use App\Models\Evidence;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class EvidenceController extends Controller
 {
+
+    public function create()
+{
+    $departments = Department::all();
+    return view('evidences.add_evidence', compact('departments'));
+}
+
+
     public function store(Request $request, $case_id)
     {
         $request->validate([

@@ -6,12 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full overflow-hidden bg-black bg-cover" style="background-image: url('/assets/img/login/main_login.png');">
+<body class="h-full overflow-hidden bg-black bg-cover" style="background-image: url('/assets/img/login/main.png');">
 
-  <!-- Logo Watermark Overlay -->
-  <div class="absolute inset-0 flex items-center justify-start z-0">
-    <img src="/assets/img/login/logo1.png" alt="MOHA Logo" class="w-3/6 opacity-80" />
-  </div>
+
 
   <!-- Verification Code Card -->
   <div class="absolute inset-0 flex items-center justify-end p-10 z-10">

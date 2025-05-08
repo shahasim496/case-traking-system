@@ -124,6 +124,16 @@
                 @endif
 
 
+                <!-- Add Evidence -->
+<li class="nav-item">
+    <a href="{{ route('evidence.create')}}" class="nav-link">
+        <i class="fa fa-plus-square" style="font-size: 18px; color: gray;"></i>
+        <span class="title">Add Evidence</span>
+        <span class="selected"></span>
+    </a>
+</li>
+
+
 
 <!-- change password -->
                 <li class="nav-item">

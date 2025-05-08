@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class RoleSeeder extends Seeder
 {
@@ -16,32 +14,23 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        Role::create([
+        // Create the SuperAdmin role
+        Role::firstOrCreate([
             'name' => 'SuperAdmin',
             'guard_name' => 'web'
         ]);
 
-        $role = Role::create([
-            'name' => 'Admin',
-            'guard_name' => 'web'
-        ]);
+        // Updated roles
         $roles = [
-            'Police Officer / Help Desk Officer',
-            'Case Officer',
-            'Investigation Officer',
-            'Senior Investigation Officer / Inspector',
-            'Station Sergeant',
-            'Sub-Divisional Officer',
-            'Commander of Division',
-            'DPP / PCA',
-            'Legal Team Officer',
+            'SuperAdmin',
+            'GFSL Security Officer ',
+            'EVO',
+            'EVO Analyst',
         ];
 
+        // Create or update roles
         foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role]);
+            Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
         }
-
-        
-
     }
 }

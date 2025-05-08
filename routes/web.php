@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaskLogController;
-use App\Http\Controllers\SubdivisionController;
+use App\Http\Controllers\EvidenceController;
 
+use App\Http\Controllers\SubdivisionController;
 use App\Http\Controllers\WitnessFileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PoliceStationController;
@@ -246,6 +247,9 @@ Route::get('/cases/{case}/pdf', [App\Http\Controllers\CaseController::class, 'ge
 
 Route::get('/get-subdivisions', [CaseController::class, 'getSubdivisions'])->name('getSubdivisions');
 Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])->name('getPoliceStations');
+
+Route::get('/evidence/add', [EvidenceController::class, 'create'])->name('evidence.create');
+Route::post('/evidence/store', [EvidenceController::class, 'store'])->name('evidence.store');
 
 
 

@@ -6,17 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full overflow-hidden bg-black bg-cover " style="background-image: url('/assets/img/login/main_login.png');">
+<body class="h-full overflow-hidden bg-black bg-cover" style="background-image: url('/assets/img/login/main.png');">
 
-  <!-- Logo Watermark Overlay -->
-  <div class="absolute inset-0 flex items-center justify-start z-0">
-    <img src="/assets/img/login/logo1.png" alt="MOHA Logo" class="w-3/6 opacity-80" />
-  </div>
+  <!-- Logo Positioned Above the Login Card -->
+ 
 
   <!-- Login Card -->
   <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
     <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Evidence Management System</h2>
+      <!-- Logo -->
+      <div class="flex justify-center mb-8">
+        <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="h-20">
+      </div>
+      <!-- Login Form -->
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Sign In</h2>
       <form class="form-signin" method="POST" action="{{ route('login') }}">
         @csrf
 

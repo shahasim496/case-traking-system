@@ -130,6 +130,3 @@
 
 @endsection
 
-@section('jsfile')
-
-@endsection
