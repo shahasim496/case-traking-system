@@ -1,4 +1,4 @@
-after every code pull 
-php artisan migrate also update env file with example env file
+php artisan migrate:fresh --seed
+php artisan storage:link
 
 also update the app url in env file
