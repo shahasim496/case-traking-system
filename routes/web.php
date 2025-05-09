@@ -250,6 +250,7 @@ Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])
 
 Route::get('/evidence/add', [EvidenceController::class, 'create'])->name('evidence.create');
 Route::post('/evidence/store', [EvidenceController::class, 'store'])->name('evidence.store');
+Route::post('/evidence/verify', [EvidenceController::class, 'verifyPoliceOfficer'])->name('evidence.verifyPoliceOfficer');
 
 
 

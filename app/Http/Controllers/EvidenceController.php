@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\TaskLog;
 use App\Models\Evidence;
 use App\Models\Department;
+use App\Models\Designation;
 use Illuminate\Http\Request;
 
 class EvidenceController extends Controller
@@ -13,7 +15,9 @@ class EvidenceController extends Controller
     public function create()
 {
     $departments = Department::all();
-    return view('evidences.add_evidence', compact('departments'));
+    $designations = Designation::all();
+       
+    return view('evidences.verify_officer', compact('departments','designations'));
 }
 
 
@@ -112,4 +116,46 @@ class EvidenceController extends Controller
 
         return redirect()->back()->with('success', 'Evidence deleted successfully.');
     }
+
+
+
+
+public function verifyPoliceOfficer(Request $request)
+{
+   
+    try {
+        // Validate the form inputs
+        $request->validate([
+            'id' => 'required',
+            'agency' => 'required',
+            'designation' => 'required',
+            'contact' => 'required',
+            'address' => 'required',
+        ]);
+
+        // Check if the user exists in the database
+        $user = User::where('id', $request->id)
+                    ->where('designation_id', $request->designation)
+                    ->first();
+
+       
+
+        if (!$user) {
+            // If user does not exist, redirect back with an error message
+            return redirect()->back()->with('error', 'User not found in the database.');
+        }
+
+        // If user exists, proceed with storing evidence
+        // Add your evidence storing logic here
+
+     
+        return view('evidences.add_evidene', ['success' => 'User Verified successfully.']);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        \Log::error('Error verifying police officer: ' . $e->getMessage());
+
+        // Redirect back with a generic error message
+        return redirect()->back()->with('error', 'An error occurred while verifying the officer. Please try again.');
+    }
+}
 }
