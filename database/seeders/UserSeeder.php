@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         // Create SuperAdmin user
         $superAdmin = User::create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
+            'email' => 'the_superadmin@yopmail.com',
             'password' => '1234567890',
             'cnic' => '12345-1234567-1',
             'phone' => '03001234567',
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
         // Create GFSL Security Officer user
         $securityOfficer = User::create([
             'name' => 'GFSL Security Officer',
-            'email' => 'security@example.com',
+            'email' => 'the_security@yopmail.com',
             'password' =>  '1234567890',
             'cnic' => '12345-1234567-2',
             'phone' => '03001234568',
@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
         // Create EVO user
         $evo = User::create([
             'name' => 'EVO Officer',
-            'email' => 'evo@example.com',
+            'email' => 'the_evo@yopmail.com',
             'password' =>  '1234567890',
             'cnic' => '12345-1234567-3',
             'phone' => '03001234569',
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
         // Create EVO Analyst user
         $evoAnalyst = User::create([
             'name' => 'EVO Analyst',
-            'email' => 'analyst@example.com',
+            'email' => 'the_analyst@yopmail.com',
             'password' =>  '1234567890',
             'cnic' => '12345-1234567-4',
             'phone' => '03001234570',

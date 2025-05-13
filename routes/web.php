@@ -249,6 +249,10 @@ Route::get('/get-subdivisions', [CaseController::class, 'getSubdivisions'])->nam
 Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])->name('getPoliceStations');
 
 Route::get('/evidence/add', [EvidenceController::class, 'create'])->name('evidence.create');
+Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidences.index');
+Route::get('/evidence/{id}', [EvidenceController::class, 'show'])->name('evidence.show');
+Route::get('/evidence/{id}/edit', [EvidenceController::class, 'edit'])->name('evidence.edit');
+Route::delete('/evidence/{id}', [EvidenceController::class, 'destroy'])->name('evidence.destroy');
 Route::post('/evidence/store', [EvidenceController::class, 'store'])->name('evidence.store');
 Route::post('/evidence/verify', [EvidenceController::class, 'verifyPoliceOfficer'])->name('evidence.verifyPoliceOfficer');
 

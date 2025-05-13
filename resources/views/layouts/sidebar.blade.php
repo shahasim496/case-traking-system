@@ -134,6 +134,15 @@
 </li>
 
 
+<li class="nav-item">
+    <a href="{{ route('evidences.index')}}" class="nav-link">
+        <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
+        <span class="title">Manage Evidence</span>
+        <span class="selected"></span>
+    </a>
+</li>
+
+
 
 <!-- change password -->
                 <li class="nav-item">
