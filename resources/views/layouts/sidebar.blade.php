@@ -9,7 +9,7 @@
             
 
                 <li class="nav-item text-center mb-4">
-                <!-- <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="sidebar-logo" style="margin-top: 40px;"> -->
+                <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="sidebar-logo" style="margin-top: 40px; width: 120px; height: auto; max-width: 100%;">
                 </li>
 
 
@@ -138,6 +138,14 @@
     <a href="{{ route('evidences.index')}}" class="nav-link">
         <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
         <span class="title">Manage Evidence</span>
+        <span class="selected"></span>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="{{ route('evidence.receipts')}}" class="nav-link">
+        <i class="fa fa-file-text" style="font-size: 18px; color: gray;"></i>
+        <span class="title">Evidence Receipts</span>
         <span class="selected"></span>
     </a>
 </li>

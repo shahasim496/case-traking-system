@@ -17,33 +17,7 @@ class PermissionSeeder extends Seeder
     {
         // Define permissions for each section
         $permissions = [
-            // Investigation Documents
-            'view investigation documents',
-            'add investigation documents',
-            'edit investigation documents',
-            'delete investigation documents',
-            'manage investigation documents',
-
-            // Evidence
-            'view evidence',
-            'add evidence',
-            'edit evidence',
-            'delete evidence',
-            'manage evidence',
-
-            // Witness
-            'view witnesses',
-            'add witnesses',
-            'edit witnesses',
-            'delete witnesses',
-            'manage witnesses',
-
-            // Court Proceedings
-            'view court proceedings',
-            'add court proceedings',
-            'edit court proceedings',
-            'delete court proceedings',
-            'manage court proceedings',
+          'assign evo officers',
 
             // dashboard
             'manage user',

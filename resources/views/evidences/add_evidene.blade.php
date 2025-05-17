@@ -4,8 +4,8 @@
 @section('content')
 <div class="container-fluid mt-4">
     <div class="card shadow">
-        <div class="card-header btn-primary text-white">
-            <h4 class="mb-0">GUYANA FORENSIC SCIENCE LABORATORY</h4>
+        <div class="card-header  text-white" style="background-color: #0066cc;">
+            <h4 class="mb-0">Evidence Management System</h4>
         </div>
         <div class="card-body">
             <!-- Dropdown to Select Option -->
@@ -48,6 +48,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,20 +60,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
 </div>
 
@@ -116,13 +120,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+              
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit Evidence</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit Evidence</button>
             </div>
         </form>
     </div>
@@ -150,6 +154,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -158,20 +166,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -234,13 +242,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+                   
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit Ballistics Evidence</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit Ballistics Evidence</button>
             </div>
         </form>
     </div>
@@ -268,6 +276,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -276,20 +288,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -365,13 +377,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+             
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit Currency Evidence</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit Currency Evidence</button>
             </div>
         </form>
     </div>
@@ -399,6 +411,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -407,20 +423,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -497,13 +513,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+                  
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit Toxicology Evidence</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit Toxicology Evidence</button>
             </div>
         </form>
     </div>
@@ -531,6 +547,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -539,20 +559,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -621,13 +641,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+               
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit Video Evidence</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit Video Evidence</button>
             </div>
         </form>
     </div>
@@ -656,6 +676,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -664,20 +688,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -722,13 +746,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+                  
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit DNA Evidence</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit DNA Evidence</button>
             </div>
         </form>
     </div>
@@ -756,6 +780,10 @@
                             <label>Designation</label>
                             <input type="text" name="designation" class="form-control" required>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label>Email</label>
+                            <input type="email" name="officer_email" class="form-control" required>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -764,20 +792,20 @@
             <div class="card mb-3">
                 <div class="card-header bg-light">GFSL Officer</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label>Id No</label>
-                            <input type="text" name="g_officer_id" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Name</label>
-                            <input type="text" name="g_officer_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label>Designation</label>
-                            <input type="text" name="g_designation" class="form-control" required>
-                        </div>
-                    </div>
+                <div class="row">
+            <div class="col-md-4 mb-3">
+                <label>Id No</label>
+                <input type="text" name="g_officer_id" class="form-control" value="{{ auth()->user()->id }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Name</label>
+                <input type="text" name="g_officer_name" class="form-control" value="{{ auth()->user()->name }}" readonly>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label>Designation</label>
+                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
                 </div>
             </div>
 
@@ -839,13 +867,13 @@
                             <textarea name="chain_comments" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-success">+ ADD</button>
+                 
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Submit Questioned Document</button>
+                <button type="submit" style="background-color: #0066cc; color: white;">Submit Questioned Document</button>
             </div>
         </form>
     </div>

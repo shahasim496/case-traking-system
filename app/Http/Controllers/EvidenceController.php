@@ -15,6 +15,11 @@ use App\Models\GeneralEvidence;
 use App\Models\CurrencyEvidence;
 use App\Models\BallisticsEvidence;
 use App\Models\ToxicologyEvidence;
+use App\Mail\EvidenceSubmittedMail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 use App\Models\QuestionedDocumentEvidence;
 
 class EvidenceController extends Controller
@@ -33,63 +38,70 @@ class EvidenceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'type' => 'required|string|max:255',
-            'date' => 'required|date',
-            'collected_by' => 'required|string|max:255',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|string|in:pending,verified,rejected,inprogress,completed',
+                'evo_officer_id' => 'nullable|exists:users,id',
+                'notes' => 'nullable|string|max:1000',
+                'report' => 'nullable|file|mimes:pdf,doc,docx' // Max 10MB
+            ]);
 
-        $evidence = Evidence::findOrFail($id);
+            $evidence = Evidence::findOrFail($id);
+        
+            $updateData = [
+                'status' => $request->status,
+                'notes' => $request->notes,
+                'status_updated_at' => now(),
+                'status_updated_by' => auth()->id(),
+            ];
 
-        $evidence->type = $request->type;
-        $evidence->date = $request->date;
-        $evidence->collected_by = $request->collected_by;
-
-        if ($request->hasFile('file')) {
-            if ($evidence->file_path && \Storage::exists('public/' . $evidence->file_path)) {
-                \Storage::delete('public/' . $evidence->file_path);
+            // If status is rejected, clear the EVO officer
+            if ($request->status === 'rejected') {
+                $updateData['evo_officer_id'] = null;
+            } else {
+                $updateData['evo_officer_id'] = $request->evo_officer_id;
             }
 
-            $filePath = $request->file('file')->store('evidences', 'public');
-            $evidence->file_path = $filePath;
+            if ($request->hasFile('report')) {
+                // Delete old file if exists
+                if ($evidence->report_path && Storage::exists('public/' . $evidence->report_path)) {
+                    Storage::delete('public/' . $evidence->report_path);
+                }
+    
+                // Store new file with proper directory name
+                $file = $request->file('report');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                
+                // Store in storage/app/public
+                $filePath = $file->storeAs('evidence_reports', $fileName, 'public');
+                
+                // Create symbolic link if it doesn't exist
+                if (!file_exists(public_path('storage'))) {
+                    \Artisan::call('storage:link');
+                }
+                
+                $updateData['report_path'] = $filePath;
+            }
+
+            $evidence->update($updateData);
+
+            return redirect()->back()->with('success', 'Evidence updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error updating evidence: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error updating evidence: ' . $e->getMessage());
         }
-
-        $evidence->save();
-
-        TaskLog::create([
-            'case_id' => $evidence->case_id,
-            'officer_id' => auth()->id(), // Authenticated user's ID
-            'officer_name' => auth()->user()->name, // Authenticated user's name
-            'officer_rank' => auth()->user()->designation->name ?? 'N/A', // Assuming a relationship exists
-            'department' => auth()->user()->department->name ?? 'N/A', // Assuming a relationship exists
-            'date' => now(), // Current date and time
-            'description' => 'Evidence doc updated ', // Static description
-            'action_taken' => 'updated', // Static action
-        ]);
-
-        return redirect()->back()->with('success', 'Evidence updated successfully.');
     }
 
     public function destroy($id)
     {
         $evidence = Evidence::findOrFail($id);
 
-        if ($evidence->file_path && \Storage::exists('public/' . $evidence->file_path)) {
-            \Storage::delete('public/' . $evidence->file_path);
+        if ($evidence->file_path && Storage::exists('public/' . $evidence->file_path)) {
+            Storage::delete('public/' . $evidence->file_path);
         }
 
         $evidence->delete();
-        TaskLog::create([
-            'case_id' => $evidence->case_id,
-            'officer_id' => auth()->id(), // Authenticated user's ID
-            'officer_name' => auth()->user()->name, // Authenticated user's name
-            'officer_rank' => auth()->user()->designation->name ?? 'N/A', // Assuming a relationship exists
-            'department' => auth()->user()->department->name ?? 'N/A', // Assuming a relationship exists
-            'date' => now(), // Current date and time
-            'description' => 'Evidence doc deleted ', // Static description
-            'action_taken' => 'deleted', // Static action
-        ]);
+       
 
         return redirect()->back()->with('success', 'Evidence deleted successfully.');
     }
@@ -111,9 +123,7 @@ public function verifyPoliceOfficer(Request $request)
         ]);
 
         // Check if the user exists in the database
-        $user = User::where('id', $request->id)
-                    ->where('designation_id', $request->designation)
-                    ->first();
+        $user = User::where('id', $request->id)->first();
 
        
 
@@ -129,11 +139,39 @@ public function verifyPoliceOfficer(Request $request)
         return view('evidences.add_evidene', ['success' => 'User Verified successfully.']);
     } catch (\Exception $e) {
         // Log the exception for debugging
-        \Log::error('Error verifying police officer: ' . $e->getMessage());
+        Log::error('Error verifying police officer: ' . $e->getMessage());
 
         // Redirect back with a generic error message
         return redirect()->back()->with('error', 'An error occurred while verifying the officer. Please try again.');
     }
+}
+
+public function receipts(Request $request)
+{
+    // Get the perPage value from the request, default to 10
+    $perPage = $request->get('perPage', 10);
+
+    // Get the type filter from the request
+    $type = $request->get('type', '');
+
+    // Fetch evidence records with optional filtering by type
+    $query = Evidence::query()->orderBy('created_at', 'desc');
+
+    if (!empty($type)) {
+        $query->where('type', $type);
+    }
+
+    $evidences = $query->paginate($perPage);
+
+    return view('evidences.receipts', compact('evidences'));
+}
+
+public function receipt($id)
+{
+    $evidence = Evidence::with('chainOfCustodies','dnaDonors','ballisticsEvidence','currencyEvidence','toxicologyEvidence',
+    'videoEvidence','questionedDocumentEvidence','generalEvidence')->findOrFail($id);
+    
+    return view('evidences.receipt', compact('evidence'));
 }
 
 public function store(Request $request)
@@ -148,12 +186,15 @@ public function store(Request $request)
     $evidence = Evidence::create([
         'type' => $formType,
         'officer_id' => $request->officer_id,
+        'officer_email' => $request->officer_email,
         'officer_name' => $request->officer_name,
         'designation' => $request->designation,
         'g_officer_id' => $request->g_officer_id,
         'g_officer_name' => $request->g_officer_name,
         'g_designation' => $request->g_designation,
     ]);
+
+    Mail::to($evidence->officer_email)->send(new EvidenceSubmittedMail($evidence));
 
       // Handle Chain of Custody (common to all forms)
     ChainOfCustody::create([
@@ -277,25 +318,64 @@ public function store(Request $request)
             return back()->with('error', 'Unknown form type.');
     }
 
-   
-
-
-
-    return redirect()->route('evidences.index')->with('success', 'Evidence submitted successfully!');
+    return redirect()->route('evidence.receipt', $evidence->id)->with('success', 'Evidence submitted successfully!');
 }
 
-public function index()
+public function index(Request $request)
 {
-     $evidences = Evidence::all(); // Fetch all evidence records
+    // Get the perPage value from the request, default to 10
+    $perPage = $request->get('perPage', 10);
+
+    // Get the type filter from the request
+    $type = $request->get('type', '');
+
+    // Fetch evidence records with optional filtering by type
+    $query = Evidence::query();
+
+    if (!empty($type)) {
+        $query->where('type', $type);
+    }
+
+    $evidences = $query->paginate($perPage);
+
     return view('evidences.index', compact('evidences'));
 }
-
 public function show($id)
 {
-    $evidence = Evidence::findOrFail($id);
-    return view('evidences.show', compact('evidence'));
+    $evidence = Evidence::with('chainOfCustodies','dnaDonors','ballisticsEvidence','currencyEvidence','toxicologyEvidence'
+    ,'videoEvidence','questionedDocumentEvidence','generalEvidence')->findOrFail($id); // Fetch the evidence record by ID
 
+    // Get all users who can be EVO officers
+    $officers = User::whereHas('roles', function($query) {
+        $query->whereIn('name', ['EVO', 'GFSL Security Officer', 'EVO Analyst']);
+    })->with('roles')->get();
 
+    return view('evidences.show', compact('evidence', 'officers'));
+}
+
+public function verifyOfficer(Request $request)
+{
+    try {
+        // Get the officer ID from the request
+        $officerId = $request->input('officer_id');
+        $evidenceId = $request->input('evidence_id');
+
+        // Try to find the officer in the database
+        $officer = User::where('id', $officerId)->first();
+
+        if ($officer) {
+            // Officer found in the database
+            return redirect()->back()->with('success', 'Officer verification successful! Officer found in the system.');
+
+           
+        } else {
+            // Officer not found
+            return redirect()->back()->with('error', 'Officer verification failed! Officer not found in the system.');
+        }
+    } catch (\Exception $e) {
+        Log::error('Error verifying officer: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'An error occurred while verifying the officer: ' . $e->getMessage());
+    }
 }
 
 }

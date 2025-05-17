@@ -26,10 +26,20 @@ class Evidence extends Model
         'type',          // Type of evidence (e.g., dna, ballistics, currency, etc.)
         'officer_id',    // ID of the officer submitting the evidence
         'officer_name',  // Name of the officer
+        'officer_email', 
         'designation',   // Officer's designation
         'g_officer_id',
         'g_officer_name',// Name of the government officer
         'g_designation', // Government officer's designation
+        'status',
+        'evo_officer_id',
+        'notes',
+        'status_updated_at',
+        'status_updated_by',
+        'officer_verified',
+        'officer_verified_at',
+        'officer_verified_by',
+        'report_path',
     ];
 
     // Define the relationship with the Case model
@@ -72,5 +82,20 @@ class Evidence extends Model
     public function questionedDocumentEvidence()
     {
         return $this->hasOne(QuestionedDocumentEvidence::class);
+    }
+
+
+     public function generalEvidence()
+    {
+        return $this->hasOne(GeneralEvidence::class);
+    }
+    public function evoOfficer()
+    {
+        return $this->belongsTo(User::class, 'evo_officer_id');
+    }
+    
+    public function statusUpdatedBy()
+    {
+        return $this->belongsTo(User::class, 'status_updated_by');
     }
 }

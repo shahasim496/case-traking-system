@@ -13,7 +13,7 @@
 
                     <!-- Submitted By Section -->
                     <div class="card mb-4">
-                        <div class="card-header bg-secondary text-white">SUBMITTED BY:</div>
+                        <div style="background-color: #0066cc;" class="card-header text-white">SUBMITTED BY:</div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -67,7 +67,7 @@
 
                     <!-- Submit Button -->
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Verify Officer</button>
+                        <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Verify Officer</button>
                     </div>
                 </form>
             </div>

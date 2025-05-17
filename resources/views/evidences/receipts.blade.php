@@ -1,16 +1,15 @@
-
 @extends('layouts.main')
-@section('title', 'Evidence List')
+@section('title', 'Evidence Receipts')
 
 @section('content')
 <div class="container-fluid mt-4">
     <div class="card shadow">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Evidence List</h4>
-            <form method="GET" action="{{ route('evidences.index') }}" class="d-flex align-items-center">
+        <div class="card-header d-flex justify-content-between align-items-center  ">
+            <h4 class="mb-0">Evidence Receipts</h4>
+            <form method="GET" action="{{ route('evidence.receipts') }}" class="d-flex align-items-center">
                 <!-- Filter by Type -->
-                <label for="type" class="me-2 mb-0"><strong>Type:</strong></label>
-                <select  name="type" id="type" class="form-select form-select-lg me-4" style="width: 200px;" onchange="this.form.submit()">
+                <label for="type" class="me-2 mb-0 "><strong>Type:</strong></label>
+                <select name="type" id="type" class="form-select form-select-lg me-4" style="width: 200px;" onchange="this.form.submit()">
                     <option value="">All</option>
                     <option value="general" {{ request('type') == 'general' ? 'selected' : '' }}>General</option>
                     <option value="currency" {{ request('type') == 'currency' ? 'selected' : '' }}>Currency</option>
@@ -22,7 +21,7 @@
                 </select>
 
                 <!-- Pagination Dropdown -->
-                <label style="margin-left: 10px;" for="perPage" class="me-2 mb-0"><strong>Show:</strong></label>
+                <label style="margin-left: 10px;" for="perPage" class="me-2 mb-0 "><strong>Show:</strong></label>
                 <select name="perPage" id="perPage" class="form-select form-select-lg" style="width: 150px;" onchange="this.form.submit()">
                     <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
                     <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
@@ -37,12 +36,11 @@
                     <thead class="thead-light">
                         <tr>
                             <th>#</th>
+                            <th>Reference Number</th>
                             <th>Type</th>
-                            <th>Officer ID</th>
                             <th>Officer Name</th>
-                            <th>Designation</th>
                             <th>Status</th>
-                            <th>Created At</th>
+                            <th>Submission Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -50,32 +48,27 @@
                         @forelse($evidences as $evidence)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
+                                <td>GFSL-{{ date('Y', strtotime($evidence->created_at)) }}-{{ $evidence->id }}</td>
                                 <td>{{ ucfirst($evidence->type) }}</td>
-                                <td>{{ $evidence->officer_id }}</td>
                                 <td>{{ $evidence->officer_name }}</td>
-                                <td>{{ $evidence->designation }}</td>
-                                 <td>
-        <span class="badge 
-            @if($evidence->status == 'pending') bg-danger 
-            @elseif($evidence->status == 'verified') bg-warning 
-            @elseif($evidence->status == 'completed') bg-success 
-            @endif">
-            {{ ucfirst($evidence->status) }}
-        </span>
-    </td>
+                                <td>
+                                    <span class="badge 
+                                        @if($evidence->status == 'pending') bg-danger 
+                                        @elseif($evidence->status == 'verified') bg-warning 
+                                        @elseif($evidence->status == 'completed') bg-success 
+                                        @endif">
+                                        {{ ucfirst($evidence->status) }}
+                                    </span>
+                                </td>
                                 <td>{{ $evidence->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('evidence.show', $evidence->id) }}" class="btn btn-info btn-sm">View</a>
-                                    <form action="{{ route('evidence.destroy', $evidence->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
+                                    <a href="{{ route('evidence.receipt', $evidence->id) }}" class="btn btn-warning">View Receipt</a>
+                                    <a href="{{ route('evidence.show', $evidence->id) }}" class="btn btn-primary">Full Details</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">No evidence records found.</td>
+                                <td colspan="7" class="text-center">No evidence receipts found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -84,10 +77,10 @@
 
             <!-- Pagination Links -->
             <div class="d-flex justify-content-between align-items-center mt-3">
-                <p class="mb-0">Showing {{ $evidences->firstItem() }} to {{ $evidences->lastItem() }} of {{ $evidences->total() }} records</p>
+                <p class="mb-0">Showing {{ $evidences->firstItem() ?? 0 }} to {{ $evidences->lastItem() ?? 0 }} of {{ $evidences->total() ?? 0 }} records</p>
                 {{ $evidences->appends(['perPage' => request('perPage'), 'type' => request('type')])->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>
 </div>
-@endsection
+@endsection 

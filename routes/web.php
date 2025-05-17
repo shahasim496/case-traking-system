@@ -250,13 +250,17 @@ Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])
 
 Route::get('/evidence/add', [EvidenceController::class, 'create'])->name('evidence.create');
 Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidences.index');
+Route::get('/evidence/receipts', [EvidenceController::class, 'receipts'])->name('evidence.receipts');
 Route::get('/evidence/{id}', [EvidenceController::class, 'show'])->name('evidence.show');
 Route::get('/evidence/{id}/edit', [EvidenceController::class, 'edit'])->name('evidence.edit');
+Route::get('/evidence/{id}/receipt', [EvidenceController::class, 'receipt'])->name('evidence.receipt');
 Route::delete('/evidence/{id}', [EvidenceController::class, 'destroy'])->name('evidence.destroy');
 Route::post('/evidence/store', [EvidenceController::class, 'store'])->name('evidence.store');
 Route::post('/evidence/verify', [EvidenceController::class, 'verifyPoliceOfficer'])->name('evidence.verifyPoliceOfficer');
+Route::post('/evidence/verify-officer', [EvidenceController::class, 'verifyOfficer'])->name('evidence.verifyOfficer');
 
-
+// Add this route with your other evidence routes
+Route::put('/evidence/{id}/status', [EvidenceController::class, 'update'])->name('evidence.updateStatus');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');

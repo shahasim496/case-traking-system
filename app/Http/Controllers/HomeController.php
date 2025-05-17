@@ -60,23 +60,36 @@ class HomeController extends Controller
         $resolvedPercentage = $totalCases > 0 ? round(($resolvedCases / $totalCases) * 100, 2) : 0;
         $case_to_court_percentage = $totalCases > 0 ? round(($case_to_court / $totalCases) * 100, 2) : 0;
 
-    
+        // Evidence Statistics
+        $totalEvidence = \App\Models\Evidence::count();
+        $pendingEvidence = \App\Models\Evidence::where('status', 'pending')->count();
+        $verifiedEvidence = \App\Models\Evidence::where('status', 'verified')->count();
+        $completedEvidence = \App\Models\Evidence::where('status', 'completed')->count();
+        
+        // Evidence by types
+        $dnaEvidence = \App\Models\Evidence::where('type', 'dna')->count();
+        $ballisticsEvidence = \App\Models\Evidence::where('type', 'Ballistics')->count();
+        $currencyEvidence = \App\Models\Evidence::where('type', 'Currency')->count();
+        $toxicologyEvidence = \App\Models\Evidence::where('type', 'Toxicology')->count();
+        $videoEvidence = \App\Models\Evidence::where('type', 'Video Evidence')->count();
+        $questionedEvidence = \App\Models\Evidence::where('type', 'questioned')->count();
+        $generalEvidence = \App\Models\Evidence::where('type', 'general')->count();
+        
+        // Get recent evidence records
+        $recentEvidence = \App\Models\Evidence::with(['evoOfficer'])->orderBy('created_at', 'desc')->take(5)->get();
+
         // Pass the data to the view
-        return view('dashboard.admin', compact('totalCases', 'pendingCases', 'resolvedCases', 'totalUsers', 'pendingPercentage', 'resolvedPercentage', 'case_to_court', 'case_to_court_percentage','ClosedCases','Cases'));
+        return view('dashboard.admin', compact(
+            'totalCases', 'pendingCases', 'resolvedCases', 'totalUsers', 
+            'pendingPercentage', 'resolvedPercentage', 'case_to_court', 
+            'case_to_court_percentage', 'ClosedCases', 'Cases',
+            'totalEvidence', 'pendingEvidence', 'verifiedEvidence', 'completedEvidence',
+            'dnaEvidence', 'ballisticsEvidence', 'currencyEvidence', 'toxicologyEvidence',
+            'videoEvidence', 'questionedEvidence', 'generalEvidence', 'recentEvidence'
+        ));
     }
 
-    public function getGroupWiseReport($group_id, $user_id = -1)
-    {
-
-        // $group_service = Group_Service::where('id',$group_id)->first();
-// return $group_services[0]->group_grade;
-
-        $reports = DB::select(
-            'CALL group_wise_report_report_views("' . $group_id . '","' . $user_id . '")'
-        );
-        return $reports[0];
-
-    }//end of function
+ 
 
     public function getTotalCadreReport()
     {

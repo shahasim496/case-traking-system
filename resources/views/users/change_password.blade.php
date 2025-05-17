@@ -50,7 +50,7 @@
 
             <div class="row">
                 <div class="col-lg-12 btn-submit mt-2 mb-2">
-                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Save</button>
                 <button type="button" class="btn btn-secondary">Cancel</button>
                 </div>
             </div>
