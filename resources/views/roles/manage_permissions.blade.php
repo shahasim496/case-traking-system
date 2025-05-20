@@ -31,7 +31,7 @@
             <input type="hidden" name="role_id" value="{{ $request->role_id }}">
 
             <div class="text-right mb-3">
-            <button type="submit" class="btn btn-success">Assign Permissions</button>
+            <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Assign Permissions</button>
         </div>
 
             <div class="table-responsive">

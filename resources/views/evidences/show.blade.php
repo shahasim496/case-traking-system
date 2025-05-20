@@ -96,6 +96,9 @@
                                     </tr>
                         </tbody>
                     </table>
+
+
+                    @if(auth()->user()->can('verify officer'))
                     
                     <!-- Officer Verification Button -->
                     <div class="mt-3 d-flex justify-content-end">
@@ -108,6 +111,9 @@
                             </button>
                         </form>
                     </div>
+                    @endif
+
+
                 </div>
             </div>
 
@@ -457,11 +463,11 @@
             </div>
 
 
-            @if(auth()->user()->hasRole('GFSL Security Officer'))
+            @if(auth()->user()->hasRole('GFSL Security Officer '))
             <!-- Status Update and EVO Assignment Section -->
             <div class="card mt-4">
                 <div class="card-header  text-white" style="background-color: #0066cc;">
-                    <h5 class="mb-0">Update Status & Assign EVO Officer</h5>
+                    <h5 class="mb-0">Update Status & Assign Officer</h5>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('evidence.updateStatus', $evidence->id) }}" enctype="multipart/form-data">
@@ -474,15 +480,14 @@
                                 <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer(this.value)">
                                     <option value="" disabled {{ !$evidence->status ? 'selected' : '' }}>Select Status</option>
                                     <option value="rejected" {{ $evidence->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                    <option value="verified" {{ $evidence->status == 'verified' ? 'selected' : '' }}>Verified</option>
-                                    <option value="inprogress" {{ $evidence->status == 'inprogress' ? 'selected' : '' }}>In Progress</option>
-                                    <option value="completed" {{ $evidence->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                    <option value="Awating Verification" {{ $evidence->status == 'Awating Verification' ? 'selected' : '' }}>Awating Verification</option>
+                        
                                 </select>
                             </div>
-                            
-                            <div class="col-md-6 mb-3" id="evoOfficerSection" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
-                                <label for="evo_officer_id" class="form-label">Assign Officer</label>
-                                <select name="evo_officer_id" id="evo_officer_id" class="form-control">
+                         
+                            <div class="col-md-6 mb-3" id="evoOfficerSection1" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
+                                <label for="evo_officer_id1" class="form-label">Assign Officer</label>
+                                <select name="evo_officer_id1" id="evo_officer_id1" class="form-control">
                                     <option value="" disabled {{ !$evidence->evo_officer_id ? 'selected' : '' }}>Select Officer</option>
                                     @foreach($officers as $officer)
                                         <option value="{{ $officer->id }}" 
@@ -501,13 +506,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="report" class="form-label">Upload Report</label>
-                                <input type="file" name="report" id="report" class="form-control" accept=".pdf,.doc,.docx">
-                               
-                            </div>
-                        </div>
+                   
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -534,7 +533,158 @@
                         </div>
                         
                         <div class="d-flex justify-content-end">
-                            <button type="submit" style="background-color: #0066cc; color: white;">Update Status</button>
+                            <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Update Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @endif
+
+            @if(auth()->user()->hasRole('EVO'))
+            <!-- Status Update and EVO Assignment Section -->
+            <div class="card mt-4">
+                <div class="card-header  text-white" style="background-color: #0066cc;">
+                    <h5 class="mb-0">Update Status & Assign Officer</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('evidence.updateStatus', $evidence->id) }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Evidence Status</label>
+                                <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer(this.value)">
+                                    <option value="" disabled {{ !$evidence->status ? 'selected' : '' }}>Select Status</option>
+                                    <option value="rejected" {{ $evidence->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                    <option value="Verified" {{ $evidence->status == 'Verified' ? 'selected' : '' }}>Verified</option>
+                        
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3" id="evoOfficerSection" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
+                                <label for="evo_officer_id" class="form-label">Assign EVO Officer</label>
+                                <select name="evo_officer_id" id="evo_officer_id" class="form-control" required>
+                                    <option value="">Select EVO Officer</option>
+                                    @foreach($officers as $officer)
+                                        <option value="{{ $officer->id }}" 
+                                            {{ $evidence->evo_officer_id == $officer->id ? 'selected' : '' }}>
+                                            {{ $officer->name }} ({{ $officer->designation->name ?? 'No Designation' }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('evo_officer_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="notes" class="form-label">Notes/Comments</label>
+                                <textarea name="notes" id="notes" class="form-control" rows="3" placeholder="Add any notes or comments about the status update...">{{ $evidence->notes }}</textarea>
+                            </div>
+                        </div>
+
+                   
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current Status</label>
+                                <div class="form-control-plaintext">
+                                    <span class="badge badge-{{ 
+                                        $evidence->status == 'verified' ? 'warning' : 
+                                        ($evidence->status == 'pending' ? 'secondary' : 'info') 
+                                    }}">
+                                        {{ ucfirst(str_replace('_', ' ', $evidence->status ?? 'Not Set')) }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current EVO Officer</label>
+                                <div class="form-control-plaintext">
+                                    {{ $evidence->evoOfficer->name ?? 'Not Assigned' }}
+                                    @if($evidence->evoOfficer)
+                                   
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Update Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @endif
+            @if(auth()->user()->hasRole('EVO Analyst'))
+            <!-- Status Update and EVO Assignment Section -->
+            <div class="card mt-4">
+                <div class="card-header  text-white" style="background-color: #0066cc;">
+                    <h5 class="mb-0">Update Status & Assign EVO Officer</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('evidence.updateStatus', $evidence->id) }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Evidence Status</label>
+                                <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer(this.value)">
+                                    <option value="" disabled {{ !$evidence->status ? 'selected' : '' }}>Select Status</option>
+                                 
+                                    <option value="inprogress" {{ $evidence->status == 'inprogress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="completed" {{ $evidence->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                </select>
+                            </div>
+                            
+                     
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="notes" class="form-label">Notes/Comments</label>
+                                <textarea name="notes" id="notes" class="form-control" rows="3" placeholder="Add any notes or comments about the status update...">{{ $evidence->notes }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="report" class="form-label">Upload Report</label>
+                                <input type="file" name="report" id="report" class="form-control" accept=".pdf,.doc,.docx">
+                          
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current Status</label>
+                                <div class="form-control-plaintext">
+                                    <span class="badge badge-{{ 
+                                        $evidence->status == 'verified' ? 'warning' : 
+                                        ($evidence->status == 'pending' ? 'secondary' : 'info') 
+                                    }}">
+                                        {{ ucfirst(str_replace('_', ' ', $evidence->status ?? 'Not Set')) }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current Officer</label>
+                                <div class="form-control-plaintext">
+                                    {{ $evidence->evoOfficer->name ?? 'Not Assigned' }}
+                                    @if($evidence->evoOfficer)
+                                   
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Update Status</button>
                         </div>
                     </form>
                 </div>
@@ -542,6 +692,8 @@
 
             @endif
 
+
+     
 
 
             @if(auth()->user()->hasRole('SuperAdmin'))
@@ -561,6 +713,7 @@
                                 <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer(this.value)">
                                     <option value="" disabled {{ !$evidence->status ? 'selected' : '' }}>Select Status</option>
                                     <option value="rejected" {{ $evidence->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                    <option value="Awating Verification" {{ $evidence->status == 'Awating Verification' ? 'selected' : '' }}>Awating Verification</option>
                                 
                                     <option value="verified" {{ $evidence->status == 'verified' ? 'selected' : '' }}>Verified</option>
                                     <option value="inprogress" {{ $evidence->status == 'inprogress' ? 'selected' : '' }}>In Progress</option>
@@ -568,17 +721,14 @@
                                 </select>
                             </div>
                             
-                            <div class="col-md-6 mb-3" id="evoOfficerSection" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
+                            <div class="col-md-6 mb-3" id="evoOfficerSection2" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
                                 <label for="evo_officer_id" class="form-label">Assign Officer</label>
-                                <select name="evo_officer_id" id="evo_officer_id" class="form-control">
-                                    <option value="" disabled {{ !$evidence->evo_officer_id ? 'selected' : '' }}>Select Officer</option>
-                                    @foreach($officers as $officer)
-                                        <option value="{{ $officer->id }}" 
-                                            {{ $evidence->evo_officer_id == $officer->id ? 'selected' : '' }}>
-                                            {{ $officer->name }}
-                                        </option>
-                                    @endforeach
+                                <select name="evo_officer_id" id="evo_officer_id2" class="form-control" required>
+                                    <option value="">Select Officer</option>
                                 </select>
+                                @error('evo_officer_id')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                         
@@ -645,5 +795,46 @@ function toggleEvoOfficer(status) {
         evoOfficerSection.style.display = 'block';
     }
 }
+
+$(document).ready(function() {
+    // Fetch users by roles when the page loads
+    $.ajax({
+        url: '{{ route("get.users.by.roles") }}',
+        type: 'GET',
+        success: function(response) {
+            var select = $('#evo_officer_id2');
+            // Clear existing options except the first one
+            select.find('option:not(:first)').remove();
+            
+            // Add new options grouped by roles
+            Object.keys(response).forEach(function(role) {
+                if (response[role].length > 0) {
+                    // Create optgroup
+                    var optgroup = $('<optgroup>', {
+                        label: role
+                    });
+                    
+                    // Add users to optgroup
+                    response[role].forEach(function(user) {
+                        optgroup.append($('<option>', {
+                            value: user.id,
+                            text: user.name
+                        }));
+                    });
+                    
+                    select.append(optgroup);
+                }
+            });
+
+            // If there's a previously selected officer, select it
+            @if($evidence->evo_officer_id)
+                select.val('{{ $evidence->evo_officer_id }}');
+            @endif
+        },
+        error: function(xhr) {
+            console.error('Error fetching users:', xhr);
+        }
+    });
+});
 </script>
 @endsection

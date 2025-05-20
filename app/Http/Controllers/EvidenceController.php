@@ -9,6 +9,7 @@ use App\Models\Evidence;
 use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Http\Request;
+use App\Models\Evidence_User;
 use App\Models\VideoEvidence;
 use App\Models\ChainOfCustody;
 use App\Models\GeneralEvidence;
@@ -18,6 +19,8 @@ use App\Models\ToxicologyEvidence;
 use App\Mail\EvidenceSubmittedMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\EvidenceReportReadyMail;
+use App\Notifications\UserNotification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use App\Models\QuestionedDocumentEvidence;
@@ -38,9 +41,11 @@ class EvidenceController extends Controller
 
     public function update(Request $request, $id)
     {
+
+     
         try {
             $request->validate([
-                'status' => 'required|string|in:pending,verified,rejected,inprogress,completed',
+                'status' => 'required',
                 'evo_officer_id' => 'nullable|exists:users,id',
                 'notes' => 'nullable|string|max:1000',
                 'report' => 'nullable|file|mimes:pdf,doc,docx' // Max 10MB
@@ -81,13 +86,44 @@ class EvidenceController extends Controller
                 }
                 
                 $updateData['report_path'] = $filePath;
+
+
+                
             }
 
             $evidence->update($updateData);
 
+            // Send email notification if status is completed
+            if ($request->status === 'completed') {
+                Mail::to($evidence->officer_email)->send(new EvidenceReportReadyMail($evidence));
+            }
+
+            if($request->evo_officer_id){    
+                Evidence_User::firstOrCreate(
+                    [
+                       'evidence_id' => $evidence->id,
+                     'user_id' =>$request->evo_officer_id,
+                    ],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+
+                // Send notification to the assigned EVO officer
+                $user = User::findOrFail($request->evo_officer_id);
+                $message = sprintf(
+                    "Evidence #%s (%s) has been assigned to you. Status: %s",
+                    $evidence->id,
+                    ucfirst($evidence->type),
+                    ucfirst($request->status)
+                );
+                $user->notify(new UserNotification($message));
+            }
+
             return redirect()->back()->with('success', 'Evidence updated successfully.');
         } catch (\Exception $e) {
-            Log::error('Error updating evidence: ' . $e->getMessage());
+          
             return redirect()->back()->with('error', 'Error updating evidence: ' . $e->getMessage());
         }
     }
@@ -206,6 +242,18 @@ public function store(Request $request)
         'comments' => $request->chain_comments,
     ]);
 
+
+    Evidence_User::firstOrCreate(
+        [
+           'evidence_id' => $evidence->id,
+         'user_id' => auth()->id(),
+        ],
+        [
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]
+    );
+
    
 
     // Handle specific forms
@@ -323,14 +371,24 @@ public function store(Request $request)
 
 public function index(Request $request)
 {
+    $query = Evidence::query();
+
+    // Check if the user is a SuperAdmin
+    if (auth()->user()->hasRole('SuperAdmin')) {
+        // SuperAdmin can see all cases
+        $query = $query->orderBy('created_at', 'desc');
+    } else {
+        // Other users can only see cases where their ID is in the CaseUsers table
+        $query = $query->whereHas('EvidenceUsers', function ($subQuery) {
+            $subQuery->where('user_id', auth()->id());
+        })->orderBy('created_at', 'desc');
+    }
+
     // Get the perPage value from the request, default to 10
     $perPage = $request->get('perPage', 10);
 
     // Get the type filter from the request
     $type = $request->get('type', '');
-
-    // Fetch evidence records with optional filtering by type
-    $query = Evidence::query();
 
     if (!empty($type)) {
         $query->where('type', $type);
@@ -343,12 +401,10 @@ public function index(Request $request)
 public function show($id)
 {
     $evidence = Evidence::with('chainOfCustodies','dnaDonors','ballisticsEvidence','currencyEvidence','toxicologyEvidence'
-    ,'videoEvidence','questionedDocumentEvidence','generalEvidence')->findOrFail($id); // Fetch the evidence record by ID
+    ,'videoEvidence','questionedDocumentEvidence','generalEvidence')->findOrFail($id);
 
-    // Get all users who can be EVO officers
-    $officers = User::whereHas('roles', function($query) {
-        $query->whereIn('name', ['EVO', 'GFSL Security Officer', 'EVO Analyst']);
-    })->with('roles')->get();
+    // Get only users with EVO role
+    $officers = User::role('EVO')->get();
 
     return view('evidences.show', compact('evidence', 'officers'));
 }
@@ -376,6 +432,23 @@ public function verifyOfficer(Request $request)
         Log::error('Error verifying officer: ' . $e->getMessage());
         return redirect()->back()->with('error', 'An error occurred while verifying the officer: ' . $e->getMessage());
     }
+}
+
+public function getEvoAnalysts()
+{
+    $evoAnalysts = User::role('EVO Analyst')->get(['id', 'name']);
+    return response()->json($evoAnalysts);
+}
+
+public function getUsersByRoles()
+{
+    $usersByRole = [
+        'EVO' => User::role('EVO')->with('designation')->get(['id', 'name', 'designation_id']),
+        'EVO Analyst' => User::role('EVO Analyst')->with('designation')->get(['id', 'name', 'designation_id']),
+        'GFSL Security Officer' => User::role('GFSL Security Officer')->with('designation')->get(['id', 'name', 'designation_id']),
+    ];
+
+    return response()->json($usersByRole);
 }
 
 }

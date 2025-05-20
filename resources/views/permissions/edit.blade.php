@@ -14,7 +14,7 @@
                 <label for="name">Permission Name</label>
                 <input type="text" name="name" id="name" class="form-control" value="{{ $permission->name }}" required>
             </div>
-            <button type="submit" class="btn btn-success">Update</button>
+            <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Update</button>
         </form>
     </div>
 </div>

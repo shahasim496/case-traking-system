@@ -53,9 +53,10 @@
                                 <td>{{ $evidence->officer_name }}</td>
                                 <td>
                                     <span class="badge 
-                                        @if($evidence->status == 'pending') bg-danger 
+                                        @if($evidence->status == 'pending') bg-danger
                                         @elseif($evidence->status == 'verified') bg-warning 
                                         @elseif($evidence->status == 'completed') bg-success 
+                                             @elseif($evidence->status == 'Awating Verification') bg-info
                                         @endif">
                                         {{ ucfirst($evidence->status) }}
                                     </span>
@@ -63,7 +64,7 @@
                                 <td>{{ $evidence->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
                                     <a href="{{ route('evidence.receipt', $evidence->id) }}" class="btn btn-warning">View Receipt</a>
-                                    <a href="{{ route('evidence.show', $evidence->id) }}" class="btn btn-primary">Full Details</a>
+                                  
                                 </td>
                             </tr>
                         @empty

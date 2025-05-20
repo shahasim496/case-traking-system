@@ -264,6 +264,9 @@ Route::put('/evidence/{id}/status', [EvidenceController::class, 'update'])->name
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+Route::get('/get-evo-analysts', [App\Http\Controllers\EvidenceController::class, 'getEvoAnalysts'])->name('get.evo.analysts');
+Route::get('/get-users-by-roles', [EvidenceController::class, 'getUsersByRoles'])->name('get.users.by.roles');
 });
 
 

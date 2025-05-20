@@ -873,7 +873,7 @@
 
             <!-- Submit Button -->
             <div class="d-flex justify-content-end">
-                <button type="submit" style="background-color: #0066cc; color: white;">Submit Questioned Document</button>
+                <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Submit Questioned Document</button>
             </div>
         </form>
     </div>

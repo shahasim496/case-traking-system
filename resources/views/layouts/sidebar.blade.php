@@ -123,7 +123,7 @@
 
                 @endif
 
-
+                @if(auth()->user()->can('add evidence'))
                 <!-- Add Evidence -->
 <li class="nav-item">
     <a href="{{ route('evidence.create')}}" class="nav-link">
@@ -132,7 +132,7 @@
         <span class="selected"></span>
     </a>
 </li>
-
+@endif
 
 <li class="nav-item">
     <a href="{{ route('evidences.index')}}" class="nav-link">
@@ -142,6 +142,9 @@
     </a>
 </li>
 
+
+
+@if(auth()->user()->can('manage evidence receipts'))
 <li class="nav-item">
     <a href="{{ route('evidence.receipts')}}" class="nav-link">
         <i class="fa fa-file-text" style="font-size: 18px; color: gray;"></i>
@@ -149,7 +152,7 @@
         <span class="selected"></span>
     </a>
 </li>
-
+@endif
 
 
 <!-- change password -->

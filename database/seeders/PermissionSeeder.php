@@ -18,6 +18,9 @@ class PermissionSeeder extends Seeder
         // Define permissions for each section
         $permissions = [
           'assign evo officers',
+          'manage evidence receipts',
+          'verify officer',
+          'add evidence',
 
             // dashboard
             'manage user',

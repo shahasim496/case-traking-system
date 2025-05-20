@@ -6,7 +6,7 @@
 <div class="card">
     <div class="card-header">
         <h4>Roles</h4>
-        <a href="{{ route('roles.create') }}" class="btn btn-sm btn-success">Add Role</a>
+        <a href="{{ route('roles.create') }}" class="btn btn-sm " style="background-color: #0066cc; color: white;">Add Role</a>
     </div>
     <div class="card-body">
         <table id="rolesTable" class="table table-bordered">

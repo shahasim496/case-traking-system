@@ -13,7 +13,7 @@
                 <label for="name">Role Name</label>
                 <input type="text" name="name" id="name" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-success">Save</button>
+            <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Save</button>
         </form>
     </div>
 </div>

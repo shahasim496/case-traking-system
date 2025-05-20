@@ -12,7 +12,7 @@
                 <div class="add-role marg-20">
                     <div class="row">
                         <div class="col-lg-4">
-                            <a href="ministry-add-summary.html" class="btn btn-success btn-outline mb-2" style="width: 100%">Add
+                            <a href="ministry-add-summary.html" class="btn btn-outline mb-2" style="width: 100%; background-color: #0066cc; color: white;">Add
                                 Roles</a>
                             <div class="bg-white card-custom gutter-b">
                                 <ul class="user-roles">

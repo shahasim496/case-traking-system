@@ -133,7 +133,7 @@
                         <th>Officer Name</th>
                         <th>Status</th>
                         <th>Submitted At</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -148,10 +148,10 @@
                             </span>
                         </td>
                         <td>{{ $evidence->created_at->format('m/d/y, h:i A') }}</td>
-                        <td>
+                        <!-- <td>
                             <a href="{{ route('evidence.show', $evidence->id) }}" class="btn btn-warning">View</a>
                             <a href="{{ route('evidence.receipt', $evidence->id) }}" class="btn btn-primary"   style="background-color:#007bff !important">Receipt</a>
-                        </td>
+                        </td> -->
                     </tr>
                     @endforeach
                 </tbody>

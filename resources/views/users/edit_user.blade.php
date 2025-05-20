@@ -129,7 +129,7 @@
 
                 <!-- Submit Buttons -->
                 <div class="col-lg-12 btn-submit mt-2 mb-2">
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Update</button>
                 <button type="button" class="btn btn-secondary">Cancel</button>
                 </div>
             </div>

@@ -6,7 +6,7 @@
 <div class="card">
     <div class="card-header">
         <h4>Permissions</h4>
-        <a href="{{ route('permissions.create') }}" class="btn btn-sm btn-success">Add Permission</a>
+        <a href="{{ route('permissions.create') }}" class="btn btn-sm " style="background-color: #0066cc; color: white;">Add Permission</a>
     </div>
     <div class="card-body">
         <table id="permissionsTable" class="table table-bordered">

@@ -119,7 +119,7 @@
                     <!-- Submit Buttons -->
                     <div class="col-lg-12 text-right mt-4">
                         <button type="button" class="btn btn-secondary">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add New User</button>
+                        <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Add New User</button>
                     </div>
 
                 </div>

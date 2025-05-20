@@ -98,4 +98,10 @@ class Evidence extends Model
     {
         return $this->belongsTo(User::class, 'status_updated_by');
     }
+
+
+    public function EvidenceUsers()
+    {
+        return $this->hasMany(Evidence_User::class, 'evidence_id', 'id');
+    }
 }
