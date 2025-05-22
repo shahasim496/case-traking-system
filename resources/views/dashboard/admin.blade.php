@@ -72,7 +72,7 @@
                 <div class="icon icon-blue">
                     <i class="fas fa-archive"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Total Evidence</h5>
+                <h5 style="display: flex; justify-content: center;">Total Evidencess</h5>
                 <h2>{{ $totalEvidence }}</h2>
             </div>
 
