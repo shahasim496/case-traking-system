@@ -21,6 +21,9 @@ class CreateEvidenceUsersTable extends Migration
             $table->foreign('evidence_id')->references('id')->on('evidences')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
+
+            // Add unique constraint to prevent duplicate entries
+            $table->unique(['evidence_id', 'user_id']);
         });
     }
 

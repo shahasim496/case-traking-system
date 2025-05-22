@@ -42,11 +42,11 @@ class EvidenceController extends Controller
     public function update(Request $request, $id)
     {
 
+      
      
         try {
             $request->validate([
                 'status' => 'required',
-                'evo_officer_id' => 'nullable|exists:users,id',
                 'notes' => 'nullable|string|max:1000',
                 'report' => 'nullable|file|mimes:pdf,doc,docx' // Max 10MB
             ]);
@@ -64,7 +64,20 @@ class EvidenceController extends Controller
             if ($request->status === 'rejected') {
                 $updateData['evo_officer_id'] = null;
             } else {
-                $updateData['evo_officer_id'] = $request->evo_officer_id;
+
+                if($request->evo_officer_id1){
+                $updateData['evo_officer_id'] = $request->evo_officer_id1;
+                $userid=$updateData['evo_officer_id'];
+                }elseif($request->evo_officer_id2){
+                    $updateData['evo_officer_id'] = $request->evo_officer_id2;
+                    $userid=$updateData['evo_officer_id'];
+                }elseif($request->evo_officer_id3){
+                    $updateData['evo_officer_id'] = $request->evo_officer_id3;
+                    $userid=$updateData['evo_officer_id'];
+                }elseif($request->evo_officer_id){
+                    $updateData['evo_officer_id'] = $request->evo_officer_id;
+                    $userid=$updateData['evo_officer_id'];
+                }
             }
 
             if ($request->hasFile('report')) {
@@ -98,27 +111,32 @@ class EvidenceController extends Controller
                 Mail::to($evidence->officer_email)->send(new EvidenceReportReadyMail($evidence));
             }
 
-            if($request->evo_officer_id){    
-                Evidence_User::firstOrCreate(
-                    [
-                       'evidence_id' => $evidence->id,
-                     'user_id' =>$request->evo_officer_id,
-                    ],
-                    [
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]
-                );
+            if($request->evo_officer_id1 || $request->evo_officer_id2 || $request->evo_officer_id3 || $request->evo_officer_id){    
+                try {
+                    Evidence_User::firstOrCreate(
+                        [
+                           'evidence_id' => $evidence->id,
+                           'user_id' => $userid,
+                        ],
+                        [
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]
+                    );
 
-                // Send notification to the assigned EVO officer
-                $user = User::findOrFail($request->evo_officer_id);
-                $message = sprintf(
-                    "Evidence #%s (%s) has been assigned to you. Status: %s",
-                    $evidence->id,
-                    ucfirst($evidence->type),
-                    ucfirst($request->status)
-                );
-                $user->notify(new UserNotification($message));
+                    // Send notification to the assigned EVO officer
+                    $user = User::findOrFail($userid);
+                    $message = sprintf(
+                        "Evidence #%s (%s) has been assigned to you. Status: %s",
+                        $evidence->id,
+                        ucfirst($evidence->type),
+                        ucfirst($request->status)
+                    );
+                    $user->notify(new UserNotification($message));
+                } catch (\Exception $e) {
+                    // Log the error but continue with the update
+                    Log::error('Error creating evidence user relationship: ' . $e->getMessage());
+                }
             }
 
             return redirect()->back()->with('success', 'Evidence updated successfully.');
