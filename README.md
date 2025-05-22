@@ -1,3 +1,3 @@
-php artisan migrate:fresh --seed
+php artisan migrate
 php artisan encrypt:controller
 
