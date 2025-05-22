@@ -477,7 +477,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Evidence Status</label>
-                                <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer(this.value)">
+                                <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer1(this.value)">
                                     <option value="" disabled {{ !$evidence->status ? 'selected' : '' }}>Select Status</option>
                                     <option value="rejected" {{ $evidence->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                     <option value="Awating Verification" {{ $evidence->status == 'Awating Verification' ? 'selected' : '' }}>Awating Verification</option>
@@ -554,7 +554,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Evidence Status</label>
-                                <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer(this.value)">
+                                <select name="status" id="status" class="form-control" required onchange="toggleEvoOfficer2(this.value)">
                                     <option value="" disabled {{ !$evidence->status ? 'selected' : '' }}>Select Status</option>
                                     <option value="rejected" {{ $evidence->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                     <option value="Verified" {{ $evidence->status == 'Verified' ? 'selected' : '' }}>Verified</option>
@@ -562,20 +562,12 @@
                                 </select>
                             </div>
                             
-                            <div class="col-md-6 mb-3" id="evoOfficerSection" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
-                                <label for="evo_officer_id" class="form-label">Assign EVO Officer</label>
-                                <select name="evo_officer_id" id="evo_officer_id" class="form-control" required>
-                                    <option value="">Select EVO Officer</option>
-                                    @foreach($officers as $officer)
-                                        <option value="{{ $officer->id }}" 
-                                            {{ $evidence->evo_officer_id == $officer->id ? 'selected' : '' }}>
-                                            {{ $officer->name }} ({{ $officer->designation->name ?? 'No Designation' }})
-                                        </option>
-                                    @endforeach
+                            <div class="col-md-6 mb-3" id="evoOfficerSection2" style="{{ $evidence->status == 'rejected' ? 'display: none;' : '' }}">
+                                <label for="evo_officer_id" class="form-label">Assign  Officer</label>
+                                <select name="evo_officer_id" id="evo_officer_id3" class="form-control" required>
+                                    <option value="">Select  Officer</option>
                                 </select>
-                                @error('evo_officer_id')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                              
                             </div>
                         </div>
                         
@@ -785,15 +777,44 @@
 
 <script>
 function toggleEvoOfficer(status) {
-    const evoOfficerSection = document.getElementById('evoOfficerSection');
-    const evoOfficerSelect = document.getElementById('evo_officer_id');
-    
+    const evoOfficerSection = document.getElementById('evoOfficerSection2');
+   
     if (status === 'rejected') {
         evoOfficerSection.style.display = 'none';
-        evoOfficerSelect.value = ''; // Clear the selection
+    
     } else {
         evoOfficerSection.style.display = 'block';
+       
     }
+}
+
+function toggleEvoOfficer1(status) {
+ 
+   
+    const evoOfficerSection1 = document.getElementById('evoOfficerSection1');
+    if (status === 'rejected') {
+      
+        evoOfficerSection1.style.display = 'none';
+    } else {
+       
+        evoOfficerSection1.style.display = 'block';
+    }
+    
+}
+
+
+function toggleEvoOfficer2(status) {
+ 
+   
+ const evoOfficerSection1 = document.getElementById('evoOfficerSection2');
+ if (status === 'rejected') {
+   
+     evoOfficerSection1.style.display = 'none';
+ } else {
+    
+     evoOfficerSection1.style.display = 'block';
+ }
+ 
 }
 
 $(document).ready(function() {
@@ -827,14 +848,45 @@ $(document).ready(function() {
             });
 
             // If there's a previously selected officer, select it
-            @if($evidence->evo_officer_id)
-                select.val('{{ $evidence->evo_officer_id }}');
-            @endif
+        
         },
         error: function(xhr) {
             console.error('Error fetching users:', xhr);
         }
     });
 });
+
+// Function to load EVO Analysts
+$(document).ready(function() {
+    $.ajax({
+        url: '{{ route("get.evo.analysts") }}',
+        type: 'GET',
+        success: function(response) {
+            var select = $('#evo_officer_id3');
+            // Clear existing options except the first one
+            select.find('option:not(:first)').remove();
+            
+            // Add EVO Analysts to the dropdown
+            response.forEach(function(analyst) {
+                select.append($('<option>', {
+                    value: analyst.id,
+                    text: analyst.name + (analyst.designation ? ' (' + analyst.designation.name + ')' : '')
+                }));
+            });
+
+            // If there's a previously selected officer, select it
+            if ('{{ $evidence->evo_officer_id }}') {
+                select.val('{{ $evidence->evo_officer_id }}');
+            }
+        },
+        error: function(xhr) {
+            console.error('Error fetching EVO Analysts:', xhr);
+        }
+    });
+});
+
+
+// Load EVO Analysts when the page loads
+
 </script>
 @endsection

@@ -118,7 +118,7 @@
             <!-- Actions -->
             <div class="d-flex justify-content-between mt-4">
                 <a href="{{ route('evidences.index') }}" class="btn btn-secondary">Back to List</a>
-                <a href="{{ route('evidence.show', $evidence->id) }}" style="background-color: #0066cc; color: white;" class="btn">View Full Details</a>
+            
             </div>
         </div>
     </div>
