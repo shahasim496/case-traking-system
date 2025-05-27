@@ -66,11 +66,15 @@
                                 <td>{{ $evidence->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
                                     <a href="{{ route('evidence.show', $evidence->id) }}" class="btn btn-info btn-sm">View</a>
+
+
+                                    @if(auth()->user()->can('delete evidence'))
                                     <form action="{{ route('evidence.destroy', $evidence->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

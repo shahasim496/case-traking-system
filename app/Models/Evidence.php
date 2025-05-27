@@ -40,6 +40,8 @@ class Evidence extends Model
         'officer_verified_at',
         'officer_verified_by',
         'report_path',
+        'case_id',
+        'case_description',
     ];
 
     // Define the relationship with the Case model

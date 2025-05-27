@@ -134,6 +134,8 @@
 </li>
 @endif
 
+
+@if(auth()->user()->can('manage evidence'))
 <li class="nav-item">
     <a href="{{ route('evidences.index')}}" class="nav-link">
         <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
@@ -141,7 +143,7 @@
         <span class="selected"></span>
     </a>
 </li>
-
+@endif
 
 
 @if(auth()->user()->can('manage evidence receipts'))

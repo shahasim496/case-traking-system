@@ -246,6 +246,8 @@ public function store(Request $request)
         'g_officer_id' => $request->g_officer_id,
         'g_officer_name' => $request->g_officer_name,
         'g_designation' => $request->g_designation,
+        'case_id' => $request->case_id,
+        'case_description' => $request->case_description,
     ]);
 
     Mail::to($evidence->officer_email)->send(new EvidenceSubmittedMail($evidence));

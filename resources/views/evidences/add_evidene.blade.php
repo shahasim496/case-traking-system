@@ -77,6 +77,23 @@
                 </div>
 </div>
 
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- EVIDENCE SUBMITTED -->
             <div class="card mb-3">
                 <div class="card-header bg-light">Evidence Submitted</div>
@@ -180,6 +197,23 @@
                 <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
             </div>
         </div>
+                </div>
+            </div>
+
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -305,6 +339,22 @@
                 </div>
             </div>
 
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Evidence Submitted -->
             <div class="card mb-3">
@@ -437,6 +487,23 @@
                 <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
             </div>
         </div>
+                </div>
+            </div>
+
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -576,6 +643,23 @@
                 </div>
             </div>
 
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Evidence Submitted -->
             <div class="card mb-3">
                 <div class="card-header bg-light">Evidence Submitted</div>
@@ -705,6 +789,23 @@
                 </div>
             </div>
 
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Donor Sections -->
             <!-- Dropdown to Select Number of Donors -->
             <div class="mb-3">
@@ -806,6 +907,23 @@
                 <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
             </div>
         </div>
+                </div>
+            </div>
+
+            <!-- Case Information -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">Case Information</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Case ID <span class="text-danger">*</span></label>
+                            <input type="text" name="case_id" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Case Description <span class="text-danger">*</span></label>
+                            <textarea name="case_description" class="form-control" rows="2" required></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 

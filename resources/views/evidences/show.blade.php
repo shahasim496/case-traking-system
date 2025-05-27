@@ -6,9 +6,6 @@
     <div class="card shadow">
         <div class="card-header  text-white" style="background-color: #0066cc;">
             <h4 class="mb-0">Evidence Details</h4>
-
-
-          
         </div>
         <div class="card-body">
             <!-- General Evidence Details -->
@@ -29,6 +26,11 @@
                                         <th width="40%">Reference Number</th>
                                         <td>GFSL-{{ date('Y', strtotime($evidence->created_at)) }}-{{ $evidence->id }}</td>
                                     </tr>
+                                    <tr>
+                                        <th width="40%">Case ID</th>
+                                        <td>{{ $evidence->case_id }}</td>
+                                    </tr>
+                                
                                     <tr>
                                         <th width="40%">Status</th>
                                         <td>

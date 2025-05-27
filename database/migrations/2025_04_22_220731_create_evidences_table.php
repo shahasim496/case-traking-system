@@ -18,6 +18,8 @@ class CreateEvidencesTable extends Migration
             $table->string('g_officer_id'); // ID of the government officer
             $table->string('g_officer_name'); // Name of the government officer
             $table->string('g_designation'); // Government officer's designation
+            $table->string('case_id'); 
+            $table->string('case_description'); 
             $table->timestamps(); // Created at and updated at timestamps
 
             // Foreign key constraint
