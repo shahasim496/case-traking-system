@@ -49,14 +49,16 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                @if(Str::contains($permission->name, 'investigation'))
-                                    Investigation
+                                @if(Str::contains($permission->name, 'role'))
+                                    Role
+                                @elseif(Str::contains($permission->name, 'permission'))
+                                    Permission
                                 @elseif(Str::contains($permission->name, 'evidence'))
                                     Evidence
-                                @elseif(Str::contains($permission->name, 'witness'))
-                                    Witness
-                                @elseif(Str::contains($permission->name, 'court'))
-                                    Court Proceedings
+                                    @elseif(Str::contains($permission->name, 'settings'))
+                                        Settings
+                                @elseif(Str::contains($permission->name, 'user'))
+                                    User
                                 @else
                                     Other
                                 @endif

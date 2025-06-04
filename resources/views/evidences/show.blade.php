@@ -465,7 +465,7 @@
             </div>
 
 
-            @if(auth()->user()->hasRole('GFSL Security Officer '))
+            @if(auth()->user()->hasRole('GFSL Security Officer'))
             <!-- Status Update and EVO Assignment Section -->
             <div class="card mt-4">
                 <div class="card-header  text-white" style="background-color: #0066cc;">

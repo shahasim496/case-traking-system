@@ -65,7 +65,7 @@
     </td>
                                 <td>{{ $evidence->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('evidence.show', $evidence->id) }}" class="btn btn-info btn-sm">View</a>
+                                    <a href="{{ route('evidence.show', $evidence->id) }}" class="btn" style="background-color: #007bff; color: white;">View</a>
 
 
                                     @if(auth()->user()->can('delete evidence'))

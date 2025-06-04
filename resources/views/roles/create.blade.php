@@ -13,6 +13,10 @@
                 <label for="name">Role Name</label>
                 <input type="text" name="name" id="name" class="form-control" required>
             </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+            </div>
             <button type="submit" class="btn" style="background-color: #0066cc; color: white;">Save</button>
         </form>
     </div>

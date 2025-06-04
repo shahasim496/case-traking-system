@@ -43,9 +43,13 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:roles,name',
+            'description' => 'nullable|string'
         ]);
 
-        Role::create(['name' => $request->name]);
+        Role::create([
+            'name' => $request->name,
+            'description' => $request->description
+        ]);
 
         return redirect()->route('roles')->with('success', 'Role created successfully.');
     }
@@ -60,10 +64,14 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:roles,name,' . $id,
+            'description' => 'nullable|string'
         ]);
 
         $role = Role::findOrFail($id);
-        $role->update(['name' => $request->name]);
+        $role->update([
+            'name' => $request->name,
+            'description' => $request->description
+        ]);
 
         return redirect()->route('roles')->with('success', 'Role updated successfully.');
     }

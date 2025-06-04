@@ -16,7 +16,7 @@ class Role extends SpatieRole
      * @var array
      */
     protected $fillable = [
-        'name', 'guard_name','user_id','is_training_enabled','is_show',
+        'name', 'guard_name', 'user_id', 'is_training_enabled', 'is_show', 'description'
     ];
 
     public function group_service()

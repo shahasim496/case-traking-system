@@ -14,7 +14,7 @@ class PermissionController extends Controller
 
     public function getPermissions(Request $request)
     {
-        $permissions = Permission::select('id', 'name')->orderBy('id', 'DESC')->get();
+        $permissions = Permission::select('id', 'name', 'description')->orderBy('id', 'DESC')->get();
 
         return DataTables::of($permissions)
             ->addIndexColumn()
@@ -40,9 +40,13 @@ class PermissionController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:permissions,name',
+            'description' => 'nullable|string',
         ]);
 
-        Permission::create(['name' => $request->name]);
+        Permission::create([
+            'name' => $request->name,
+            'description' => $request->description
+        ]);
 
         return redirect()->route('permissions')->with('success', 'Permission created successfully.');
     }
@@ -57,10 +61,14 @@ class PermissionController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:permissions,name,' . $id,
+            'description' => 'nullable|string',
         ]);
 
         $permission = Permission::findOrFail($id);
-        $permission->update(['name' => $request->name]);
+        $permission->update([
+            'name' => $request->name,
+            'description' => $request->description
+        ]);
 
         return redirect()->route('permissions')->with('success', 'Permission updated successfully.');
     }

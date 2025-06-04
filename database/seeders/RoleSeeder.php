@@ -14,23 +14,35 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        // Create the SuperAdmin role
-        Role::firstOrCreate([
-            'name' => 'SuperAdmin',
-            'guard_name' => 'web'
-        ]);
-
-        // Updated roles
+        // Define roles with their descriptions
         $roles = [
-            'SuperAdmin',
-            'GFSL Security Officer ',
-            'EVO',
-            'EVO Analyst',
+            'SuperAdmin' => [
+                'description' => 'Has complete access to all system features and can manage all aspects of the system including users, roles, permissions, and settings.',
+                'guard_name' => 'web'
+            ],
+            'GFSL Security Officer' => [
+                'description' => 'Responsible for managing security-related operations, evidence handling, and officer verification processes.',
+                'guard_name' => 'web'
+            ],
+            'EVO' => [
+                'description' => 'Evidence Verification Officer responsible for verifying and managing evidence records and ensuring proper documentation.',
+                'guard_name' => 'web'
+            ],
+            'EVO Analyst' => [
+                'description' => 'Analyzes evidence data, generates reports, and provides insights on evidence management processes.',
+                'guard_name' => 'web'
+            ],
         ];
 
-        // Create or update roles
-        foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+        // Create or update roles with descriptions
+        foreach ($roles as $roleName => $roleData) {
+            Role::firstOrCreate(
+                ['name' => $roleName],
+                [
+                    'description' => $roleData['description'],
+                    'guard_name' => $roleData['guard_name']
+                ]
+            );
         }
     }
 }

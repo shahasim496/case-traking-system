@@ -23,7 +23,7 @@
 
 
 
-                @if(auth()->user()->can('manage user'))
+                @if(auth()->user()->can('manage users'))
 <!-- manage user -->
 
                 <li class="nav-item">

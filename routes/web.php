@@ -48,12 +48,12 @@ Route::post('/reset_password', [App\Http\Controllers\SendCodeController::class, 
 // Route::post('/register', [App\Http\Controllers\RegistrationController::class, 'userRegister'])->name('userRegister');
 Route::get('/resend_code', [App\Http\Controllers\SendCodeController::class, 'resendCode'])->name('resendCode');
 
-Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned', 'permission:manage user']], function () {
-    Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users');
-    Route::get('/all', [App\Http\Controllers\UserController::class, 'all_users'])->name('user.all');
-    Route::get('/getUsers', [App\Http\Controllers\UserController::class, 'getUsers'])->name('user.getUsers');
-    Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->name('user.create');
-    Route::get('/edit/{id}', [App\Http\Controllers\UserController::class, 'edit'])->name('user.edit'); 
+Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function () {
+    Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users')->middleware('permission:view user');
+    Route::get('/all', [App\Http\Controllers\UserController::class, 'all_users'])->name('user.all')->middleware('permission:view user');
+    Route::get('/getUsers', [App\Http\Controllers\UserController::class, 'getUsers'])->name('user.getUsers')->middleware('permission:view user');
+    Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->name('user.create')->middleware('permission:create user');
+    Route::get('/edit/{id}', [App\Http\Controllers\UserController::class, 'edit'])->name('user.edit')->middleware('permission:edit user'); 
 });
 
 
@@ -70,14 +70,14 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
     Route::get('/verifycode', [App\Http\Controllers\UserController::class, 'verifyCode'])->name('user.verifyCode');
     Route::post('/verifyUserCode', [App\Http\Controllers\UserController::class, 'verifyUserCode'])->name('user.verifyUserCode');
     Route::post('/reset_password', [App\Http\Controllers\UserController::class, 'resetPassword'])->name('user.resetPassword');
-    Route::post('/store', [App\Http\Controllers\UserController::class, 'store'])->name('user.store');
-    Route::post('/storeOfficer', [App\Http\Controllers\UserController::class, 'storeOfficer'])->name('user.storeOfficer');
-    Route::put('/update/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('user.update');
+    Route::post('/store', [App\Http\Controllers\UserController::class, 'store'])->name('user.store')->middleware('permission:create user');
+    Route::post('/storeOfficer', [App\Http\Controllers\UserController::class, 'storeOfficer'])->name('user.storeOfficer')->middleware('permission:create user');
+    Route::put('/update/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('user.update')->middleware('permission:edit user');
     Route::put('/updateOfficer/{id}', [App\Http\Controllers\UserController::class, 'updateOfficer'])->name('user.updateOfficer')->middleware('role:SuperAdmin|Admin');
-    Route::get('/delete/{id}', [App\Http\Controllers\UserController::class, 'delete'])->name('user.delete');
+    Route::get('/delete/{id}', [App\Http\Controllers\UserController::class, 'delete'])->name('user.delete')->middleware('permission:delete user');
 
     Route::get('/markNotification', [App\Http\Controllers\UserController::class, 'markNotification'])->name('user.markNotification');
-    Route::get('/banned/{id}', [App\Http\Controllers\UserController::class, 'banned'])->name('user.banned');
+    Route::get('/banned/{id}', [App\Http\Controllers\UserController::class, 'banned'])->name('user.banned')->middleware('permission:ban user');
 });
 
 
@@ -122,85 +122,35 @@ Route::group(['middleware' => ['role:SuperAdmin|Admin|Cadre', 'auth', 'banned']]
 });
 
 Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned', 'permission:manage role and permissions']], function () {
-    Route::get('/', [App\Http\Controllers\RoleController::class, 'index'])->name('roles');
-    Route::get('/getRoles', [App\Http\Controllers\RoleController::class, 'getRoles'])->name('roles.getRoles');
-    Route::get('/create', [App\Http\Controllers\RoleController::class, 'create'])->name('roles.create');
-    Route::post('/store', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store');
-    Route::get('/edit/{id}', [App\Http\Controllers\RoleController::class, 'edit'])->name('roles.edit');
-    Route::put('/update/{id}', [App\Http\Controllers\RoleController::class, 'update'])->name('roles.update');
-    Route::get('/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete');
+    Route::get('/', [App\Http\Controllers\RoleController::class, 'index'])->name('roles')->middleware('permission:view role');
+    Route::get('/getRoles', [App\Http\Controllers\RoleController::class, 'getRoles'])->name('roles.getRoles')->middleware('permission:view role');
+    Route::get('/create', [App\Http\Controllers\RoleController::class, 'create'])->name('roles.create')->middleware('permission:create role');
+    Route::post('/store', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store')->middleware('permission:create role');
+    Route::get('/edit/{id}', [App\Http\Controllers\RoleController::class, 'edit'])->name('roles.edit')->middleware('permission:edit role');
+    Route::put('/update/{id}', [App\Http\Controllers\RoleController::class, 'update'])->name('roles.update')->middleware('permission:edit role');
+    Route::get('/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete')->middleware('permission:delete role');
  
-    Route::get('/assign-permissions/{id}', [App\Http\Controllers\RoleController::class, 'assignPermissions'])->name('roles.assignPermissions');
-    Route::get('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'managePermissions'])->name('roles.managePermissions');
-    Route::post('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'storeAssignedPermissions'])->name('roles.storeAssignedPermissions');
+    Route::get('/assign-permissions/{id}', [App\Http\Controllers\RoleController::class, 'assignPermissions'])->name('roles.assignPermissions')->middleware('permission:manage permission assignment');
+    Route::get('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'managePermissions'])->name('roles.managePermissions')->middleware('permission:manage permission assignment');
+    Route::post('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'storeAssignedPermissions'])->name('roles.storeAssignedPermissions')->middleware('permission:manage permission assignment');
 
 
 });
 
 
 
-Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned', 'permission:manage role and permissions']], function () {
-    Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions');
-    Route::get('/getPermissions', [App\Http\Controllers\PermissionController::class, 'getPermissions'])->name('permissions.getPermissions');
-    Route::get('/create', [App\Http\Controllers\PermissionController::class, 'create'])->name('permissions.create');
-    Route::post('/store', [App\Http\Controllers\PermissionController::class, 'store'])->name('permissions.store');
-    Route::get('/edit/{id}', [App\Http\Controllers\PermissionController::class, 'edit'])->name('permissions.edit');
-    Route::put('/update/{id}', [App\Http\Controllers\PermissionController::class, 'update'])->name('permissions.update');
-    Route::delete('/delete/{id}', [App\Http\Controllers\PermissionController::class, 'delete'])->name('permissions.delete');
+Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned']], function () {
+    Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions')->middleware('permission:view permission');
+    Route::get('/getPermissions', [App\Http\Controllers\PermissionController::class, 'getPermissions'])->name('permissions.getPermissions')->middleware('permission:view permission')  ;
+    Route::get('/create', [App\Http\Controllers\PermissionController::class, 'create'])->name('permissions.create')->middleware('permission:create permission');
+    Route::post('/store', [App\Http\Controllers\PermissionController::class, 'store'])->name('permissions.store')->middleware('permission:create permission');
+    Route::get('/edit/{id}', [App\Http\Controllers\PermissionController::class, 'edit'])->name('permissions.edit')->middleware('permission:edit permission');
+    Route::put('/update/{id}', [App\Http\Controllers\PermissionController::class, 'update'])->name('permissions.update')->middleware('permission:edit permission');
+    Route::delete('/delete/{id}', [App\Http\Controllers\PermissionController::class, 'delete'])->name('permissions.delete')->middleware('permission:delete permission');
 });
 
-// Route::group(['prefix' => 'casetype', 'middleware' => ['auth', 'banned']], function () {
-//     Route::get('/', [App\Http\Controllers\CaseTypeController::class, 'index'])->name('cases'); // Main index route
-//     Route::get('/getCases', [App\Http\Controllers\CaseTypeController::class, 'getCases'])->name('cases.getCases'); // DataTable route
-//     Route::get('/create', [App\Http\Controllers\CaseTypeController::class, 'create'])->name('cases.create'); // Create case route
-//     Route::post('/store', [App\Http\Controllers\CaseTypeController::class, 'store'])->name('cases.store'); // Store case route
-//     Route::get('/edit/{id}', [App\Http\Controllers\CaseTypeController::class, 'edit'])->name('cases.edit'); // Edit case route
-//     Route::put('/update/{id}', [App\Http\Controllers\CaseTypeController::class, 'update'])->name('cases.update'); // Update case route
-//     Route::delete('/delete/{id}', [App\Http\Controllers\CaseTypeController::class, 'delete'])->name('cases.delete'); // Delete case route
-// });
 
 
-
-
-
-// Route::group(['prefix' => 'case', 'middleware' => ['auth', 'banned']], function () {
-//     Route::get('/create', [App\Http\Controllers\CaseController::class, 'create'])->name('casess.create');
-//     Route::post('/store', [App\Http\Controllers\CaseController::class, 'store'])->name('casess.store');
-//     Route::get('/cases', [App\Http\Controllers\CaseController::class, 'index'])->name('casess.index');
-   
-//     Route::get('/cases/{id}/edit', [App\Http\Controllers\CaseController::class, 'edit'])->name('casess.edit');
-//     Route::delete('/cases/{id}', [App\Http\Controllers\CaseController::class, 'destroy'])->name('casess.destroy');
-
-
-
-// Route::put('/cases/{id}', [App\Http\Controllers\CaseController::class, 'update'])->name('casess.update');
-
-// Route::post('/documents/store/{case_id}', [InvestigationDocumentController::class, 'store'])->name('documents.store');
-
-// Route::put('/documents/{id}', [App\Http\Controllers\InvestigationDocumentController::class, 'update'])->name('documents.update');
-// Route::delete('/documents/{id}', [App\Http\Controllers\InvestigationDocumentController::class, 'destroy'])->name('documents.destroy');
-
-
-// Route::post('/court-proceedings/store/{case_id}', [CourtProceedingController::class, 'store'])->name('court-proceedings.store');
-// Route::put('/court-proceedings/{id}', [App\Http\Controllers\CourtProceedingController::class, 'update'])->name('court-proceedings.update');
-// Route::delete('/court-proceedings/{id}', [App\Http\Controllers\CourtProceedingController::class, 'destroy'])->name('court-proceedings.destroy');
-
-
-// Route::post('/evidences/store/{case_id}', [App\Http\Controllers\EvidenceController::class, 'store'])->name('evidences.store');
-// Route::put('/evidences/{id}', [App\Http\Controllers\EvidenceController::class, 'update'])->name('evidences.update');
-// Route::delete('/evidences/{id}', [App\Http\Controllers\EvidenceController::class, 'destroy'])->name('evidences.destroy');
-
-
-// Route::post('/witnesses/store/{case_id}', [App\Http\Controllers\WitnessController::class, 'store'])->name('witnesses.store');
-
-// Route::put('/witnesses/{id}', [App\Http\Controllers\WitnessController::class, 'update'])->name('witnesses.update');
-
-// Route::delete('/witness-files/{id}', [App\Http\Controllers\WitnessController::class, 'destroy'])->name('witness-files.destroy');
-
-// Route::delete('/witness-filess/{id}', [App\Http\Controllers\WitnessFileController::class, 'destroy'])->name('witness-filess.destroy');
-
-
-// });
 
 
 Route::group([ 'middleware' => ['auth', 'banned']], function () {
@@ -209,34 +159,14 @@ Route::get('/get-subdivisions/{unitId}', [AdministrativeUnitController::class, '
 
 Route::get('/get-police-stations/{subdivisionId}', [AdministrativeUnitController::class, 'getPoliceStations']);
 
-Route::resource('admin-units', AdministrativeUnitController::class);
-Route::resource('subdivisions', SubdivisionController::class);
-Route::resource('police-stations', PoliceStationController::class);
+Route::resource('admin-units', AdministrativeUnitController::class)->middleware('permission:manage settings');
+Route::resource('subdivisions', SubdivisionController::class)->middleware('permission:manage settings');
+Route::resource('police-stations', PoliceStationController::class)->middleware('permission:manage settings');
 
 
 
 
-// Route::get('/get-case-officers', [App\Http\Controllers\CaseController::class, 'getCaseOfficers'])->name('get.case.officers');
-// Route::get('/get-case-investigation-officers', [App\Http\Controllers\CaseController::class, 'getinvestigationOfficers'])->name('get.case.investigation.officers');
-// Route::get('/get-case-senior-investigation-officers', [App\Http\Controllers\CaseController::class, 'getseniorinvestigationOfficers'])->name('get.case.senior.investigation.officers');
-// Route::get('/get-station-sergeants', [App\Http\Controllers\CaseController::class, 'getStationSergeants'])->name('get.station.sergeants');
 
-// Route::get('/get-subdivisional-officer', [App\Http\Controllers\CaseController::class, 'getSubdivisionalOfficer'])->name('get.subdivisionalofficer');
-
-// Route::get('/get-commanders', [App\Http\Controllers\CaseController::class, 'getCommanders'])->name('get.commanders');
-
-// Route::get('/get-dpp-pca', [App\Http\Controllers\CaseController::class, 'getDppPca'])->name('get.dpp.pca');
-// Route::post('/cases/{id}/take-action', [App\Http\Controllers\CaseController::class, 'takeAction'])->name('cases.takeAction');
-
-// Route::get('/task-logs/{case_id}', [TaskLogController::class, 'index'])->name('taskLogs.index');
-
-// Route::get('/get-help-desk-users/{caseId}', [App\Http\Controllers\CaseController::class, 'getHelpDeskUsers'])->name('get.help.desk.users');
-
-
-// Route::get('/get-legal-team-officers', [App\Http\Controllers\CaseController::class, 'getLegalTeamOfficers'])->name('get.legal.team.officers');
-    
-
-// Route::get('/cases/{case}/pdf', [App\Http\Controllers\CaseController::class, 'generatePdf'])->name('cases.pdf');
 
 
 Route::get('/get-subdivisions', [CaseController::class, 'getSubdivisions'])->name('getSubdivisions');
@@ -256,7 +186,7 @@ Route::post('/evidence/verify', [EvidenceController::class, 'verifyPoliceOfficer
 Route::post('/evidence/verify-officer', [EvidenceController::class, 'verifyOfficer'])->name('evidence.verifyOfficer')->middleware('permission:verify officer');
 
 // Add this route with your other evidence routes
-Route::put('/evidence/{id}/status', [EvidenceController::class, 'update'])->name('evidence.updateStatus');
+Route::put('/evidence/{id}/status', [EvidenceController::class, 'update'])->name('evidence.updateStatus')->middleware('permission:manage evidence');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');

@@ -126,17 +126,29 @@ class UserController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $btnText = $row->is_blocked == 0 ? 'Banned' : 'Unbanned';
+                $actionBtn = '';
 
-                $actionBtn = '<a href="' . route('user.banned', $row->id) .
-                    '" class="btn profile_icon" data-toggle="tooltip" title="' . $btnText . '">
-                    <i class="fa fa-user" aria-hidden="true"></i></a>
-                    <a href="' . route('user.edit', $row->id) .
-                    '" class="btn edit_icon" data-toggle="tooltip" title="Edit">
-                    <i class="fa fa-pencil" aria-hidden="true"></i></a>
-                    <a href="' . route('user.delete', $row->id) .
-                    '" onClick="return deleteR(' . $row->id . ');" id="delete_' . $row->id .
-                    '" class="btn delete_icon" data-toggle="tooltip" title="Delete">
-                    <i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+                // Ban/Unban button - only show if user has ban permission
+                if (auth()->user()->can('ban user')) {
+                    $actionBtn .= '<a href="' . route('user.banned', $row->id) .
+                        '" class="btn profile_icon" data-toggle="tooltip" title="' . $btnText . '">
+                        <i class="fa fa-user" aria-hidden="true"></i></a>';
+                }
+
+                // Edit button - only show if user has edit permission
+                if (auth()->user()->can('edit user')) {
+                    $actionBtn .= '<a href="' . route('user.edit', $row->id) .
+                        '" class="btn edit_icon" data-toggle="tooltip" title="Edit">
+                        <i class="fa fa-pencil" aria-hidden="true"></i></a>';
+                }
+
+                // Delete button - only show if user has delete permission
+                if (auth()->user()->can('delete user')) {
+                    $actionBtn .= '<a href="' . route('user.delete', $row->id) .
+                        '" onClick="return deleteR(' . $row->id . ');" id="delete_' . $row->id .
+                        '" class="btn delete_icon" data-toggle="tooltip" title="Delete">
+                        <i class="fa fa-trash-o" aria-hidden="true"></i></a>';
+                }
 
                 return $actionBtn;
             })
