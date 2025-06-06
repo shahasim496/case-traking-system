@@ -175,6 +175,7 @@ Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])
 
 
 Route::get('/evidence/add', [EvidenceController::class, 'create'])->name('evidence.create')->middleware('permission:add evidence');
+Route::get('/evidence/add-form', [EvidenceController::class, 'add'])->name('evidence.add')->middleware('permission:add evidence');
 Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidences.index')->middleware('permission:manage evidence');
 Route::get('/evidence/receipts', [EvidenceController::class, 'receipts'])->name('evidence.receipts')->middleware('permission:manage evidence receipts');
 Route::get('/evidence/{id}', [EvidenceController::class, 'show'])->name('evidence.show')->middleware('permission:show evidence');

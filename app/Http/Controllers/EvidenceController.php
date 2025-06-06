@@ -29,15 +29,19 @@ class EvidenceController extends Controller
 {
 
     public function create()
-{
-    $departments = Department::all();
-    $designations = Designation::all();
-       
-    return view('evidences.verify_officer', compact('departments','designations'));
-}
+    {
+        $departments = Department::all();
+        $designations = Designation::all();
+           
+        return view('evidences.verify_officer', compact('departments','designations'));
+    }
 
-
-    
+    public function add()
+    {
+        $departments = Department::all();
+        $designations = Designation::all(); 
+        return view('evidences.add_evidene', compact('departments','designations'));
+    }
 
     public function update(Request $request, $id)
     {
@@ -190,7 +194,7 @@ public function verifyPoliceOfficer(Request $request)
         // Add your evidence storing logic here
 
      
-        return view('evidences.add_evidene', ['success' => 'User Verified successfully.']);
+        return redirect()->route('evidence.add')->with('success', 'User Verified successfully.');
     } catch (\Exception $e) {
         // Log the exception for debugging
         Log::error('Error verifying police officer: ' . $e->getMessage());
@@ -231,6 +235,8 @@ public function receipt($id)
 public function store(Request $request)
 {
 
+
+
     
     // Identify the form type (add a hidden input in each form: <input type="hidden" name="form_type" value="dna">)
     $formType = $request->type;
@@ -253,14 +259,25 @@ public function store(Request $request)
     Mail::to($evidence->officer_email)->send(new EvidenceSubmittedMail($evidence));
 
       // Handle Chain of Custody (common to all forms)
-    ChainOfCustody::create([
-        'evidence_id' => $evidence->id,
-        'date' => $request->chain_date,
-        'time' => $request->chain_time,
-        'delivered_by' => $request->delivered_by,
-        'received_by' => $request->received_by,
-        'comments' => $request->chain_comments,
-    ]);
+
+      try {
+          $request->validate([
+              'chain_date' => 'required|date', 
+              'chain_time' => 'required|date_format:H:i',
+          ]);
+
+          ChainOfCustody::create([
+              'evidence_id' => $evidence->id,
+              'date' => $request->chain_date,
+              'time' => $request->chain_time,
+              'delivered_by' => $request->delivered_by,
+              'received_by' => $request->received_by,
+              'comments' => $request->chain_comments,
+          ]);
+      } catch (\Exception $e) {
+          Log::error('Error creating chain of custody: ' . $e->getMessage());
+          throw $e;
+      }
 
 
     Evidence_User::firstOrCreate(
@@ -282,18 +299,28 @@ public function store(Request $request)
             // Save donors
             for ($i = 1; $i <= 10; $i++) {
                 if ($request->has("donor{$i}_last_name")) {
-                    DnaDonor::create([
-                        'evidence_id' => $evidence->id,
-                        'last_name' => $request->input("donor{$i}_last_name"),
-                        'first_name' => $request->input("donor{$i}_first_name"),
-                        'middle_initial' => $request->input("donor{$i}_middle_initial"),
-                        'phone' => $request->input("donor{$i}_phone"),
-                        'dob' => $request->input("donor{$i}_dob"),
-                        'gender' => $request->input("donor{$i}_gender"),
-                        'address' => $request->input("donor{$i}_address"),
-                        'collection_datetime' => $request->input("donor{$i}_collection_datetime"),
-                        'id_number' => $request->input("donor{$i}_id_number"),
-                    ]);
+
+                    try {
+                        $request->validate([
+                            "donor{$i}_collection_datetime" => 'required|date_format:Y-m-d H:i:s',
+                            "donor{$i}_dob" => 'required|date_format:Y-m-d'
+                        ]);
+                        DnaDonor::create([
+                            'evidence_id' => $evidence->id,
+                            'last_name' => $request->input("donor{$i}_last_name"),
+                            'first_name' => $request->input("donor{$i}_first_name"),
+                            'middle_initial' => $request->input("donor{$i}_middle_initial"),
+                            'phone' => $request->input("donor{$i}_phone"),
+                            'dob' => $request->input("donor{$i}_dob"),
+                            'gender' => $request->input("donor{$i}_gender"),
+                            'address' => $request->input("donor{$i}_address"),
+                            'collection_datetime' => $request->input("donor{$i}_collection_datetime"),
+                            'id_number' => $request->input("donor{$i}_id_number"),
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Error creating DNA donor record: ' . $e->getMessage());
+                        throw $e;
+                    }
                 }
             }
             break;
@@ -356,6 +383,14 @@ public function store(Request $request)
             break;
 
         case 'Video Evidence':
+
+            try {
+                $request->validate([
+                    'extraction_date_' => 'required|date_format:Y-m-d H:i:s',
+                    
+
+                ]);
+                    
             // Save video-specific data
             VideoEvidence::create([
                 'evidence_id' => $evidence->id,
@@ -369,6 +404,10 @@ public function store(Request $request)
                 'num_videos' => $request->num_videos_,
                 'total_length' => $request->total_length_,
             ]);
+            } catch (\Exception $e) {
+                Log::error('Error creating video evidence: ' . $e->getMessage());
+                throw $e;
+            }
             break;
 
         case 'questioned':

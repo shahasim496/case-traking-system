@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="container-fluid mt-4">
+
     <div class="card shadow">
         <div class="card-header  text-white" style="background-color: #0066cc;">
             <h4 class="mb-0">Evidence Management System</h4>
@@ -14,7 +15,7 @@
                 <select id="formSelector" class="form-control">
                     <option value="" disabled selected>Select an Option</option>
                     <option value="general">General</option>
-                    <option value="d_exam">Dna Examination</option>
+                    <option value="d_exam">DNA Examination</option>
                     <option value="q_document">Questioned document</option>
                     <option value="ballisstics">Ballistics</option>
                     <option value="currency">Currency</option>
@@ -46,7 +47,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -71,7 +77,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>
@@ -169,7 +177,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -194,7 +207,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>
@@ -308,7 +323,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -333,7 +353,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>
@@ -459,7 +481,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -484,7 +511,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>
@@ -612,7 +641,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -637,7 +671,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>
@@ -758,7 +794,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -783,7 +824,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>
@@ -879,7 +922,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Designation</label>
-                            <input type="text" name="designation" class="form-control" required>
+                            <select name="designation" class="form-control" required>
+                                <option value="" disabled selected>Select Designation</option>
+                                @foreach($designations as $designation)
+                                    <option value="{{ $designation->id }}">{{ $designation->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label>Email</label>
@@ -904,7 +952,9 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label>Designation</label>
-                <input type="text" name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                <select name="g_designation" class="form-control" value="{{ auth()->user()->designation->name ?? 'N/A' }}" readonly>
+                    <option value="{{ auth()->user()->designation_id }}" selected>{{ auth()->user()->designation->name ?? 'N/A' }}</option>
+                </select>
             </div>
         </div>
                 </div>

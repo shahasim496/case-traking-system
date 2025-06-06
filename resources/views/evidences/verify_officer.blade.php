@@ -18,11 +18,16 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="id" class="form-label">ID</label>
-                                    <input type="text" name="id" id="id" class="form-control" required>
+                                    <input type="number" name="id" id="id" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="submitted_by" class="form-label">Full Name</label>
-                                    <input type="text" name="submitted_by" id="submitted_by" class="form-control" required>
+                                    <input type="text" name="submitted_by" id="submitted_by" class="form-control @error('submitted_by') is-invalid @enderror" pattern="[A-Za-z ]+" title="Please enter only letters" required>
+                                    @error('submitted_by')
+                                        <div class="invalid-feedback">
+                                            Please enter alphabetic characters only
+                                        </div>
+                                    @enderror
                                 </div>
 
 
@@ -52,7 +57,12 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label for="contact" class="form-label">Contact No.</label>
-                                    <input type="text" name="contact" id="contact" class="form-control" required>
+                                    <input type="number" name="contact" id="contact" class="form-control @error('contact') is-invalid @enderror" min="1000000000" max="9999999999" title="Please enter exactly 10 digits" required>
+                                    @error('contact')
+                                        <div class="invalid-feedback">
+                                            Please enter a valid 10 digit contact number
+                                        </div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label for="address" class="form-label">Address</label>
