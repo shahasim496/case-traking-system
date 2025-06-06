@@ -46,7 +46,7 @@ class EvidenceController extends Controller
     public function update(Request $request, $id)
     {
 
-      
+     
      
         try {
             $request->validate([
@@ -302,7 +302,7 @@ public function store(Request $request)
 
                     try {
                         $request->validate([
-                            "donor{$i}_collection_datetime" => 'required|date_format:Y-m-d H:i:s',
+                            "donor{$i}_collection_datetime" => 'required|date_format:Y-m-d\TH:i',
                             "donor{$i}_dob" => 'required|date_format:Y-m-d'
                         ]);
                         DnaDonor::create([
@@ -383,27 +383,32 @@ public function store(Request $request)
             break;
 
         case 'Video Evidence':
-
             try {
                 $request->validate([
-                    'extraction_date_' => 'required|date_format:Y-m-d H:i:s',
-                    
-
+                    'extraction_date_' => 'required|date',
+                    'extracted_from_' => 'required|string',
+                    'extraction_method_' => 'required|string',
+                    'storage_media_' => 'required|string',
+                    'retrieved_by_' => 'required|string',
+                    'contact_' => 'required|string',
+                    'num_cameras_' => 'required|numeric',
+                    'num_videos_' => 'required|numeric',
+                    'total_length_' => 'required|string',
                 ]);
                     
-            // Save video-specific data
-            VideoEvidence::create([
-                'evidence_id' => $evidence->id,
-                'extraction_date' => $request->extraction_date_,
-                'extracted_from' => $request->extracted_from_,
-                'extraction_method' => $request->extraction_method_,
-                'storage_media' => $request->storage_media_,
-                'retrieved_by' => $request->retrieved_by_,
-                'contact' => $request->contact_,
-                'num_cameras' => $request->num_cameras_,
-                'num_videos' => $request->num_videos_,
-                'total_length' => $request->total_length_,
-            ]);
+                // Save video-specific data
+                VideoEvidence::create([
+                    'evidence_id' => $evidence->id,
+                    'extraction_date' => $request->extraction_date_,
+                    'extracted_from' => $request->extracted_from_,
+                    'extraction_method' => $request->extraction_method_,
+                    'storage_media' => $request->storage_media_,
+                    'retrieved_by' => $request->retrieved_by_,
+                    'contact' => $request->contact_,
+                    'num_cameras' => $request->num_cameras_,
+                    'num_videos' => $request->num_videos_,
+                    'total_length' => $request->total_length_,
+                ]);
             } catch (\Exception $e) {
                 Log::error('Error creating video evidence: ' . $e->getMessage());
                 throw $e;
