@@ -648,10 +648,36 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="report" class="form-label">Upload Report</label>
-                                <input type="file" name="report" id="report" class="form-control" accept=".pdf,.doc,.docx">
-                          
+                                <input type="file" name="report" id="report" class="form-control" accept=".pdf,.doc,.docx" onchange="validateFile(this)">
+                                <small class="text-muted">Only PDF and Word documents allowed (max 10MB)</small>
+                                <div id="fileError" class="invalid-feedback"></div>
                             </div>
                         </div>
+                        <script>
+                            function validateFile(input) {
+                                const file = input.files[0];
+                                const fileError = document.getElementById('fileError');
+                                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                                const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+
+                                if (file) {
+                                    if (!allowedTypes.includes(file.type)) {
+                                        input.value = '';
+                                        fileError.textContent = 'Only PDF and Word documents are allowed';
+                                        input.classList.add('is-invalid');
+                                        return false;
+                                    }
+                                    if (file.size > maxSize) {
+                                        input.value = '';
+                                        fileError.textContent = 'File size must be less than 10MB';
+                                        input.classList.add('is-invalid');
+                                        return false;
+                                    }
+                                    input.classList.remove('is-invalid');
+                                    return true;
+                                }
+                            }
+                        </script>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -736,8 +762,12 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="report" class="form-label">Upload Report</label>
-                                <input type="file" name="report" id="report" class="form-control" accept=".pdf,.doc,.docx">
-                          
+                                <input type="file" name="report" id="report" class="form-control" accept=".pdf,.doc,.docx" onchange="validateFileSize(this)">
+                                <small class="text-muted">Allowed file types: PDF, DOC, DOCX. Maximum file size: 10MB</small>
+                                @error('report')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                                <span id="fileSizeError" class="text-danger" style="display:none">File size exceeds 10MB limit</span>
                             </div>
                         </div>
                         

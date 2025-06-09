@@ -65,6 +65,8 @@ class HomeController extends Controller
         $pendingEvidence = \App\Models\Evidence::where('status', 'pending')->count();
         $verifiedEvidence = \App\Models\Evidence::where('status', 'verified')->count();
         $completedEvidence = \App\Models\Evidence::where('status', 'completed')->count();
+        $inProgressEvidence = \App\Models\Evidence::where('status', 'inprogress')->count();
+        $awaitingVerificationEvidence = \App\Models\Evidence::where('status', 'Awating Verification')->count();
         
         // Evidence by types
         $dnaEvidence = \App\Models\Evidence::where('type', 'dna')->count();
@@ -84,6 +86,7 @@ class HomeController extends Controller
             'pendingPercentage', 'resolvedPercentage', 'case_to_court', 
             'case_to_court_percentage', 'ClosedCases', 'Cases',
             'totalEvidence', 'pendingEvidence', 'verifiedEvidence', 'completedEvidence',
+            'inProgressEvidence', 'awaitingVerificationEvidence',
             'dnaEvidence', 'ballisticsEvidence', 'currencyEvidence', 'toxicologyEvidence',
             'videoEvidence', 'questionedEvidence', 'generalEvidence', 'recentEvidence'
         ));

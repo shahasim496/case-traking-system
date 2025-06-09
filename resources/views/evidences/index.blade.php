@@ -21,7 +21,7 @@
                     @endif
                     <form method="GET" action="{{ route('evidences.index') }}" class="d-flex align-items-center">
                         <!-- Filter by Type -->
-                        <label for="type" class="me-2 mb-0"><strong>Type:</strong></label>
+                        <label  style="margin-left: 10px; margin-right: 10px;"  for="type" class="me-2 mb-0"><strong>Type:</strong></label>
                         <select name="type" id="type" class="form-select form-select-lg me-4" style="width: 200px;" onchange="this.form.submit()">
                             <option value="">All</option>
                             <option value="general" {{ request('type') == 'general' ? 'selected' : '' }}>General</option>
@@ -34,7 +34,7 @@
                         </select>
 
                         <!-- Pagination Dropdown -->
-                        <label style="margin-left: 10px;" for="perPage" class="me-2 mb-0"><strong>Show:</strong></label>
+                        <label style="margin-left: 10px; margin-right: 10px;" for="perPage" class="me-2 mb-0"><strong>Show: </strong></label>
                         <select name="perPage" id="perPage" class="form-select form-select-lg" style="width: 150px;" onchange="this.form.submit()">
                             <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
                             <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>

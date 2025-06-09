@@ -106,25 +106,25 @@
             <!-- DNA Evidence -->
             <div class="dashboard-card">
                 <div class="icon icon-red">
-                    <i class="fas fa-dna"></i>
+                    <i class="fas fa-spinner"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">DNA Evidence</h5>
-                <h2>{{ $dnaEvidence }}</h2>
+                <h5 style="display: flex; justify-content: center;">In Progress</h5>
+                <h2>{{ $inProgressEvidence }}</h2>
             </div>
 
             <!-- Ballistics Evidence -->
             <div class="dashboard-card">
                 <div class="icon icon-blue">
-                    <i class="fas fa-crosshairs"></i>
+                    <i class="fas fa-clock"></i>
                 </div>
-                <h5 style="display: flex; justify-content: center;">Ballistics Evidence</h5>
-                <h2>{{ $ballisticsEvidence }}</h2>
+                <h5 style="display: flex; justify-content: center;">Awaiting Verification</h5>
+                <h2>{{ $awaitingVerificationEvidence }}</h2>
             </div>
         </div>
 
         <!-- Recent Evidence Table -->
         <div class="recent-evidence">
-            <h4 style="margin: 20px; ">Recent Evidence Submissions</h4>
+            <h4 style="margin-bottom: 20px; padding: 10px; background-color: #007bff; color: white; border-radius: 5px;">Recent Evidence Submissions</h4>
             <table class="table">
                 <thead class="bg-primary text-white">
                     <tr>
@@ -221,11 +221,17 @@
             new Chart(evidenceByStatusCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Pending', 'Verified', 'Completed'],
+                    labels: ['Pending', 'Verified', 'Completed', 'In Progress', 'Awaiting Verification'],
                     datasets: [{
                         label: 'Evidence Count',
-                        data: [{{ $pendingEvidence }}, {{ $verifiedEvidence }}, {{ $completedEvidence }}],
-                        backgroundColor: ['#ff6384', '#ffcd56', '#36a2eb'],
+                        data: [
+                            {{ $pendingEvidence }}, 
+                            {{ $verifiedEvidence }}, 
+                            {{ $completedEvidence }}, 
+                            {{ $inProgressEvidence }}, 
+                            {{ $awaitingVerificationEvidence }}
+                        ],
+                        backgroundColor: ['#ff6384', '#ffcd56', '#36a2eb', '#dc3545', '#007bff'],
                         borderWidth: 1
                     }]
                 },
@@ -236,8 +242,14 @@
                         legend: { display: false },
                     },
                     scales: {
-                        x: { title: { display: true, text: 'Status' } },
-                        y: { title: { display: true, text: 'Count' }, beginAtZero: true }
+                        x: { 
+                            title: { display: true, text: 'Status' },
+                            ticks: { maxRotation: 45, minRotation: 45 }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Count' }, 
+                            beginAtZero: true 
+                        }
                     }
                 }
             });

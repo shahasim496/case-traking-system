@@ -777,7 +777,7 @@
         <form method="POST" action="{{ route('evidence.store') }}" enctype="multipart/form-data">
             @csrf
 
-            <input type="hidden" name="type" value="dna"> <!-- Replace "dna" with the appropriate type -->
+            <input type="hidden" name="type" value="DNA"> <!-- Replace "dna" with the appropriate type -->
 
             <!-- police officer -->
             <div class="card mb-3">
