@@ -17,3 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+
+// Evidence Management API Routes
+Route::get('/v1/evidences/{key}', [App\Http\Controllers\Api\EvidenceApiController::class, 'getAllEvidences']);
+
+Route::get('/v1/evidences/{id}/{key2}', [App\Http\Controllers\Api\EvidenceApiController::class, 'getEvidenceById']);
+Route::get('/v1/evidences/reports/statistics/{key}', [App\Http\Controllers\Api\EvidenceApiController::class, 'reports']);
