@@ -30,9 +30,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::group(['prefix' => 'job', 'middleware' => ['auth', 'banned']], function () {
+    
+    Route::get('/posting', [App\Http\Controllers\HomeController::class, 'index'])->name('job.posting');
+});
 
 // Route to display the Create Case page
+
 
 
 Auth::routes(['register' => false]);
@@ -169,31 +173,14 @@ Route::resource('police-stations', PoliceStationController::class)->middleware('
 
 
 
-Route::get('/get-subdivisions', [CaseController::class, 'getSubdivisions'])->name('getSubdivisions');
-Route::get('/get-police-stations', [CaseController::class, 'getPoliceStations'])->name('getPoliceStations');
 
 
 
-Route::get('/evidence/add', [EvidenceController::class, 'create'])->name('evidence.create')->middleware('permission:add evidence');
-Route::get('/evidence/add-form', [EvidenceController::class, 'add'])->name('evidence.add')->middleware('permission:add evidence');
-Route::get('/evidence', [EvidenceController::class, 'index'])->name('evidences.index')->middleware('permission:manage evidence');
-Route::get('/evidence/receipts', [EvidenceController::class, 'receipts'])->name('evidence.receipts')->middleware('permission:manage evidence receipts');
-Route::get('/evidence/{id}', [EvidenceController::class, 'show'])->name('evidence.show')->middleware('permission:show evidence');
-Route::get('/evidence/{id}/edit', [EvidenceController::class, 'edit'])->name('evidence.edit')->middleware('permission:edit evidence');
-Route::get('/evidence/{id}/receipt', [EvidenceController::class, 'receipt'])->name('evidence.receipt')->middleware('permission:manage evidence receipts');
-Route::delete('/evidence/{id}', [EvidenceController::class, 'destroy'])->name('evidence.destroy')->middleware('permission:delete evidence');
-Route::post('/evidence/store', [EvidenceController::class, 'store'])->name('evidence.store')->middleware('permission:add evidence');
-Route::post('/evidence/verify', [EvidenceController::class, 'verifyPoliceOfficer'])->name('evidence.verifyPoliceOfficer')->middleware('permission:add evidence');
-Route::post('/evidence/verify-officer', [EvidenceController::class, 'verifyOfficer'])->name('evidence.verifyOfficer')->middleware('permission:verify officer');
 
-// Add this route with your other evidence routes
-Route::put('/evidence/{id}/status', [EvidenceController::class, 'update'])->name('evidence.updateStatus')->middleware('permission:manage evidence');
 
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
-Route::get('/get-evo-analysts', [App\Http\Controllers\EvidenceController::class, 'getEvoAnalysts'])->name('get.evo.analysts');
-Route::get('/get-users-by-roles', [EvidenceController::class, 'getUsersByRoles'])->name('get.users.by.roles');
 });
 
 

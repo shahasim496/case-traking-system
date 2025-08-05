@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             PermissionSeeder::class,
             DepartmentSeeder::class,
-            CaseTypeSeeder::class,
+       
             DesignationSeeder::class,
         
             UserSeeder::class,

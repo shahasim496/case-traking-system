@@ -123,38 +123,17 @@
 
                 @endif
 
-                @if(auth()->user()->can('add evidence'))
-                <!-- Add Evidence -->
-<li class="nav-item">
-    <a href="{{ route('evidence.create')}}" class="nav-link">
-        <i class="fa fa-plus-square" style="font-size: 18px; color: gray;"></i>
-        <span class="title">Add Evidence</span>
-        <span class="selected"></span>
-    </a>
-</li>
-@endif
+
+                <li class="nav-item">
+                    <a href="{{ route('job.posting') }}" class="nav-link">
+                        <i class="fa fa-key" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Post Job</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
 
 
-@if(auth()->user()->can('manage evidence'))
-<li class="nav-item">
-    <a href="{{ route('evidences.index')}}" class="nav-link">
-        <i class="fa fa-archive" style="font-size: 18px; color: gray;"></i>
-        <span class="title">Manage Evidence</span>
-        <span class="selected"></span>
-    </a>
-</li>
-@endif
 
-
-@if(auth()->user()->can('manage evidence receipts'))
-<li class="nav-item">
-    <a href="{{ route('evidence.receipts')}}" class="nav-link">
-        <i class="fa fa-file-text" style="font-size: 18px; color: gray;"></i>
-        <span class="title">Evidence Receipts</span>
-        <span class="selected"></span>
-    </a>
-</li>
-@endif
 
 
 <!-- change password -->
