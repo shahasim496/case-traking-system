@@ -132,6 +132,15 @@
                     </a>
                 </li>
 
+                
+                <li class="nav-item">
+                    <a href="{{ route('job-posting.index') }}" class="nav-link">
+                        <i class="fa fa-briefcase" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Manage Jobs</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
+
 
 
 

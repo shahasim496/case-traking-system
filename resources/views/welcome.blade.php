@@ -2,7 +2,7 @@
 <html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <title>Evidence Management System</title>
+  <title>Personnel Information Management System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -17,7 +17,7 @@
   <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
     <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
       <div class="flex justify-center mb-6">
-        <img src="/assets/img/login/Ministry-Logo.png" alt="Evidence Management System Logo" class="h-24">
+        <img src="/assets/img/login/Ministry-Logo.png" alt="Personnel Information Management System Logo" class="h-24">
       </div>
       <form class="form-signin" method="POST" action="{{ route('login') }}">
         @csrf

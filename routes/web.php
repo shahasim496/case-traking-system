@@ -32,7 +32,13 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'job', 'middleware' => ['auth', 'banned']], function () {
     
-    Route::get('/posting', [App\Http\Controllers\HomeController::class, 'index'])->name('job.posting');
+    Route::get('/', [App\Http\Controllers\JobPostingController::class, 'index'])->name('job-posting.index');
+    Route::get('/create-post', [App\Http\Controllers\JobPostingController::class, 'create'])->name('job.posting');
+    Route::post('/store-post', [App\Http\Controllers\JobPostingController::class, 'store'])->name('job-posting.store');
+    Route::get('/{id}', [App\Http\Controllers\JobPostingController::class, 'show'])->name('job-posting.show');
+    Route::get('/{id}/edit', [App\Http\Controllers\JobPostingController::class, 'edit'])->name('job-posting.edit');
+    Route::put('/{id}', [App\Http\Controllers\JobPostingController::class, 'update'])->name('job-posting.update');
+    Route::delete('/{id}', [App\Http\Controllers\JobPostingController::class, 'destroy'])->name('job-posting.destroy');
 });
 
 // Route to display the Create Case page

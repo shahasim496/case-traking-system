@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta name="description" content="Responsive Admin Template" />
     <meta name="author" content="SmartUniversity" />
-    <title>Evidence Management System</title>
+    <title>Personnel Information Management System</title>
     <link rel="apple-touch-icon" href="/images/Mask Group 17.svg">
     <link rel="shortcut icon" type="image/x-icon" href="/images/Mask Group 17.svg">
 

@@ -13,8 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\EncryptController::class,
-      
+       
+       
     ];
 
     /**
@@ -26,6 +26,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        
+        // Deactivate expired job postings every minute
+        $schedule->command('jobs:deactivate-expired')
+                ->everyMinute()
+                ->appendOutputTo(storage_path('logs/job-deactivation.log'));
     }
 
     /**
