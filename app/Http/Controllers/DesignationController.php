@@ -11,29 +11,11 @@ class DesignationController extends Controller
 {
     public function index()
     {
-        return view('designations.index');
+        $designations = Designation::orderBy('id', 'DESC')->paginate(10);
+        return view('designations.index', compact('designations'));
     }
 
-    public function getDesignations(Request $request)
-    {
-   
-        $designation= Designation::orderBy('id', 'DESC')->get();
-
-        return DataTables::of($designation)
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                $actionBtn = '<a href="' . route('designations.edit', $row->id) . '" class="btn edit_icon" data-toggle="tooltip" title="Edit">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                              </a>
-                              <button class="btn delete_icon" data-id="' . $row->id . '" data-toggle="modal" data-target="#deleteModal" title="Delete">
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                              </button>';
-                return $actionBtn;
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    }
-
+  
     public function create()
     {
         return view('designations.create');

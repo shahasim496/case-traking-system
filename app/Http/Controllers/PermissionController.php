@@ -38,6 +38,7 @@ class PermissionController extends Controller
 
     public function store(Request $request)
     {
+      
         $request->validate([
             'name' => 'required|unique:permissions,name',
             'description' => 'nullable|string',

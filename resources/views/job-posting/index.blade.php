@@ -106,12 +106,9 @@
                             </table>
                         </div>
                         
-                        <!-- Pagination -->
-                        @if($jobPostings->hasPages())
-                            <div class="d-flex justify-content-center mt-4">
-                                {{ $jobPostings->links() }}
-                            </div>
-                        @endif
+                        <div class="d-flex justify-content-center">
+                            {{ $jobPostings->appends(['status' => request('status'), 'per_page' => request('per_page')])->links('pagination::bootstrap-4') }}
+                        </div>
                     @else
                         <div class="text-center py-5">
                             <i class="fa fa-briefcase fa-3x text-muted mb-3"></i>

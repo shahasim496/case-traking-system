@@ -47,114 +47,19 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        // $this->middleware(['permission:read_user'])->only(['index']);
-        // $this->middleware(['permission:create_user'])->only(['create','store']);
+     
 
     } //end of function
 
-    public function index(Request $request)
-    {
-
-        $data = $request->all();
-
-        // $permissions = Auth::user()->getPermissionsViaRoles();
-
-        if (Auth::User()->hasRole('SuperAdmin')) {
-            $applications = Application::orderBy('id', 'DESC')->get(); //orderBy('created_at','DESC')->
-        } else {
-            $applications = Application::orderBy('id', 'DESC')->where('from_user_id', Auth::user()->id)->get();
-        }
+    public function index(Request $request) {
+        $users = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'SuperAdmin');
+        })->orderBy('id', 'DESC')->paginate(10);
+        return view('users.index', compact('users'));
+    }
 
 
-        return Datatables::of($applications)
-            ->addIndexColumn()
-            ->addColumn('title', function ($row) {
-                return $row->title;
-            })->addColumn('category', function ($row) {
-                return "category";
-            })->addColumn('status', function ($row) {
-                return "status";
-            })->addColumn('submittion_date', function ($row) {
-                return date("d-m-Y", strtotime($row->submittion_date));
-            })->addColumn('action', function ($row) {
 
-                $actionBtn = '<a href="' . route('users', $row->id) .
-                    '" class="btn-sm btn-outline-warning"><i class="feather icon-eye"></i></a> <a href="' . route('users', $row->id) .
-                    '" class="btn-sm btn-outline-info"><i class="feather icon-edit"></i></a> <a href="' . route('users', $row->id) .
-                    '" onClick="return deleteR(' . $row->id . ');" id="delete_' . $row->id .
-                    '" class="btn-sm btn-outline-danger"><i class="feather icon-trash-2"></i></a>';
-                return $actionBtn;
-            })
-            ->rawColumns(['action'])
-            ->make(true);
-    } //end of function
-
-    public function all_users(Request $request)
-    {
-
-        $data = $request->all();
-        return view('users.view_users');
-    } //end of function
-
-    public function getUsers(Request $request)
-    {
-        $data = $request->all();
-
-        // Fetch all users
-        $users = User::orderBy('id', 'DESC')->get();
-
-        return Datatables::of($users)
-            ->addIndexColumn()
-            ->addColumn('name', function ($row) {
-                return $row->name;
-            })
-            ->addColumn('cnic', function ($row) {
-                return $row->cnic ?? '-';
-            })
-            ->addColumn('designation', function ($row) {
-                return $row->designation ?? '-';
-            })
-            ->addColumn('email', function ($row) {
-                return $row->email;
-            })
-            ->addColumn('phone', function ($row) {
-                return $row->phone ?? '-';
-            })
-            ->addColumn('is_block', function ($row) {
-                $btnText = $row->is_blocked == 0 ? 'Unbanned' : 'Banned';
-                return $btnText;
-            })
-            ->addColumn('action', function ($row) {
-                $btnText = $row->is_blocked == 0 ? 'Banned' : 'Unbanned';
-                $actionBtn = '';
-
-                // Ban/Unban button - only show if user has ban permission
-                if (auth()->user()->can('ban user')) {
-                    $actionBtn .= '<a href="' . route('user.banned', $row->id) .
-                        '" class="btn profile_icon" data-toggle="tooltip" title="' . $btnText . '">
-                        <i class="fa fa-user" aria-hidden="true"></i></a>';
-                }
-
-                // Edit button - only show if user has edit permission
-                if (auth()->user()->can('edit user')) {
-                    $actionBtn .= '<a href="' . route('user.edit', $row->id) .
-                        '" class="btn edit_icon" data-toggle="tooltip" title="Edit">
-                        <i class="fa fa-pencil" aria-hidden="true"></i></a>';
-                }
-
-                // Delete button - only show if user has delete permission
-                if (auth()->user()->can('delete user')) {
-                    $actionBtn .= '<a href="' . route('user.delete', $row->id) .
-                        '" onClick="return deleteR(' . $row->id . ');" id="delete_' . $row->id .
-                        '" class="btn delete_icon" data-toggle="tooltip" title="Delete">
-                        <i class="fa fa-trash-o" aria-hidden="true"></i></a>';
-                }
-
-                return $actionBtn;
-            })
-            ->rawColumns(['action', 'is_block'])
-            ->make(true);
-    } //end of function
 
     public function banned(Request $request, $id)
     {
@@ -173,7 +78,7 @@ class UserController extends Controller
             }
 
             $user->save();
-            return redirect()->route('user.all')->with('success', $masg);
+            return redirect()->route('users')->with('success', $masg);
         } else {
             return redirect()->back()->with('User not found.');
         }
@@ -187,7 +92,7 @@ class UserController extends Controller
 
         // Fetch all designations
         $designations = Designation::all();
-       
+
 
 
         $roles = Role::where('name', '!=', 'SuperAdmin')->get();
@@ -202,48 +107,53 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        try {
+
         $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
             'cnic' => 'required|string|max:15|unique:users,cnic',
-            'phone' => 'required|string|max:15',
+            'phone' => 'required|string|max:12|regex:/^[0-9]+$/', // Only numbers, max 12 digits
             'department_id' => 'required|integer',
             'designation_id' => 'required|integer',
-           
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
         ]);
 
         DB::beginTransaction();
 
-        
+            // Generate a unique password using UUID
+            $password = (string) Str::uuid();
 
-        try {
+
+
+
+
+   
             // Create the user
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => $password,
                 'cnic' => $request->cnic,
                 'phone' => $request->phone,
                 'department_id' => $request->department_id,
                 'designation_id' => $request->designation_id,
-               
+
             ]);
 
             // Assign multiple roles to the user
             $user->assignRole($request->roles);
 
             // Send email to the created user
-        \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $request->password));
+            \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $password));
 
             DB::commit();
 
-            return redirect()->route('user.all')->with('success', 'User created successfully.');
+            return redirect()->route('users')->with('success', 'User created successfully.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Something went wrong. Please try again.')->withInput();
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
 
@@ -412,18 +322,14 @@ class UserController extends Controller
         }
     } //end of function
 
-    public function myApplication(Request $request)
-    {
-        $data = $request->all();
-        return view('application.index');
-    } //end of function
+  
 
     public function edit($id)
     {
         $user = User::findOrFail($id);
         $departments = Department::all();
         $designations = Designation::all();
-       
+
         $roles = Role::all();
         $userRoles = $user->roles->pluck('name')->toArray();
 
@@ -441,7 +347,7 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validatedData=$request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
@@ -449,7 +355,7 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'department_id' => 'required',
             'designation_id' => 'required',
-            
+
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
         ]);
@@ -459,47 +365,48 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
+            $password = (string) Str::uuid();
             // Update user details
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => $password,
                 'cnic' => $request->cnic,
                 'phone' => $request->phone,
                 'department_id' => $request->department_id,
                 'designation_id' => $request->designation_id,
-                
+
             ]);
 
-            // $message = "Dear {$user->name}, your profile has been updated successfully.";
-            // $user->notify(new UserNotification($message));
+           
 
             // Sync roles for the user
             $user->syncRoles($request->roles);
 
-              // Send email to the updated user
-        \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user,$request->password));
+            // Send email to the updated user
+            \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user, $request->password));
 
             DB::commit();
 
-            return redirect()->route('user.all')->with('success', 'User updated successfully.');
+            return redirect()->route('users')->with('success', 'User updated successfully.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Something went wrong. Please try again.')->withInput();
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
     }
 
     public function delete(Request $request, $id)
     {
-        $data = $request->all();
-
         $user = User::find($id);
-        $user->deleted_by = auth()->user()->id;
-        $user->save();
+        
+        if (!$user) {
+            return redirect()->route('users')->with('error', 'User not found.');
+        }
 
-        $user->delete();
+        // Permanently delete the user
+        $user->forceDelete();
 
-        return redirect()->route('user.all')->with('User deleted successfully.');
+        return redirect()->route('users')->with('success', 'User permanently deleted successfully.');
     } //end of function
 
     public function markNotification(Request $request)

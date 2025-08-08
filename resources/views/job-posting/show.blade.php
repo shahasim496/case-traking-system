@@ -80,7 +80,7 @@
                                 <i class="fa fa-file-text mr-2"></i>Job Description
                             </h5>
                             <div class="bg-light p-3 rounded">
-                                {!! nl2br(e($jobPosting->description)) !!}
+                                {!! $jobPosting->description !!}
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                                 <i class="fa fa-list-check mr-2"></i>Requirements & Qualifications
                             </h5>
                             <div class="bg-light p-3 rounded">
-                                {!! nl2br(e($jobPosting->requirements)) !!}
+                                {!! $jobPosting->requirements !!}
                             </div>
                         </div>
                     </div>

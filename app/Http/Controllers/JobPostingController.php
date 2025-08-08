@@ -48,7 +48,7 @@ class JobPostingController extends Controller
                 'department_id' => 'required|exists:departments,id', 
                 'description' => 'required|string',
                 'requirements' => 'required|string',
-                'positions' => 'required|integer|min:5',
+                'positions' => 'required|integer|min:1',
                 'deadline' => 'required|date|after:' . now()->addDays(1)->format('Y-m-d'),
                 'status' => 'required|in:active,inactive,draft',
             ], [
@@ -177,5 +177,51 @@ class JobPostingController extends Controller
             return redirect()->route('job-posting.index')
                 ->with('error', 'Failed to delete job posting. Please try again.');
         }
+    }
+
+    /**
+     * Display a listing of active job postings for public view.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function publicIndex(Request $request)
+    {
+        $query = JobPosting::with('department')
+            ->where('status', 'active')
+            ->where('deadline', '>=', now())
+            ->orderBy('created_at', 'desc');
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('requirements', 'like', "%{$search}%")
+                  ->orWhereHas('department', function($dept) use ($search) {
+                      $dept->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $jobPostings = $query->paginate(3);
+        
+        return view('careers.index', compact('jobPostings'));
+    }
+
+    /**
+     * Display the specified job posting for public view.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function publicShow($id)
+    {
+        $jobPosting = JobPosting::with('department')
+            ->where('status', 'active')
+            ->where('deadline', '>=', now())
+            ->findOrFail($id);
+            
+        return view('careers.show', compact('jobPosting'));
     }
 }

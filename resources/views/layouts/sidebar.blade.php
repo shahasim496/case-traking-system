@@ -35,7 +35,7 @@
                     </a>
                     <ul class="sub-menu">
                         <li class="nav-item">
-                            <a href="{{route('user.all')}}" class="nav-link">
+                            <a href="{{route('users')}}" class="nav-link">
                                 <span class="title">View Users</span>
                             </a>
                         </li>

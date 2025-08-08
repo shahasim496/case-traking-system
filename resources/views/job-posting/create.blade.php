@@ -48,6 +48,72 @@
                                     @endif
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Designation <span class="text-danger">*</span></label>
+                                    <select name="designation_id" id="designation_id" class="form-control form-control-lg" required>
+                                        <option value="">Choose Designation</option>
+                                        @foreach($designations ?? [] as $designation)
+                                            <option value="{{ $designation->id }}" {{ old('designation_id') == $designation->id ? 'selected' : '' }}>
+                                                {{ $designation->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if ($errors->has('designation_id'))
+                                        <small class="text-danger">{{ $errors->first('designation_id') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Pay Scale <span class="text-danger">*</span></label>
+                                    <select name="pay_scale" id="pay_scale" class="form-control form-control-lg" required>
+                                        <option value="">Select Pay Scale</option>
+                                        @for($i = 1; $i <= 21; $i++)
+                                            <option value="GY-{{ $i }}" {{ old('pay_scale') == 'GY-' . $i ? 'selected' : '' }}>
+                                                GY-{{ $i }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                    @if ($errors->has('pay_scale'))
+                                        <small class="text-danger">{{ $errors->first('pay_scale') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Job Type <span class="text-danger">*</span></label>
+                                    <select name="job_type" id="job_type" class="form-control form-control-lg" required>
+                                        <option value="">Select Job Type</option>
+                                        <option value="full_time" {{ old('job_type') == 'full_time' ? 'selected' : '' }}>Full Time</option>
+                                        <option value="part_time" {{ old('job_type') == 'part_time' ? 'selected' : '' }}>Part Time</option>
+                                        <option value="contract" {{ old('job_type') == 'contract' ? 'selected' : '' }}>Contract</option>
+                                        <option value="temporary" {{ old('job_type') == 'temporary' ? 'selected' : '' }}>Temporary</option>
+                                        <option value="internship" {{ old('job_type') == 'internship' ? 'selected' : '' }}>Internship</option>
+                                    </select>
+                                    @if ($errors->has('job_type'))
+                                        <small class="text-danger">{{ $errors->first('job_type') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Gender Preference <span class="text-danger">*</span></label>
+                                    <select name="gender" id="gender" class="form-control form-control-lg" required>
+                                        <option value="">Select Gender Preference</option>
+                                        <option value="any" {{ old('gender') == 'any' ? 'selected' : '' }}>Any Gender</option>
+                                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                    </select>
+                                    @if ($errors->has('gender'))
+                                        <small class="text-danger">{{ $errors->first('gender') }}</small>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Job Details Section -->
@@ -59,7 +125,8 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">Job Description <span class="text-danger">*</span></label>
-                                    <textarea id="description" name="description" class="form-control" rows="5" placeholder="Describe the role, responsibilities, and what the ideal candidate will do..." required>{{ old('description') }}</textarea>
+                                    <div id="description-editor" class="form-control" style="min-height: 200px;">{{ old('description') }}</div>
+                                    <textarea id="description" name="description" style="display: none;">{{ old('description') }}</textarea>
                                     @if ($errors->has('description'))
                                         <small class="text-danger">{{ $errors->first('description') }}</small>
                                     @endif
@@ -69,7 +136,8 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">Requirements & Qualifications <span class="text-danger">*</span></label>
-                                    <textarea id="requirements" name="requirements" class="form-control" rows="4" placeholder="List the required skills, experience, education, and qualifications..." required>{{ old('requirements') }}</textarea>
+                                    <div id="requirements-editor" class="form-control" style="min-height: 200px;">{{ old('requirements') }}</div>
+                                    <textarea id="requirements" name="requirements" style="display: none;">{{ old('requirements') }}</textarea>
                                     @if ($errors->has('requirements'))
                                         <small class="text-danger">{{ $errors->first('requirements') }}</small>
                                     @endif
@@ -149,8 +217,63 @@
     </div>
 </div>
 
+<!-- CKEditor CDN -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CKEditor for job description
+    ClassicEditor
+        .create(document.querySelector('#description-editor'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'underline', 'strikethrough', '|', 
+                     'bulletedList', 'numberedList', '|', 'link', 'blockQuote', '|', 
+                     'undo', 'redo'],
+            placeholder: 'Describe the role, responsibilities, and what the ideal candidate will do...',
+            height: '200px'
+        })
+        .then(editor => {
+            // Sync editor content with hidden textarea
+            editor.model.document.on('change:data', () => {
+                const data = editor.getData();
+                document.getElementById('description').value = data;
+            });
+            
+            // Set initial content if there's old input
+            const oldContent = document.getElementById('description').value;
+            if (oldContent) {
+                editor.setData(oldContent);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Initialize CKEditor for requirements
+    ClassicEditor
+        .create(document.querySelector('#requirements-editor'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'underline', 'strikethrough', '|', 
+                     'bulletedList', 'numberedList', '|', 'link', 'blockQuote', '|', 
+                     'undo', 'redo'],
+            placeholder: 'List the required skills, experience, education, and qualifications...',
+            height: '200px'
+        })
+        .then(editor => {
+            // Sync editor content with hidden textarea
+            editor.model.document.on('change:data', () => {
+                const data = editor.getData();
+                document.getElementById('requirements').value = data;
+            });
+            
+            // Set initial content if there's old input
+            const oldContent = document.getElementById('requirements').value;
+            if (oldContent) {
+                editor.setData(oldContent);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
     const deadlineInput = document.getElementById('deadline');
     const deadlineError = document.getElementById('deadlineError');
     const form = document.getElementById('jobPostingForm');

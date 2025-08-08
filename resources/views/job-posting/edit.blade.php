@@ -65,7 +65,8 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">Job Description <span class="text-danger">*</span></label>
-                                    <textarea id="description" name="description" class="form-control" rows="5" placeholder="Describe the role, responsibilities, and what the ideal candidate will do..." required>{{ old('description', $jobPosting->description) }}</textarea>
+                                    <div id="description-editor" class="form-control" style="min-height: 200px;">{{ old('description', $jobPosting->description) }}</div>
+                                    <textarea id="description" name="description" style="display: none;">{{ old('description', $jobPosting->description) }}</textarea>
                                     @if ($errors->has('description'))
                                         <small class="text-danger">{{ $errors->first('description') }}</small>
                                     @endif
@@ -75,7 +76,8 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">Requirements & Qualifications <span class="text-danger">*</span></label>
-                                    <textarea id="requirements" name="requirements" class="form-control" rows="4" placeholder="List the required skills, experience, education, and qualifications..." required>{{ old('requirements', $jobPosting->requirements) }}</textarea>
+                                    <div id="requirements-editor" class="form-control" style="min-height: 200px;">{{ old('requirements', $jobPosting->requirements) }}</div>
+                                    <textarea id="requirements" name="requirements" style="display: none;">{{ old('requirements', $jobPosting->requirements) }}</textarea>
                                     @if ($errors->has('requirements'))
                                         <small class="text-danger">{{ $errors->first('requirements') }}</small>
                                     @endif
@@ -159,8 +161,63 @@
     </div>
 </div>
 
+<!-- CKEditor CDN -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CKEditor for job description
+    ClassicEditor
+        .create(document.querySelector('#description-editor'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'underline', 'strikethrough', '|', 
+                     'bulletedList', 'numberedList', '|', 'link', 'blockQuote', '|', 
+                     'undo', 'redo'],
+            placeholder: 'Describe the role, responsibilities, and what the ideal candidate will do...',
+            height: '200px'
+        })
+        .then(editor => {
+            // Sync editor content with hidden textarea
+            editor.model.document.on('change:data', () => {
+                const data = editor.getData();
+                document.getElementById('description').value = data;
+            });
+            
+            // Set initial content if there's old input
+            const oldContent = document.getElementById('description').value;
+            if (oldContent) {
+                editor.setData(oldContent);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Initialize CKEditor for requirements
+    ClassicEditor
+        .create(document.querySelector('#requirements-editor'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'underline', 'strikethrough', '|', 
+                     'bulletedList', 'numberedList', '|', 'link', 'blockQuote', '|', 
+                     'undo', 'redo'],
+            placeholder: 'List the required skills, experience, education, and qualifications...',
+            height: '200px'
+        })
+        .then(editor => {
+            // Sync editor content with hidden textarea
+            editor.model.document.on('change:data', () => {
+                const data = editor.getData();
+                document.getElementById('requirements').value = data;
+            });
+            
+            // Set initial content if there's old input
+            const oldContent = document.getElementById('requirements').value;
+            if (oldContent) {
+                editor.setData(oldContent);
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
     const deadlineInput = document.getElementById('deadline');
     const deadlineError = document.getElementById('deadlineError');
     const form = document.getElementById('jobPostingForm');

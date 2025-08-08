@@ -16,6 +16,6 @@ class Permission extends SpatiePermission
      * @var array
      */
     protected $fillable = [
-        'name', 'guard_name', 'module', 'sub_module'
+        'name', 'guard_name', 'description'
     ];
 }

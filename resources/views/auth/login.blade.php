@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full overflow-hidden bg-black bg-cover" style="background-image: url('/assets/img/login/main.png');">
+<body class="h-full overflow-hidden bg-black bg-cover" style="background-image: url('/assets/img/login/1.jpg');">
 
   <!-- Logo Positioned Above the Login Card -->
  
 
   <!-- Login Card -->
-  <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
+  <div class="absolute inset-0 flex items-center  p-10 z-10">
     <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
       <!-- Logo -->
       <div class="flex justify-center mb-8">

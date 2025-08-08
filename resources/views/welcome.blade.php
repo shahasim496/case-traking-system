@@ -5,8 +5,9 @@
   <title>Personnel Information Management System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="h-full overflow-hidden bg-black bg-cover " style="background-image: url('/assets/img/login/main.png');">
+<body class="h-full overflow-hidden bg-black bg-cover " style="background-image: url('/assets/img/login/1.jpg');">
 
   <!-- Logo Watermark Overlay -->
   <div class="absolute inset-0 flex items-center justify-start z-0">
@@ -14,7 +15,7 @@
   </div>
 
   <!-- Login Card -->
-  <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
+  <div class="absolute inset-0 flex items-center  p-10 z-10">
     <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
       <div class="flex justify-center mb-6">
         <img src="/assets/img/login/Ministry-Logo.png" alt="Personnel Information Management System Logo" class="h-24">
@@ -68,6 +69,12 @@
 
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200">Sign In</button>
       </form>
+      
+      <div class="mt-6 text-center">
+        <a href="{{ route('careers') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+          <i class="fas fa-briefcase mr-1"></i>View Current Job Openings
+        </a>
+      </div>
     </div>
   </div>
 

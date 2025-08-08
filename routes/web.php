@@ -30,6 +30,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public job portal routes (no authentication required)
+Route::get('/careers', [App\Http\Controllers\JobPostingController::class, 'publicIndex'])->name('careers');
+Route::get('/careers/{id}', [App\Http\Controllers\JobPostingController::class, 'publicShow'])->name('careers.show');
+
 Route::group(['prefix' => 'job', 'middleware' => ['auth', 'banned']], function () {
     
     Route::get('/', [App\Http\Controllers\JobPostingController::class, 'index'])->name('job-posting.index');
@@ -60,8 +64,6 @@ Route::get('/resend_code', [App\Http\Controllers\SendCodeController::class, 'res
 
 Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users')->middleware('permission:view user');
-    Route::get('/all', [App\Http\Controllers\UserController::class, 'all_users'])->name('user.all')->middleware('permission:view user');
-    Route::get('/getUsers', [App\Http\Controllers\UserController::class, 'getUsers'])->name('user.getUsers')->middleware('permission:view user');
     Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->name('user.create')->middleware('permission:create user');
     Route::get('/edit/{id}', [App\Http\Controllers\UserController::class, 'edit'])->name('user.edit')->middleware('permission:edit user'); 
 });
@@ -138,7 +140,7 @@ Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned', 'permissio
     Route::post('/store', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store')->middleware('permission:create role');
     Route::get('/edit/{id}', [App\Http\Controllers\RoleController::class, 'edit'])->name('roles.edit')->middleware('permission:edit role');
     Route::put('/update/{id}', [App\Http\Controllers\RoleController::class, 'update'])->name('roles.update')->middleware('permission:edit role');
-    Route::get('/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete')->middleware('permission:delete role');
+    Route::delete('/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete')->middleware('permission:delete role');
  
     Route::get('/assign-permissions/{id}', [App\Http\Controllers\RoleController::class, 'assignPermissions'])->name('roles.assignPermissions')->middleware('permission:manage permission assignment');
     Route::get('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'managePermissions'])->name('roles.managePermissions')->middleware('permission:manage permission assignment');

@@ -19,6 +19,14 @@ class RoleSeeder extends Seeder
             'SuperAdmin' => [
                 'description' => 'Has complete access to all system features and can manage all aspects of the system including users, roles, permissions, and settings.',
                 'guard_name' => 'web'
+            ],
+            'Admin' => [
+                'description' => 'Has administrative access to manage users, departments, and system configurations. Can view reports and manage basic system settings.',
+                'guard_name' => 'web'
+            ],
+            'Manager' => [
+                'description' => 'Can manage their assigned departments and view reports. Has access to employee information and can perform basic administrative tasks.',
+                'guard_name' => 'web'
             ]
         ];
 
