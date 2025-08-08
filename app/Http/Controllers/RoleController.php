@@ -22,12 +22,28 @@ class RoleController extends Controller
         return DataTables::of($roles)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
-                $actionBtn = '<a href="' . route('roles.edit', $row->id) . '" class="btn edit_icon" data-toggle="tooltip" title="Edit">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                              </a>
-                              <button class="btn delete_icon" data-id="' . $row->id . '" data-toggle="modal" data-target="#deleteModal" title="Delete">
-                                <i class="fa fa-trash-o" aria-hidden="true"></i>
-                              </button>';
+                $actionBtn = '<div class="d-flex gap-1">';
+                
+                // Edit button
+                if (auth()->user()->can('edit role')) {
+                    $actionBtn .= '<a href="' . route('roles.edit', $row->id) . '" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
+                                    <i class="fa fa-edit mr-1"></i>Edit
+                                  </a>';
+                }
+                // Delete button
+                if (auth()->user()->can('delete role')) {
+                    $actionBtn .= '<button class="btn btn-danger d-flex align-items-center justify-content-center delete-btn" 
+                                            style="width: 80px; background-color: #dc3545; color: white;"
+                                            data-id="' . $row->id . '" 
+                                            data-name="' . $row->name . '"
+                                            data-toggle="modal" 
+                                            data-target="#deleteModal" 
+                                            title="Delete">
+                                    <i class="fa fa-trash mr-1"></i>Delete
+                                  </button>';
+                }
+                
+                $actionBtn .= '</div>';
                 return $actionBtn;
             })
             ->rawColumns(['action'])

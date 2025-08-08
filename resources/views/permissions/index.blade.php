@@ -138,6 +138,56 @@
     margin-right: 0;
 }
 
+/* Action button styles to match user index */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.btn-warning {
+    color: #212529;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover {
+    color: #212529;
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+.btn-danger {
+    color: #fff !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px !important;
+}
+
+.btn-danger:hover {
+    color: #fff !important;
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+    transform: translateY(-1px);
+}
+
+/* Custom button styles to match user index exactly */
+.btn[style*="background-color: #00349C"] {
+    border-color: #00349C;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px !important;
+}
+
+.btn[style*="background-color: #00349C"]:hover {
+    background-color: #002a7a !important;
+    border-color: #002a7a;
+    transform: translateY(-1px);
+}
+
 .badge {
     font-size: 0.75em;
     border-radius: 4px;
@@ -271,7 +321,7 @@ $(document).ready(function() {
     });
 
     // Handle delete button click
-    $('#permissionsTable').on('click', '.delete_icon', function () {
+    $('#permissionsTable').on('click', '.delete-btn', function () {
         var id = $(this).data('id');
         var name = $(this).data('name') || 'this permission';
         var url = "{{ route('permissions.delete', ':id') }}".replace(':id', id);

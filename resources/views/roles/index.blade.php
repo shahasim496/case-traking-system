@@ -138,6 +138,56 @@
     margin-right: 0;
 }
 
+/* Action button styles to match user index */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.btn-warning {
+    color: #212529;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover {
+    color: #212529;
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+.btn-danger {
+    color: #fff !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px !important;
+}
+
+.btn-danger:hover {
+    color: #fff !important;
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+    transform: translateY(-1px);
+}
+
+/* Custom button styles to match user index exactly */
+.btn[style*="background-color: #00349C"] {
+    border-color: #00349C;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px !important;
+}
+
+.btn[style*="background-color: #00349C"]:hover {
+    background-color: #002a7a !important;
+    border-color: #002a7a;
+    transform: translateY(-1px);
+}
+
 .badge {
     font-size: 0.75em;
     border-radius: 4px;
@@ -249,6 +299,13 @@
 
 <script>
 $(document).ready(function() {
+    // Setup CSRF token for AJAX requests
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     // Initialize DataTable
     var table = $('#rolesTable').DataTable({
         processing: true,
@@ -256,7 +313,7 @@ $(document).ready(function() {
         ajax: "{{ route('roles.getRoles') }}",
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'name', name: 'name' },
+            { data: 'name', name: 'name', orderable: true, searchable: true },
             { data: 'action', name: 'action', orderable: false, searchable: false },
         ],
         pageLength: 50,
@@ -264,6 +321,7 @@ $(document).ready(function() {
         info: false,
         searching: false,
         responsive: true,
+        order: [[1, 'asc']], // Sort by name column (index 1) by default
         language: {
             emptyTable: "No roles found",
             processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
@@ -271,7 +329,7 @@ $(document).ready(function() {
     });
 
     // Handle delete button click
-    $('#rolesTable').on('click', '.delete_icon', function () {
+    $('#rolesTable').on('click', '.delete-btn', function () {
         var id = $(this).data('id');
         var name = $(this).data('name') || 'this role';
         var url = "{{ route('roles.delete', ':id') }}".replace(':id', id);

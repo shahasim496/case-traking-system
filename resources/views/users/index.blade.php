@@ -86,32 +86,34 @@
                                             <div class="d-flex gap-1">
                                              
                                                 
-                                                @can('edit user')
-                                                <a href="{{ route('user.edit', $user->id) }}" class="btn btn-warning btn-sm" title="Edit">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                                @endcan
-                                                
-                                                @can('ban user')
-                                                <button class="btn btn-sm {{ $user->is_blocked == 0 ? 'btn-danger' : 'btn-success' }} ban-btn" 
-                                                        title="{{ $user->is_blocked == 0 ? 'Ban User' : 'Unban User' }}"
-                                                        data-id="{{ $user->id }}"
-                                                        data-status="{{ $user->is_blocked }}"
-                                                        data-name="{{ $user->name }}">
-                                                    <i class="fa {{ $user->is_blocked == 0 ? 'fa-ban' : 'fa-check' }}"></i>
-                                                </button>
-                                                @endcan
-                                                
-                                                @can('delete user')
-                                                <button class="btn btn-danger btn-sm delete-btn" 
-                                                        data-id="{{ $user->id }}" 
-                                                        data-name="{{ $user->name }}"
-                                                        data-toggle="modal" 
-                                                        data-target="#deleteModal" 
-                                                        title="Delete">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                                @endcan
+                                                                                                 @can('edit user')
+                                                 <a href="{{ route('user.edit', $user->id) }}" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
+                                                 <i class="fa fa-edit mr-1"></i>Edit
+                                                 </a>
+                                                 @endcan
+                                                 
+                                                 @can('ban user')
+                                                 <button class="btn d-flex align-items-center justify-content-center {{ $user->is_blocked == 0 ? 'btn-danger' : 'btn-success' }} ban-btn" 
+                                                         style="width: 80px;"
+                                                         title="{{ $user->is_blocked == 0 ? 'Ban User' : 'Unban User' }}"
+                                                         data-id="{{ $user->id }}"
+                                                         data-status="{{ $user->is_blocked }}"
+                                                         data-name="{{ $user->name }}">
+                                                     <i class="fa {{ $user->is_blocked == 0 ? 'fa-ban' : 'fa-check' }} mr-1"></i>{{ $user->is_blocked == 0 ? 'Ban' : 'Unban' }}
+                                                 </button>
+                                                 @endcan
+                                                 
+                                                 @can('delete user')
+                                                 <button class="btn btn-danger d-flex align-items-center justify-content-center delete-btn" 
+                                                         style="width: 80px;"
+                                                         data-id="{{ $user->id }}" 
+                                                         data-name="{{ $user->name }}"
+                                                         data-toggle="modal" 
+                                                         data-target="#deleteModal" 
+                                                         title="Delete">
+                                                         <i class="fa fa-trash mr-1"></i>Delete
+                                                 </button>
+                                                 @endcan
                                             </div>
                                         </td>
                                     </tr>

@@ -72,7 +72,7 @@
                                             Reset
                                         </button>
                                         <button type="submit" class="btn btn-lg" style="background-color: #00349C; color: white;">
-                                            Save Designation
+                                        <i class="fa fa-save mr-2"></i>Save Designation
                                         </button>
                                     </div>
                                 </div>

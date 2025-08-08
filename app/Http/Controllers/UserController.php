@@ -330,7 +330,7 @@ class UserController extends Controller
         $departments = Department::all();
         $designations = Designation::all();
 
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'SuperAdmin')->get();
         $userRoles = $user->roles->pluck('name')->toArray();
 
         // Debug the user data

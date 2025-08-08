@@ -1,203 +1,200 @@
 @extends('layouts.main')
 @section('title', 'Edit Department')
 
-
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h4>Edit Department</h4>
-    </div>
-    <div class="card-body">
-        <form action="{{ route('departments.update', $department->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="form-group">
-                <label for="name">Department Name</label>
-                <input type="text" name="name" id="name" class="form-control" value="{{ $department->name }}" required>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header text-white" style="background-color: #00349C;">
+                    <h4 class="mb-0">
+                        <i class="fa fa-edit mr-2"></i>Edit Department
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    @include('components.toaster')
+                    
+                    <form method="POST" action="{{ route('departments.update', $department->id) }}" id="departmentForm" enctype='multipart/form-data'>
+                        @csrf
+                        @method('PUT')
+                        
+                        <!-- Department Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                                    <i class="fa fa-info-circle mr-2"></i>Department Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Department Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="name" 
+                                           name="name" 
+                                           class="form-control form-control-lg @error('name') is-invalid @enderror" 
+                                           placeholder="Enter department name" 
+                                           required 
+                                           value="{{ old('name', $department->name) }}">
+                                    @error('name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Description Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                                    <i class="fa fa-align-left mr-2"></i>Additional Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Description
+                                    </label>
+                                    <textarea name="description" 
+                                              id="description" 
+                                              class="form-control form-control-lg @error('description') is-invalid @enderror" 
+                                              rows="4"
+                                              placeholder="Enter department description (optional)">{{ old('description', $department->description) }}</textarea>
+                                    @error('description')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end">
+                                    <div>
+                                        <a href="{{ route('departments') }}" class="btn btn-outline-secondary btn-lg mr-2">
+                                            <i class="fa fa-times mr-1"></i>Cancel
+                                        </a>
+                                       
+                                        <button type="submit" class="btn btn-lg" style="background-color: #00349C; color: white;">
+                                            <i class="fa fa-save mr-1"></i>Update Department
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea name="description" id="description" class="form-control">{{ $department->description }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-success">Update</button>
-        </form>
+        </div>
     </div>
 </div>
-@endsection
 
-@section('jsfile')
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    border-bottom: none;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #00349C;
+    box-shadow: 0 0 0 0.2rem rgba(0, 52, 156, 0.25);
+}
+
+.form-control-lg {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+}
+
+textarea.form-control-lg {
+    min-height: 120px;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.border-bottom {
+    border-color: #e3e6f0 !important;
+}
+
+.text-danger {
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .d-flex.justify-content-end {
+        justify-content: center !important;
+    }
+    
+    .d-flex.justify-content-end > div {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .d-flex.justify-content-end .btn {
+        margin-bottom: 0.5rem;
+        margin-right: 0 !important;
+    }
+}
+</style>
 
 <script>
-
-    function deleteR(id) {
-    event.preventDefault();
-
-    var url = $("#delete_"+id).attr('href');
-   console.log(url);
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-      confirmButtonClass: 'btn btn-primary',
-      cancelButtonClass: 'btn btn-danger ml-1',
-      buttonsStyling: false,
-    }).then(function (result) {
-      console.log(result);
-      if (result.value) {
-        console.log("yes delete it.");
-        window.location.href = url;
-      }
-      else if (result.dismiss === Swal.DismissReason.cancel) {
-        console.log("cancel.");
-
-      }
+$(document).ready(function() {
+    // Form validation
+    $('#departmentForm').on('submit', function(e) {
+        // Basic form validation - check if required fields are filled
+        var requiredFields = ['name'];
+        var isValid = true;
+        
+        requiredFields.forEach(function(field) {
+            var value = $('#' + field).val();
+            if (!value || value.trim() === '') {
+                $('#' + field).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#' + field).removeClass('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
     });
-      // if(!confirm("Are You Sure to delete this"))
-      //     event.preventDefault();
-  }
-
-  $(function(){
-
-    $('#department_id').select2('destroy');
-    $('#department_id').empty();
-    $('#department_id').select2({
-
-    theme: 'bootstrap4',
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        allowClear: Boolean($(this).data('allow-clear')),
-        closeOnSelect:true,
-        ajax: {
-            url: "{{route('getModelData')}}",
-            data: function (params) {
-            var query = {
-                department: params.term,
-                type: 'department'
-            }
-
-            // Query parameters will be ?search=[term]&type=public
-            return query;
-            },
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-            return {
-                results:  $.map(data, function (item) {
-                    return {
-                        text: item.name,
-                        id: item.id
-                    }
-                })
-            };
-            },
-            cache: true
-        }
-
-    });//end of select2
-
-    var department_data = {
-        id: '<?php echo $record->department->id ?? '' ?>',
-        text: '<?php echo $record->department->name ?? '' ?>'
-    };
-
-    var newOption = new Option(department_data.text, department_data.id, false, false);
-    $("#department_id").append(newOption).trigger("change");
-
-
-    $('#post_id').select2('destroy');
-    $('#post_id').empty();
-    $('#post_id').select2({
-
-    theme: 'bootstrap4',
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        allowClear: Boolean($(this).data('allow-clear')),
-        closeOnSelect:true,
-        ajax: {
-            url: "{{route('getModelData')}}",
-            data: function (params) {
-            var query = {
-                post: params.term,
-                type: 'post'
-            }
-            // Query parameters will be ?search=[term]&type=public
-            return query;
-            },
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-            return {
-                results:  $.map(data, function (item) {
-                    return {
-                        text: item.name,
-                        id: item.id
-                    }
-                })
-            };
-            },
-            cache: true
-        }
-
-    });//end of select2
-
-    var post_data = {
-        id: '<?php echo $record->post->id ?? '' ?>',
-        text: '<?php echo $record->post->name ?? '' ?>'
-    };
-
-    var newOption = new Option(post_data.text, post_data.id, false, false);
-    $("#post_id").append(newOption).trigger("change");
-
-    $('#division_id').select2('destroy');
-    $('#division_id').empty();
-    $('#division_id').select2({
-
-        theme: 'bootstrap4',
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        allowClear: Boolean($(this).data('allow-clear')),
-        closeOnSelect:true,
-        ajax: {
-            url: "{{route('getModelData')}}",
-            data: function (params) {
-            var query = {
-                division: params.term,
-                type: 'division'
-            }
-            // Query parameters will be ?search=[term]&type=public
-            return query;
-            },
-            dataType: 'json',
-            delay: 250,
-            processResults: function (data) {
-            return {
-                results:  $.map(data, function (item) {
-                    return {
-                        text: item.name,
-                        id: item.id
-                    }
-                })
-            };
-            },
-            cache: true
-        }
-
-    });//end of select2
-
-    var division_data = {
-        id: '<?php echo $record->division->id ?? '' ?>',
-        text: '<?php echo $record->division->name ?? '' ?>'
-    };
-
-    var newOption = new Option(division_data.text, division_data.id, false, false);
-    $("#division_id").append(newOption).trigger("change");
-
-  });//end of function
-
+});
 </script>
-
 @endsection

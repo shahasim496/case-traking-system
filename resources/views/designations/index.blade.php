@@ -18,8 +18,39 @@ resources/views/designations/index.blade.php
                 <div class="card-body p-4">
                     @include('components.toaster')
                     
+                    <!-- Search and Export Section -->
+                    <div class="row mb-4">
+                        <div class="col-lg-8 col-md-6 mb-3 mb-md-0">
+                            <div class="search-container">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-right-0">
+                                            <i class="fa fa-search text-muted"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" id="searchInput" class="form-control border-left-0" placeholder="Search designations by name or description...">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary border-left-0" type="button" id="clearSearchBtn" title="Clear Search">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="export-container d-flex justify-content-end">
+                                <button type="button" class="btn btn-success mr-2" id="exportExcelBtn">
+                                    <i class="fa fa-file-excel-o mr-1"></i>Excel
+                                </button>
+                                <button type="button" class="btn btn-danger" id="exportPdfBtn">
+                                    <i class="fa fa-file-pdf-o mr-1"></i>PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered" id="designationsTable">
                             <thead class="thead-dark">
                                 <tr>
                                     <th width="5%">#</th>
@@ -35,12 +66,20 @@ resources/views/designations/index.blade.php
                                         <td>{{ $designation->name }}</td>
                                         <td>{{ $designation->description ?? 'No description' }}</td>
                                         <td>
-                                            <a href="{{ route('designations.edit', $designation->id) }}" class="btn btn-sm" style="background-color: #00349C; color: white; width: 80px;" title="Edit">
-                                                <i class="fa fa-edit mr-1"></i>Edit
-                                            </a>
-                                            <button class="btn btn-danger btn-sm delete-btn" style="width: 80px;" data-id="{{ $designation->id }}" data-toggle="modal" data-target="#deleteModal" title="Delete">
-                                                <i class="fa fa-trash mr-1"></i>Delete
-                                            </button>
+                                            <div class="d-flex gap-1">
+                                                <a href="{{ route('designations.edit', $designation->id) }}" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
+                                                    <i class="fa fa-edit mr-1"></i>Edit
+                                                </a>
+                                                <button class="btn btn-danger d-flex align-items-center justify-content-center delete-btn" 
+                                                        style="width: 80px;" 
+                                                        data-id="{{ $designation->id }}" 
+                                                        data-name="{{ $designation->name }}"
+                                                        data-toggle="modal" 
+                                                        data-target="#deleteModal" 
+                                                        title="Delete">
+                                                    <i class="fa fa-trash mr-1"></i>Delete
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -53,8 +92,8 @@ resources/views/designations/index.blade.php
                     </div>
                     
                     <div class="d-flex justify-content-center">
-            {{ $designations->appends(['status' => request('status'), 'per_page' => request('per_page')])->links('pagination::bootstrap-4') }}
-        </div>
+                        {{ $designations->appends(['status' => request('status'), 'per_page' => request('per_page')])->links('pagination::bootstrap-4') }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -74,7 +113,7 @@ resources/views/designations/index.blade.php
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this designation?</p>
+                <p>Are you sure you want to delete designation: <strong id="deleteDesignationName"></strong>?</p>
                 <p class="text-muted small">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
@@ -121,6 +160,19 @@ resources/views/designations/index.blade.php
     font-weight: 500;
 }
 
+.d-flex.gap-1 .btn {
+    margin-right: 0.25rem;
+}
+
+.d-flex.gap-1 .btn:last-child {
+    margin-right: 0;
+}
+
+.badge {
+    font-size: 0.75em;
+    border-radius: 4px;
+}
+
 .modal-content {
     border-radius: 10px;
     border: none;
@@ -143,16 +195,246 @@ resources/views/designations/index.blade.php
     background-color: #00349C;
     border-color: #00349C;
 }
+
+/* Improved Search and Export Styles */
+.search-container {
+    position: relative;
+}
+
+.search-container .input-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.search-container .input-group-text {
+    border: 1px solid #ced4da;
+    border-right: none;
+}
+
+.search-container .form-control {
+    border: 1px solid #ced4da;
+    border-left: none;
+    padding: 0.75rem 1rem;
+}
+
+.search-container .form-control:focus {
+    box-shadow: none;
+    border-color: #00349C;
+}
+
+.search-container .btn {
+    border: 1px solid #ced4da;
+    border-left: none;
+    padding: 0.75rem 1rem;
+}
+
+.export-container .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.export-container .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.export-container .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.export-container .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .d-flex.gap-1 .btn {
+        margin-bottom: 0.25rem;
+        margin-right: 0.25rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9em;
+    }
+    
+    .export-container {
+        justify-content: center !important;
+        margin-top: 15px;
+    }
+    
+    .search-container {
+        margin-bottom: 15px;
+    }
+}
 </style>
+
+<!-- Include jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 <script>
 $(document).ready(function() {
     // Handle delete button click
     $('.delete-btn').click(function() {
         var id = $(this).data('id');
+        var name = $(this).data('name');
         var url = "{{ route('designations.delete', ':id') }}".replace(':id', id);
+        
+        $('#deleteDesignationName').text(name);
         $('#deleteForm').attr('action', url);
     });
+    
+    // Search functionality
+    $('#clearSearchBtn').click(function() {
+        $('#searchInput').val('');
+        performSearch();
+    });
+    
+    $('#searchInput').on('keyup', function(e) {
+        performSearch();
+    });
+    
+    function performSearch() {
+        var searchTerm = $('#searchInput').val().toLowerCase();
+        var table = $('#designationsTable tbody');
+        var rows = table.find('tr');
+        var visibleCount = 0;
+        
+        rows.each(function() {
+            var row = $(this);
+            var text = row.text().toLowerCase();
+            
+            if (text.includes(searchTerm) || searchTerm === '') {
+                row.show();
+                visibleCount++;
+            } else {
+                row.hide();
+            }
+        });
+        
+        // Update row numbers for visible rows
+        updateRowNumbers();
+        
+        // Show "no results" message if needed
+        if (visibleCount === 0 && searchTerm !== '') {
+            if (table.find('.no-results').length === 0) {
+                table.append('<tr class="no-results"><td colspan="4" class="text-center text-muted">No designations found matching your search.</td></tr>');
+            }
+        } else {
+            table.find('.no-results').remove();
+        }
+    }
+    
+    function updateRowNumbers() {
+        var visibleRows = $('#designationsTable tbody tr:visible:not(.no-results)');
+        visibleRows.each(function(index) {
+            $(this).find('td:first').text(index + 1);
+        });
+    }
+    
+    // Export to Excel functionality
+    $('#exportExcelBtn').click(function() {
+        exportToExcel();
+    });
+    
+    function exportToExcel() {
+        var table = document.getElementById('designationsTable');
+        var html = table.outerHTML;
+        
+        // Create a temporary link element
+        var link = document.createElement('a');
+        link.download = 'designations_export.xls';
+        link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    // Export to PDF functionality
+    $('#exportPdfBtn').click(function() {
+        exportToPDF();
+    });
+    
+    function exportToPDF() {
+        // Get visible rows only (respect search filter)
+        var visibleRows = $('#designationsTable tbody tr:visible:not(.no-results)');
+        
+        // Prepare data for PDF
+        var data = [];
+        visibleRows.each(function() {
+            var row = $(this);
+            var rowData = [];
+            
+            // Get text content from each cell (excluding actions column)
+            row.find('td').each(function(index) {
+                if (index < 3) { // Exclude actions column
+                    var cellText = $(this).text().trim();
+                    rowData.push(cellText);
+                }
+            });
+            
+            if (rowData.length > 0) {
+                data.push(rowData);
+            }
+        });
+        
+        // Create PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Add title
+        doc.setFontSize(20);
+        doc.setTextColor(0, 52, 156); // #00349C
+        doc.text('Designations Report', 105, 20, { align: 'center' });
+        
+        // Add date
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(), 105, 30, { align: 'center' });
+        
+        // Define table headers
+        var headers = ['#', 'Name', 'Description'];
+        
+        // Add table
+        doc.autoTable({
+            head: [headers],
+            body: data,
+            startY: 40,
+            styles: {
+                fontSize: 10,
+                cellPadding: 3,
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1,
+            },
+            headStyles: {
+                fillColor: [52, 58, 64], // Dark gray
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+            },
+            alternateRowStyles: {
+                fillColor: [248, 249, 250], // Light gray
+            },
+            columnStyles: {
+                0: { cellWidth: 15 }, // #
+                1: { cellWidth: 50 }, // Name
+                2: { cellWidth: 125 }, // Description
+            },
+            didDrawPage: function(data) {
+                // Add footer
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Total Designations: ' + data.length, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+            }
+        });
+        
+        // Save the PDF
+        doc.save('designations_report.pdf');
+    }
 });
 </script>
 @endsection
