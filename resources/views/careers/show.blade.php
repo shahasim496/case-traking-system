@@ -292,18 +292,40 @@
                                         <i class="fas fa-building meta-icon"></i>
                                         <span>{{ $jobPosting->department->name ?? 'Not Specified' }}</span>
                                     </div>
+                                    @if($jobPosting->designation)
+                                        <div class="meta-item">
+                                            <i class="fas fa-id-badge meta-icon"></i>
+                                            <span>{{ $jobPosting->designation->name }}</span>
+                                        </div>
+                                    @endif
                                     <div class="meta-item">
                                         <i class="fas fa-users meta-icon"></i>
                                         <span>{{ $jobPosting->positions }} Position(s) Available</span>
                                     </div>
-                                    <div class="meta-item">
-                                        <i class="fas fa-map-marker-alt meta-icon"></i>
-                                        <span>{{ $jobPosting->department->name ?? 'Not Specified' }}</span>
-                                    </div>
-                                    <div class="meta-item">
-                                        <i class="fas fa-user meta-icon"></i>
-                                        <span>Age Limit: 30 Years</span>
-                                    </div>
+                                    @if($jobPosting->pay_scale)
+                                        <div class="meta-item">
+                                            <i class="fas fa-money-bill-wave meta-icon"></i>
+                                            <span>{{ $jobPosting->pay_scale }}</span>
+                                        </div>
+                                    @endif
+                                    @if($jobPosting->job_type)
+                                        <div class="meta-item">
+                                            <i class="fas fa-briefcase meta-icon"></i>
+                                            <span>{{ ucwords(str_replace('_', ' ', $jobPosting->job_type)) }}</span>
+                                        </div>
+                                    @endif
+                                    @if($jobPosting->age_limit)
+                                        <div class="meta-item">
+                                            <i class="fas fa-user meta-icon"></i>
+                                            <span>Age Limit: {{ $jobPosting->age_limit }} Years</span>
+                                        </div>
+                                    @endif
+                                    @if($jobPosting->gender && $jobPosting->gender != 'any')
+                                        <div class="meta-item">
+                                            <i class="fas fa-venus-mars meta-icon"></i>
+                                            <span>{{ ucwords($jobPosting->gender) }} Preferred</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="status-badge">
@@ -311,6 +333,34 @@
                             </div>
                         </div>
                     </div>
+
+                    @if($jobPosting->job_advertisement)
+                    <div class="job-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-file-pdf me-2"></i>Official Job Advertisement
+                        </h3>
+                        <div class="section-content">
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h5 class="mb-2">
+                                            <i class="fas fa-file-pdf me-2 text-danger"></i>
+                                            Complete Job Advertisement
+                                        </h5>
+                                        <p class="mb-0">View the official PDF document with detailed job information, requirements, and application procedures.</p>
+                                    </div>
+                                    <div>
+                                        <a href="{{ Storage::url($jobPosting->job_advertisement) }}" 
+                                           target="_blank" 
+                                           class="btn btn-danger btn-lg">
+                                            <i class="fas fa-eye me-2"></i>View PDF
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                                          <div class="job-section">
                          <h3 class="section-title">
@@ -338,12 +388,25 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <p><strong>Job Location:</strong> {{ $jobPosting->department->name ?? 'Not Specified' }}</p>
-                                    <p><strong>Employment Type:</strong> Contractual</p>
-                                    <p><strong>Experience Level:</strong> Preferably 0-2 years of post-qualification experience</p>
+                                    @if($jobPosting->job_type)
+                                        <p><strong>Employment Type:</strong> {{ ucwords(str_replace('_', ' ', $jobPosting->job_type)) }}</p>
+                                    @endif
+                                    @if($jobPosting->designation)
+                                        <p><strong>Designation:</strong> {{ $jobPosting->designation->name }}</p>
+                                    @endif
+                                    @if($jobPosting->pay_scale)
+                                        <p><strong>Pay Scale:</strong> {{ $jobPosting->pay_scale }}</p>
+                                    @endif
                                 </div>
                                 <div class="col-md-6">
                                     <p><strong>Positions Available:</strong> {{ $jobPosting->positions }}</p>
                                     <p><strong>Department:</strong> {{ $jobPosting->department->name ?? 'Not Specified' }}</p>
+                                    @if($jobPosting->age_limit)
+                                        <p><strong>Age Limit:</strong> {{ $jobPosting->age_limit }} years</p>
+                                    @endif
+                                    @if($jobPosting->gender && $jobPosting->gender != 'any')
+                                        <p><strong>Gender Preference:</strong> {{ ucwords($jobPosting->gender) }}</p>
+                                    @endif
                                     <p><strong>Posted On:</strong> {{ $jobPosting->created_at->format('F d, Y') }}</p>
                                 </div>
                             </div>

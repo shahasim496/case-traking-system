@@ -324,16 +324,39 @@
                                  <div class="d-flex justify-content-between align-items-start mb-3">
                                      <div class="flex-grow-1">
                                          <h3 class="job-title">{{ $jobPosting->title }}</h3>
-                                         <div class="job-location">
-                                             <i class="fas fa-map-marker-alt location-icon"></i>
-                                             {{ $jobPosting->department->name ?? 'Not Specified' }}
-                                             <span class="ms-3">(Age Limit: 30 Years)</span>
-                                         </div>
+                                                                                 <div class="job-location">
+                                            <i class="fas fa-map-marker-alt location-icon"></i>
+                                            {{ $jobPosting->department->name ?? 'Not Specified' }}
+                                            @if($jobPosting->designation)
+                                                • {{ $jobPosting->designation->name }}
+                                            @endif
+                                            @if($jobPosting->age_limit)
+                                                <span class="ms-3">(Age Limit: {{ $jobPosting->age_limit }} Years)</span>
+                                            @endif
+                                        </div>
+                                        <div class="mt-2">
+                                            @if($jobPosting->pay_scale)
+                                                <span class="badge bg-success me-2">{{ $jobPosting->pay_scale }}</span>
+                                            @endif
+                                            @if($jobPosting->job_type)
+                                                <span class="badge bg-primary me-2">{{ ucwords(str_replace('_', ' ', $jobPosting->job_type)) }}</span>
+                                            @endif
+                                            @if($jobPosting->gender && $jobPosting->gender != 'any')
+                                                <span class="badge bg-info">{{ ucwords($jobPosting->gender) }} Preferred</span>
+                                            @endif
+                                        </div>
                                      </div>
                                      <div class="ms-3">
-                                         <a href="{{ route('careers.show', $jobPosting->id) }}" class="view-detail-btn">
-                                             <i class="fas fa-eye me-2"></i>VIEW DETAIL
-                                         </a>
+                                         <div class="d-flex flex-column gap-2">
+                                             @if($jobPosting->job_advertisement)
+                                                 <a href="{{ Storage::url($jobPosting->job_advertisement) }}" target="_blank" class="btn btn-danger btn-sm">
+                                                     <i class="fas fa-eye me-1"></i>View PDF
+                                                 </a>
+                                             @endif
+                                             <a href="{{ route('careers.show', $jobPosting->id) }}" class="view-detail-btn">
+                                                 <i class="fas fa-eye me-2"></i>VIEW DETAIL
+                                             </a>
+                                         </div>
                                      </div>
                                  </div>
                              </div>
@@ -359,14 +382,23 @@
                                      </div>
                                  </div>
                                  
-                                 <div class="job-section">
-                                     <div class="section-title">Additional Information:</div>
-                                     <div class="section-content">
-                                         <strong>Job Location:</strong> {{ $jobPosting->department->name ?? 'Not Specified' }}
-                                         <br>
-                                         <strong>Positions Available:</strong> {{ $jobPosting->positions }}
-                                     </div>
-                                 </div>
+                                                                 <div class="job-section">
+                                    <div class="section-title">Additional Information:</div>
+                                    <div class="section-content">
+                                        <strong>Job Location:</strong> {{ $jobPosting->department->name ?? 'Not Specified' }}
+                                        <br>
+                                        <strong>Positions Available:</strong> {{ $jobPosting->positions }}
+                                        @if($jobPosting->pay_scale)
+                                            <br><strong>Pay Scale:</strong> {{ $jobPosting->pay_scale }}
+                                        @endif
+                                        @if($jobPosting->job_type)
+                                            <br><strong>Job Type:</strong> {{ ucwords(str_replace('_', ' ', $jobPosting->job_type)) }}
+                                        @endif
+                                        @if($jobPosting->gender && $jobPosting->gender != 'any')
+                                            <br><strong>Gender Preference:</strong> {{ ucwords($jobPosting->gender) }}
+                                        @endif
+                                    </div>
+                                </div>
                                  
                                  <div class="job-dates">
                                      <div class="date-item">

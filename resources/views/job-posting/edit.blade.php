@@ -18,7 +18,7 @@
                 <div class="card-body p-4">
                     @include('components.toaster')
                     
-                    <form method="POST" action="{{ route('job-posting.update', $jobPosting->id) }}" id="jobPostingForm">
+                    <form method="POST" action="{{ route('job-posting.update', $jobPosting->id) }}" id="jobPostingForm" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
@@ -54,6 +54,72 @@
                                     @endif
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Designation <span class="text-danger">*</span></label>
+                                    <select name="designation_id" id="designation_id" class="form-control form-control-lg" required>
+                                        <option value="">Choose Designation</option>
+                                        @foreach($designations ?? [] as $designation)
+                                            <option value="{{ $designation->id }}" {{ old('designation_id', $jobPosting->designation_id) == $designation->id ? 'selected' : '' }}>
+                                                {{ $designation->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if ($errors->has('designation_id'))
+                                        <small class="text-danger">{{ $errors->first('designation_id') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Pay Scale <span class="text-danger">*</span></label>
+                                    <select name="pay_scale" id="pay_scale" class="form-control form-control-lg" required>
+                                        <option value="">Select Pay Scale</option>
+                                        @for($i = 1; $i <= 21; $i++)
+                                            <option value="GY-{{ $i }}" {{ old('pay_scale', $jobPosting->pay_scale) == 'GY-' . $i ? 'selected' : '' }}>
+                                                GY-{{ $i }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                    @if ($errors->has('pay_scale'))
+                                        <small class="text-danger">{{ $errors->first('pay_scale') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Job Type <span class="text-danger">*</span></label>
+                                    <select name="job_type" id="job_type" class="form-control form-control-lg" required>
+                                        <option value="">Select Job Type</option>
+                                        <option value="full_time" {{ old('job_type', $jobPosting->job_type) == 'full_time' ? 'selected' : '' }}>Full Time</option>
+                                        <option value="part_time" {{ old('job_type', $jobPosting->job_type) == 'part_time' ? 'selected' : '' }}>Part Time</option>
+                                        <option value="contract" {{ old('job_type', $jobPosting->job_type) == 'contract' ? 'selected' : '' }}>Contract</option>
+                                        <option value="temporary" {{ old('job_type', $jobPosting->job_type) == 'temporary' ? 'selected' : '' }}>Temporary</option>
+                                        <option value="internship" {{ old('job_type', $jobPosting->job_type) == 'internship' ? 'selected' : '' }}>Internship</option>
+                                    </select>
+                                    @if ($errors->has('job_type'))
+                                        <small class="text-danger">{{ $errors->first('job_type') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Gender Preference <span class="text-danger">*</span></label>
+                                    <select name="gender" id="gender" class="form-control form-control-lg" required>
+                                        <option value="">Select Gender Preference</option>
+                                        <option value="any" {{ old('gender', $jobPosting->gender) == 'any' ? 'selected' : '' }}>Any Gender</option>
+                                        <option value="male" {{ old('gender', $jobPosting->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                                        <option value="female" {{ old('gender', $jobPosting->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                                    </select>
+                                    @if ($errors->has('gender'))
+                                        <small class="text-danger">{{ $errors->first('gender') }}</small>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Job Details Section -->
@@ -62,6 +128,28 @@
                                 <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">Job Details</h5>
                             </div>
                             
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Job Advertisement PDF</label>
+                                    @if($jobPosting->job_advertisement)
+                                        <div class="mb-2">
+                                            <span class="text-success">
+                                                <i class="fa fa-file-pdf mr-1"></i>
+                                                Current file: 
+                                                <a href="{{ Storage::url($jobPosting->job_advertisement) }}" target="_blank" class="text-primary">
+                                                    <i class="fa fa-eye mr-1"></i>{{ basename($jobPosting->job_advertisement) }} (Click to view)
+                                                </a>
+                                            </span>
+                                        </div>
+                                    @endif
+                                    <input type="file" id="job_advertisement" name="job_advertisement" class="form-control" accept=".pdf">
+                                    <small class="text-muted">Upload new PDF file to replace current one (max 10MB). Leave empty to keep current file.</small>
+                                    @if ($errors->has('job_advertisement'))
+                                        <small class="text-danger">{{ $errors->first('job_advertisement') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">Job Description <span class="text-danger">*</span></label>
@@ -97,6 +185,17 @@
                                     <input type="number" id="positions" name="positions" class="form-control" placeholder="1" min="1" required value="{{ old('positions', $jobPosting->positions) }}">
                                     @if ($errors->has('positions'))
                                         <small class="text-danger">{{ $errors->first('positions') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Age Limit <span class="text-danger">*</span></label>
+                                    <input type="number" id="age_limit" name="age_limit" class="form-control" placeholder="e.g., 35" min="18" max="65" required value="{{ old('age_limit', $jobPosting->age_limit) }}">
+                                    <small class="text-muted">Maximum age limit for applicants</small>
+                                    @if ($errors->has('age_limit'))
+                                        <small class="text-danger">{{ $errors->first('age_limit') }}</small>
                                     @endif
                                 </div>
                             </div>

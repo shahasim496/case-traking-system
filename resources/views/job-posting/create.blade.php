@@ -13,7 +13,7 @@
                                 <div class="card-body p-4">
                     @include('components.toaster')
                     
-                    <form method="POST" action="{{ route('job-posting.store') }}" id="jobPostingForm">
+                    <form method="POST" action="{{ route('job-posting.store') }}" id="jobPostingForm" enctype="multipart/form-data">
                         @csrf
                         
                         <!-- Basic Information Section -->
@@ -124,6 +124,17 @@
                             
                             <div class="col-12">
                                 <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Job Advertisement PDF <span class="text-danger">*</span></label>
+                                    <input type="file" id="job_advertisement" name="job_advertisement" class="form-control" accept=".pdf" required>
+                                    <small class="text-muted">Upload job advertisement as PDF file (max 10MB)</small>
+                                    @if ($errors->has('job_advertisement'))
+                                        <small class="text-danger">{{ $errors->first('job_advertisement') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
                                     <label class="font-weight-bold text-dark">Job Description <span class="text-danger">*</span></label>
                                     <div id="description-editor" class="form-control" style="min-height: 200px;">{{ old('description') }}</div>
                                     <textarea id="description" name="description" style="display: none;">{{ old('description') }}</textarea>
@@ -157,6 +168,17 @@
                                     <input type="number" id="positions" name="positions" class="form-control" placeholder="1" min="1" required value="{{ old('positions', 1) }}">
                                     @if ($errors->has('positions'))
                                         <small class="text-danger">{{ $errors->first('positions') }}</small>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">Age Limit <span class="text-danger">*</span></label>
+                                    <input type="number" id="age_limit" name="age_limit" class="form-control" placeholder="e.g., 35" min="18" max="65" required value="{{ old('age_limit') }}">
+                                    <small class="text-muted">Maximum age limit for applicants</small>
+                                    @if ($errors->has('age_limit'))
+                                        <small class="text-danger">{{ $errors->first('age_limit') }}</small>
                                     @endif
                                 </div>
                             </div>
@@ -204,7 +226,7 @@
                                         <i class="fa fa-times mr-2"></i>Cancel
                                     </a>
                                     <button type="submit" class="btn btn-lg text-white" style="background-color: #00349C; border-color: #00349C;">
-                                        Create Job Posting
+                                        iCreate Job Posting
                                     </button>
                                 </div>
                             </div>

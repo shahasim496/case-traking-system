@@ -24,10 +24,11 @@
                     <!-- Job Status and Meta Information -->
                     <div class="row mb-4">
                         <div class="col-md-8">
-                            <div class="d-flex align-items-center mb-3">
-                              
-                                
+                            <div class="d-flex align-items-center mb-3 flex-wrap">
                                 <span class="badge badge-info mr-3">{{ $jobPosting->department->name ?? 'N/A' }}</span>
+                                <span class="badge badge-primary mr-3">{{ $jobPosting->designation->name ?? 'N/A' }}</span>
+                                <span class="badge badge-success mr-3">{{ $jobPosting->pay_scale ?? 'N/A' }}</span>
+                                <span class="badge badge-warning mr-3">{{ ucwords(str_replace('_', ' ', $jobPosting->job_type ?? 'N/A')) }}</span>
                                 <span class="badge badge-secondary">{{ $jobPosting->positions }} Position(s)</span>
                             </div>
                         </div>
@@ -73,6 +74,29 @@
                         </div>
                     </div>
 
+                    <!-- Job Advertisement -->
+                    @if($jobPosting->job_advertisement)
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                                <i class="fa fa-file-pdf mr-2"></i>Job Advertisement
+                            </h5>
+                            <div class="bg-light p-3 rounded text-center">
+                                <div class="mb-3">
+                                    <i class="fa fa-file-pdf fa-3x text-danger"></i>
+                                </div>
+                                <h6>Official Job Advertisement</h6>
+                                <p class="text-muted">View the complete job advertisement with all details</p>
+                                <a href="{{ Storage::url($jobPosting->job_advertisement) }}" 
+                                   target="_blank" 
+                                   class="btn btn-danger">
+                                    <i class="fa fa-eye mr-2"></i>View PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Job Description -->
                     <div class="row mb-4">
                         <div class="col-12">
@@ -107,6 +131,26 @@
                                 <tr>
                                     <td><strong>Department:</strong></td>
                                     <td>{{ $jobPosting->department->name ?? 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Designation:</strong></td>
+                                    <td>{{ $jobPosting->designation->name ?? 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pay Scale:</strong></td>
+                                    <td>{{ $jobPosting->pay_scale ?? 'N/A' }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Job Type:</strong></td>
+                                    <td>{{ ucwords(str_replace('_', ' ', $jobPosting->job_type ?? 'N/A')) }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gender Preference:</strong></td>
+                                    <td>{{ ucwords($jobPosting->gender ?? 'N/A') }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Age Limit:</strong></td>
+                                    <td>{{ $jobPosting->age_limit ?? 'N/A' }} years</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Positions Available:</strong></td>

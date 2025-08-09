@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\JobPosting;
+use App\Models\Designation;
 use Illuminate\Http\Request;
 
 class JobPostingController extends Controller
@@ -15,7 +16,7 @@ class JobPostingController extends Controller
      */
     public function index()
     {
-        $jobPostings = JobPosting::with('department', 'createdBy')
+        $jobPostings = JobPosting::with('department', 'designation', 'createdBy')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
             
@@ -30,7 +31,8 @@ class JobPostingController extends Controller
     public function create()
     {
         $departments = Department::orderBy('name')->get();
-        return view('job-posting.create', compact('departments'));
+        $designations = Designation::orderBy('name')->get();
+        return view('job-posting.create', compact('departments', 'designations'));
     }
 
     /**
@@ -45,15 +47,25 @@ class JobPostingController extends Controller
         try {
             $request->validate([
                 'title' => 'required|string|max:255',
-                'department_id' => 'required|exists:departments,id', 
+                'department_id' => 'required|exists:departments,id',
+                'designation_id' => 'required|exists:designations,id',
+                'pay_scale' => 'required|string|max:50',
+                'job_type' => 'required|in:full_time,part_time,contract,temporary,internship',
+                'gender' => 'required|in:any,male,female',
+                'job_advertisement' => 'required|mimes:pdf|max:10240', // 10MB max
                 'description' => 'required|string',
                 'requirements' => 'required|string',
                 'positions' => 'required|integer|min:1',
+                'age_limit' => 'required|integer|min:18|max:65',
                 'deadline' => 'required|date|after:' . now()->addDays(1)->format('Y-m-d'),
                 'status' => 'required|in:active,inactive,draft',
             ], [
                 'deadline.after' => 'The deadline must be at least 15 days from today.',
                 'department_id.exists' => 'The selected department is invalid.',
+                'designation_id.exists' => 'The selected designation is invalid.',
+                'job_advertisement.required' => 'Job advertisement PDF is required.',
+                'job_advertisement.mimes' => 'Job advertisement must be a PDF file.',
+                'job_advertisement.max' => 'Job advertisement file size must not exceed 10MB.',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()
@@ -66,13 +78,27 @@ class JobPostingController extends Controller
      
 
         try {
+            // Handle file upload
+            $advertisementPath = null;
+            if ($request->hasFile('job_advertisement')) {
+                $file = $request->file('job_advertisement');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $advertisementPath = $file->storeAs('job_advertisements', $fileName, 'public');
+            }
+
             // Create the job posting
-            $jobPosting =JobPosting::create([
+            $jobPosting = JobPosting::create([
                 'title' => $request->title,
                 'department_id' => $request->department_id,
+                'designation_id' => $request->designation_id,
+                'pay_scale' => $request->pay_scale,
+                'job_type' => $request->job_type,
+                'gender' => $request->gender,
+                'job_advertisement' => $advertisementPath,
                 'description' => $request->description,
                 'requirements' => $request->requirements,
                 'positions' => $request->positions,
+                'age_limit' => $request->age_limit,
                 'deadline' => $request->deadline,
                 'status' => $request->status,
                 'created_by' => auth()->id()
@@ -110,7 +136,8 @@ class JobPostingController extends Controller
     {
         $jobPosting = JobPosting::findOrFail($id);
         $departments = Department::orderBy('name')->get();
-        return view('job-posting.edit', compact('jobPosting', 'departments'));
+        $designations = Designation::orderBy('name')->get();
+        return view('job-posting.edit', compact('jobPosting', 'departments', 'designations'));
     }
 
     /**
@@ -126,27 +153,58 @@ class JobPostingController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'department_id' => 'required|exists:departments,id',
+            'designation_id' => 'required|exists:designations,id',
+            'pay_scale' => 'required|string|max:50',
+            'job_type' => 'required|in:full_time,part_time,contract,temporary,internship',
+            'gender' => 'required|in:any,male,female',
+            'job_advertisement' => 'nullable|mimes:pdf|max:10240', // Optional for update
             'description' => 'required|string',
             'requirements' => 'required|string',
             'positions' => 'required|integer|min:1',
+            'age_limit' => 'required|integer|min:18|max:65',
             'deadline' => 'required|date|after:' . now()->addDays(14)->format('Y-m-d'),
             'status' => 'required|in:active,inactive,draft',
         ], [
             'deadline.after' => 'The deadline must be at least 15 days from today.',
             'department_id.exists' => 'The selected department is invalid.',
+            'designation_id.exists' => 'The selected designation is invalid.',
+            'job_advertisement.mimes' => 'Job advertisement must be a PDF file.',
+            'job_advertisement.max' => 'Job advertisement file size must not exceed 10MB.',
         ]);
 
         try {
             $jobPosting = JobPosting::findOrFail($id);
-            $jobPosting->update([
+            
+            // Handle file upload if new file is provided
+            $updateData = [
                 'title' => $request->title,
                 'department_id' => $request->department_id,
+                'designation_id' => $request->designation_id,
+                'pay_scale' => $request->pay_scale,
+                'job_type' => $request->job_type,
+                'gender' => $request->gender,
                 'description' => $request->description,
                 'requirements' => $request->requirements,
                 'positions' => $request->positions,
+                'age_limit' => $request->age_limit,
                 'deadline' => $request->deadline,
                 'status' => $request->status,
-            ]);
+            ];
+
+            if ($request->hasFile('job_advertisement')) {
+                // Delete old file if exists
+                if ($jobPosting->job_advertisement && \Storage::disk('public')->exists($jobPosting->job_advertisement)) {
+                    \Storage::disk('public')->delete($jobPosting->job_advertisement);
+                }
+                
+                // Upload new file
+                $file = $request->file('job_advertisement');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $advertisementPath = $file->storeAs('job_advertisements', $fileName, 'public');
+                $updateData['job_advertisement'] = $advertisementPath;
+            }
+
+            $jobPosting->update($updateData);
 
             return redirect()->route('job-posting.index')
                 ->with('success', 'Job posting updated successfully!');
@@ -186,7 +244,7 @@ class JobPostingController extends Controller
      */
     public function publicIndex(Request $request)
     {
-        $query = JobPosting::with('department')
+        $query = JobPosting::with('department', 'designation')
             ->where('status', 'active')
             ->where('deadline', '>=', now())
             ->orderBy('created_at', 'desc');
@@ -217,7 +275,7 @@ class JobPostingController extends Controller
      */
     public function publicShow($id)
     {
-        $jobPosting = JobPosting::with('department')
+        $jobPosting = JobPosting::with('department', 'designation')
             ->where('status', 'active')
             ->where('deadline', '>=', now())
             ->findOrFail($id);

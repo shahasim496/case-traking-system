@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use phpseclib3\System\SSH\Agent;
 
 class JobPosting extends Model
 {
@@ -24,9 +25,15 @@ class JobPosting extends Model
     protected $fillable = [
         'title',
         'department_id',
+        'designation_id',
+        'pay_scale',
+        'job_type',
+        'gender',
+        'job_advertisement',
         'description',
         'requirements',
         'positions',
+        'age_limit',
         'deadline',
         'status',
         'created_by'
@@ -40,6 +47,7 @@ class JobPosting extends Model
     protected $casts = [
         'deadline' => 'date',
         'positions' => 'integer',
+        'age_limit' => 'integer',
     ];
 
     /**
@@ -48,6 +56,14 @@ class JobPosting extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    /**
+     * Get the designation that belongs to the job posting.
+     */
+    public function designation()
+    {
+        return $this->belongsTo(Designation::class);
     }
 
     /**
