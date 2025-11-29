@@ -148,17 +148,17 @@ Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 
 
 // Case Tracking Routes
 Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function () {
-    Route::get('/', [App\Http\Controllers\CourtCaseController::class, 'index'])->name('cases.index');
-    Route::get('/create', [App\Http\Controllers\CourtCaseController::class, 'create'])->name('cases.create');
-    Route::post('/store', [App\Http\Controllers\CourtCaseController::class, 'store'])->name('cases.store');
-    Route::get('/{id}', [App\Http\Controllers\CourtCaseController::class, 'show'])->name('cases.show');
-    Route::get('/{id}/edit', [App\Http\Controllers\CourtCaseController::class, 'edit'])->name('cases.edit');
-    Route::put('/{id}', [App\Http\Controllers\CourtCaseController::class, 'update'])->name('cases.update');
-    Route::delete('/{id}', [App\Http\Controllers\CourtCaseController::class, 'destroy'])->name('cases.destroy');
+    Route::get('/', [App\Http\Controllers\CourtCaseController::class, 'index'])->name('cases.index')->middleware('permission:view case');
+    Route::get('/create', [App\Http\Controllers\CourtCaseController::class, 'create'])->name('cases.create')->middleware('permission:add case');
+    Route::post('/store', [App\Http\Controllers\CourtCaseController::class, 'store'])->name('cases.store')->middleware('permission:add case');
+    Route::get('/{id}', [App\Http\Controllers\CourtCaseController::class, 'show'])->name('cases.show')->middleware('permission:view case');
+    Route::get('/{id}/edit', [App\Http\Controllers\CourtCaseController::class, 'edit'])->name('cases.edit')->middleware('permission:edit case');
+    Route::put('/{id}', [App\Http\Controllers\CourtCaseController::class, 'update'])->name('cases.update')->middleware('permission:edit case');
+    Route::delete('/{id}', [App\Http\Controllers\CourtCaseController::class, 'destroy'])->name('cases.destroy')->middleware('permission:delete case');
     
     // Notices and Hearings
-    Route::post('/{id}/notices', [App\Http\Controllers\CourtCaseController::class, 'storeNotice'])->name('cases.notices.store');
-    Route::post('/{id}/hearings', [App\Http\Controllers\CourtCaseController::class, 'storeHearing'])->name('cases.hearings.store');
+    Route::post('/{id}/notices', [App\Http\Controllers\CourtCaseController::class, 'storeNotice'])->name('cases.notices.store')->middleware('permission:add notice');
+    Route::post('/{id}/hearings', [App\Http\Controllers\CourtCaseController::class, 'storeHearing'])->name('cases.hearings.store')->middleware('permission:add hearing');
     Route::post('/{id}/forward', [App\Http\Controllers\CourtCaseController::class, 'forward'])->name('cases.forward');
     Route::post('/{id}/comments', [App\Http\Controllers\CourtCaseController::class, 'storeComment'])->name('cases.comments.store');
     Route::put('/{id}/comments/{commentId}', [App\Http\Controllers\CourtCaseController::class, 'updateComment'])->name('cases.comments.update');
@@ -166,18 +166,18 @@ Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function
 
 // Notice Routes
 Route::group(['prefix' => 'notices', 'middleware' => ['auth', 'banned']], function () {
-    Route::get('/{id}', [App\Http\Controllers\NoticeController::class, 'show'])->name('notices.show');
-    Route::get('/{id}/edit', [App\Http\Controllers\NoticeController::class, 'edit'])->name('notices.edit');
-    Route::put('/{id}', [App\Http\Controllers\NoticeController::class, 'update'])->name('notices.update');
-    Route::delete('/{id}', [App\Http\Controllers\NoticeController::class, 'destroy'])->name('notices.destroy');
+    Route::get('/{id}', [App\Http\Controllers\NoticeController::class, 'show'])->name('notices.show')->middleware('permission:view notice');
+    Route::get('/{id}/edit', [App\Http\Controllers\NoticeController::class, 'edit'])->name('notices.edit')->middleware('permission:edit notice');
+    Route::put('/{id}', [App\Http\Controllers\NoticeController::class, 'update'])->name('notices.update')->middleware('permission:edit notice');
+    Route::delete('/{id}', [App\Http\Controllers\NoticeController::class, 'destroy'])->name('notices.destroy')->middleware('permission:delete notice');
 });
 
 // Hearing Routes
 Route::group(['prefix' => 'hearings', 'middleware' => ['auth', 'banned']], function () {
-    Route::get('/{id}', [App\Http\Controllers\HearingController::class, 'show'])->name('hearings.show');
-    Route::get('/{id}/edit', [App\Http\Controllers\HearingController::class, 'edit'])->name('hearings.edit');
-    Route::put('/{id}', [App\Http\Controllers\HearingController::class, 'update'])->name('hearings.update');
-    Route::delete('/{id}', [App\Http\Controllers\HearingController::class, 'destroy'])->name('hearings.destroy');
+    Route::get('/{id}', [App\Http\Controllers\HearingController::class, 'show'])->name('hearings.show')->middleware('permission:view hearing');
+    Route::get('/{id}/edit', [App\Http\Controllers\HearingController::class, 'edit'])->name('hearings.edit')->middleware('permission:edit hearing') ;
+    Route::put('/{id}', [App\Http\Controllers\HearingController::class, 'update'])->name('hearings.update')->middleware('permission:edit hearing');
+    Route::delete('/{id}', [App\Http\Controllers\HearingController::class, 'destroy'])->name('hearings.destroy')->middleware('permission:delete hearing');
 });
 
 
