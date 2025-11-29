@@ -11,7 +11,13 @@
                     <h4 class="mb-0">
                         <i class="fa fa-gavel mr-2"></i>Case Details
                     </h4>
-                  
+                    <div>
+                        @if(auth()->user()->can('view task logs'))
+                        <a href="{{ route('cases.logs', $case->id) }}" class="btn btn-light btn-sm mr-2">
+                            <i class="fa fa-history mr-1"></i>View Activity Logs
+                        </a>
+                        @endif
+                    </div>
                 </div>
                 <div class="card-body">
                     @include('components.toaster')

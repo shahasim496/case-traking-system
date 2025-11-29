@@ -8,9 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\LogsActivity;
 
 class HearingController extends Controller
 {
+    use LogsActivity;
     /**
      * Display the specified hearing.
      */
@@ -48,6 +50,7 @@ class HearingController extends Controller
         DB::beginTransaction();
 
         try {
+            $oldData = $hearing->toArray();
             $validatedData['updated_by'] = auth()->id();
 
             // Handle file upload
@@ -64,6 +67,18 @@ class HearingController extends Controller
             }
 
             $hearing->update($validatedData);
+
+            // Log activity
+            $this->logActivity(
+                $hearing->case_id,
+                'hearing',
+                'updated',
+                "Hearing updated for case '{$hearing->courtCase->case_number}' scheduled for " . date('d M Y', strtotime($hearing->hearing_date)),
+                'Hearing',
+                $hearing->id,
+                $oldData,
+                $hearing->fresh()->toArray()
+            );
 
             DB::commit();
 
@@ -85,6 +100,21 @@ class HearingController extends Controller
         DB::beginTransaction();
 
         try {
+            $hearingData = $hearing->toArray();
+            $case = $hearing->courtCase;
+            
+            // Log activity before deletion
+            $this->logActivity(
+                $caseId,
+                'hearing',
+                'deleted',
+                "Hearing deleted from case '{$case->case_number}'",
+                'Hearing',
+                $hearing->id,
+                $hearingData,
+                null
+            );
+
             // Delete court order if exists
             if ($hearing->court_order) {
                 Storage::disk('public')->delete($hearing->court_order);

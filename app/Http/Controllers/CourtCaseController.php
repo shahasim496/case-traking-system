@@ -18,9 +18,11 @@ use App\Models\CaseComment;
 use App\Models\User;
 use App\Notifications\AppNotification;
 use Illuminate\Support\Facades\Mail;
+use App\Traits\LogsActivity;
 
 class CourtCaseController extends Controller
 {
+    use LogsActivity;
     public function __construct()
     {
         $this->middleware('auth');
@@ -126,6 +128,18 @@ class CourtCaseController extends Controller
                     'updated_by' => auth()->id(),
                 ]);
             }
+
+            // Log activity
+            $this->logActivity(
+                $case->id,
+                'case',
+                'created',
+                "Case '{$case->case_number}' ({$case->case_title}) was created",
+                'CourtCase',
+                $case->id,
+                null,
+                $case->toArray()
+            );
 
             DB::commit();
 
@@ -423,6 +437,18 @@ class CourtCaseController extends Controller
                 $case->id
             ));
 
+            // Log activity
+            $this->logActivity(
+                $caseId,
+                'forwarding',
+                'forwarded',
+                "Case '{$case->case_number}' was forwarded from {$user->name} to {$receiver->name}",
+                'CaseForward',
+                $caseForward->id,
+                null,
+                $caseForward->toArray()
+            );
+
             DB::commit();
 
             // Prepare success message with email status
@@ -468,13 +494,25 @@ class CourtCaseController extends Controller
         DB::beginTransaction();
 
         try {
-            CaseComment::create([
+            $comment = CaseComment::create([
                 'case_id' => $caseId,
                 'user_id' => $user->id,
                 'comment' => $validatedData['comment'],
                 'created_by' => $user->id,
                 'updated_by' => $user->id,
             ]);
+
+            // Log activity
+            $this->logActivity(
+                $caseId,
+                'comment',
+                'created',
+                "Comment added to case '{$case->case_number}' by {$user->name}",
+                'CaseComment',
+                $comment->id,
+                null,
+                $comment->toArray()
+            );
 
             DB::commit();
 
@@ -515,10 +553,23 @@ class CourtCaseController extends Controller
         DB::beginTransaction();
 
         try {
+            $oldData = $comment->toArray();
             $comment->update([
                 'comment' => $validatedData['comment'],
                 'updated_by' => $user->id,
             ]);
+
+            // Log activity
+            $this->logActivity(
+                $caseId,
+                'comment',
+                'updated',
+                "Comment updated on case '{$case->case_number}' by {$user->name}",
+                'CaseComment',
+                $comment->id,
+                $oldData,
+                $comment->fresh()->toArray()
+            );
 
             DB::commit();
 
@@ -611,6 +662,7 @@ class CourtCaseController extends Controller
         DB::beginTransaction();
 
         try {
+            $oldData = $case->toArray();
             $validatedData['updated_by'] = auth()->id();
             
             // Remove parties from validated data before updating case
@@ -632,6 +684,18 @@ class CourtCaseController extends Controller
                     'updated_by' => auth()->id(),
                 ]);
             }
+
+            // Log activity
+            $this->logActivity(
+                $case->id,
+                'case',
+                'updated',
+                "Case '{$case->case_number}' ({$case->case_title}) was updated",
+                'CourtCase',
+                $case->id,
+                $oldData,
+                $case->fresh()->toArray()
+            );
 
             DB::commit();
 
@@ -663,6 +727,8 @@ class CourtCaseController extends Controller
         DB::beginTransaction();
 
         try {
+            $caseData = $case->toArray();
+            
             // Delete related notices attachments
             foreach ($case->notices as $notice) {
                 if ($notice->attachment) {
@@ -676,6 +742,18 @@ class CourtCaseController extends Controller
                     Storage::disk('public')->delete($hearing->court_order);
                 }
             }
+
+            // Log activity before deletion
+            $this->logActivity(
+                $case->id,
+                'case',
+                'deleted',
+                "Case '{$case->case_number}' ({$case->case_title}) was deleted",
+                'CourtCase',
+                $case->id,
+                $caseData,
+                null
+            );
 
             $case->delete();
 
@@ -721,7 +799,19 @@ class CourtCaseController extends Controller
                 $validatedData['attachment'] = $path;
             }
 
-            Notice::create($validatedData);
+            $notice = Notice::create($validatedData);
+
+            // Log activity
+            $this->logActivity(
+                $caseId,
+                'notice',
+                'created',
+                "Notice added to case '{$case->case_number}' on " . date('d M Y', strtotime($notice->notice_date)),
+                'Notice',
+                $notice->id,
+                null,
+                $notice->toArray()
+            );
 
             DB::commit();
 
@@ -768,7 +858,19 @@ class CourtCaseController extends Controller
                 $validatedData['court_order'] = $path;
             }
 
-            Hearing::create($validatedData);
+            $hearing = Hearing::create($validatedData);
+
+            // Log activity
+            $this->logActivity(
+                $caseId,
+                'hearing',
+                'created',
+                "Hearing added to case '{$case->case_number}' scheduled for " . date('d M Y', strtotime($hearing->hearing_date)),
+                'Hearing',
+                $hearing->id,
+                null,
+                $hearing->toArray()
+            );
 
             DB::commit();
 

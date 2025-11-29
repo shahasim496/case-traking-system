@@ -8,9 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\LogsActivity;
 
 class NoticeController extends Controller
 {
+    use LogsActivity;
     /**
      * Display the specified notice.
      */
@@ -45,6 +47,7 @@ class NoticeController extends Controller
         DB::beginTransaction();
 
         try {
+            $oldData = $notice->toArray();
             $validatedData['updated_by'] = auth()->id();
 
             // Handle file upload
@@ -61,6 +64,18 @@ class NoticeController extends Controller
             }
 
             $notice->update($validatedData);
+
+            // Log activity
+            $this->logActivity(
+                $notice->case_id,
+                'notice',
+                'updated',
+                "Notice updated for case '{$notice->courtCase->case_number}' on " . date('d M Y', strtotime($notice->notice_date)),
+                'Notice',
+                $notice->id,
+                $oldData,
+                $notice->fresh()->toArray()
+            );
 
             DB::commit();
 
@@ -82,6 +97,21 @@ class NoticeController extends Controller
         DB::beginTransaction();
 
         try {
+            $noticeData = $notice->toArray();
+            $case = $notice->courtCase;
+            
+            // Log activity before deletion
+            $this->logActivity(
+                $caseId,
+                'notice',
+                'deleted',
+                "Notice deleted from case '{$case->case_number}'",
+                'Notice',
+                $notice->id,
+                $noticeData,
+                null
+            );
+
             // Delete attachment if exists
             if ($notice->attachment) {
                 Storage::disk('public')->delete($notice->attachment);

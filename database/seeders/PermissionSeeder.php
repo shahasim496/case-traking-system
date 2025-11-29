@@ -61,6 +61,9 @@ class PermissionSeeder extends Seeder
             'delete hearing' => 'Can delete hearings',
             'view hearing' => 'Can view hearings',
 
+            //task logs permissions
+            'view task logs' => 'Can view task logs',
+
 
         ];
 
@@ -109,6 +112,8 @@ class PermissionSeeder extends Seeder
                 'edit hearing',
                 'delete hearing',
                 'view hearing',
+
+                'view task logs',
             ],
 
 

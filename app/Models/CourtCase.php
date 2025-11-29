@@ -84,5 +84,13 @@ class CourtCase extends Model
     {
         return $this->hasMany(CaseComment::class, 'case_id')->orderBy('created_at', 'DESC');
     }
+
+    /**
+     * Get the task logs for the case.
+     */
+    public function taskLogs()
+    {
+        return $this->hasMany(TaskLog::class, 'case_id')->orderBy('created_at', 'DESC');
+    }
 }
 

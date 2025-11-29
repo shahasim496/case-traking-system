@@ -180,6 +180,11 @@ Route::group(['prefix' => 'hearings', 'middleware' => ['auth', 'banned']], funct
     Route::delete('/{id}', [App\Http\Controllers\HearingController::class, 'destroy'])->name('hearings.destroy')->middleware('permission:delete hearing');
 });
 
+// Task Logs Routes
+Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function () {
+    Route::get('/{id}/logs', [App\Http\Controllers\TaskLogController::class, 'index'])->name('cases.logs')->middleware('permission:view case');
+});
+
 
 
 

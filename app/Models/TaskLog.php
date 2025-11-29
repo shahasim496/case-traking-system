@@ -11,22 +11,47 @@ class TaskLog extends Model
 
     protected $fillable = [
         'case_id',
-        'officer_id',
-        'officer_name',
-        'officer_rank',
-        'department',
-        'date',
+        'user_id',
+        'category',
+        'activity_type',
+        'entity_type',
+        'entity_id',
         'description',
-        'action_taken',
+        'old_data',
+        'new_data',
+        'ip_address',
+        'user_agent',
     ];
 
-    public function case()
+    protected $casts = [
+        'old_data' => 'array',
+        'new_data' => 'array',
+    ];
+
+    public function courtCase()
     {
-        return $this->belongsTo(NewCaseManagement::class, 'case_id');
+        return $this->belongsTo(CourtCase::class, 'case_id');
     }
 
-    public function officer()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'officer_id');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the related entity (Notice, Hearing, etc.)
+     */
+    public function entity()
+    {
+        if (!$this->entity_type || !$this->entity_id) {
+            return null;
+        }
+
+        $modelClass = 'App\\Models\\' . $this->entity_type;
+        if (class_exists($modelClass)) {
+            return $modelClass::find($this->entity_id);
+        }
+
+        return null;
     }
 }
