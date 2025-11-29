@@ -222,7 +222,7 @@
             </div>
             
             <!-- Recent Notices -->
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header text-white" style="background-color: #00349C;">
                     <h5 class="mb-0">
                         <i class="fa fa-bell mr-2"></i>Recent Notices
@@ -241,6 +241,160 @@
                     @endif
                 </div>
             </div>
+            
+            <!-- Forward To Section -->
+            @if(isset($forwardableUsers) && $forwardableUsers->count() > 0)
+            <div class="card shadow-sm">
+                <div class="card-header text-white" style="background-color: #00349C;">
+                    <h5 class="mb-0">
+                        <i class="fa fa-share mr-2"></i>Forward To
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('cases.forward', $case->id) }}" id="forwardForm">
+                        @csrf
+                        <div class="form-group">
+                            <label class="font-weight-bold">Select User <span class="text-danger">*</span></label>
+                            <select name="forwarded_to" id="forwarded_to" class="form-control @error('forwarded_to') is-invalid @enderror" required>
+                                <option value="">-- Select User --</option>
+                                @foreach($forwardableUsers as $forwardableUser)
+                                    <option value="{{ $forwardableUser->id }}" {{ old('forwarded_to') == $forwardableUser->id ? 'selected' : '' }}>
+                                        {{ $forwardableUser->name }} 
+                                        @if($forwardableUser->roles && $forwardableUser->roles->count() > 0)
+                                            ({{ $forwardableUser->roles->pluck('name')->implode(', ') }})
+                                        @endif
+                                        @if($forwardableUser->department)
+                                            - {{ $forwardableUser->department->name }}
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('forwarded_to')
+                                <small class="text-danger d-block">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="font-weight-bold">Message</label>
+                            <textarea name="message" id="message" class="form-control @error('message') is-invalid @enderror" 
+                                      rows="3" placeholder="Enter message (optional)...">{{ old('message') }}</textarea>
+                            @error('message')
+                                <small class="text-danger d-block">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        
+                        <button type="submit" class="btn btn-block" style="background-color: #00349C; color: white;">
+                            <i class="fa fa-paper-plane mr-1"></i>Forward Case
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @else
+            <div class="card shadow-sm">
+                <div class="card-header text-white" style="background-color: #00349C;">
+                    <h5 class="mb-0">
+                        <i class="fa fa-share mr-2"></i>Forward To
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted text-center mb-0">
+                        @if(auth()->user()->hasRole('SuperAdmin'))
+                            No users available to forward in this case's department.
+                        @elseif(auth()->user()->hasRole('Legal Officer'))
+                            No Joint Secretary users found.
+                        @elseif(auth()->user()->hasRole('Joint Secretary'))
+                            No Permanent Secretary or Secretary users found in this case's department.
+                        @else
+                            You do not have permission to forward cases.
+                        @endif
+                    </p>
+                </div>
+            </div>
+            @endif
+            
+            <!-- Comments Section -->
+            @if($case->department_id && (auth()->user()->department_id == $case->department_id || auth()->user()->hasRole('SuperAdmin')))
+            <div class="card shadow-sm mt-4">
+                <div class="card-header text-white" style="background-color: #00349C;">
+                    <h5 class="mb-0">
+                        <i class="fa fa-comments mr-2"></i>Comments
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Add Comment Form -->
+                    <form method="POST" action="{{ route('cases.comments.store', $case->id) }}" class="mb-4">
+                        @csrf
+                        <div class="form-group">
+                            <label class="font-weight-bold">Add Comment</label>
+                            <textarea name="comment" id="comment" class="form-control @error('comment') is-invalid @enderror" 
+                                      rows="3" placeholder="Enter your comment..." required>{{ old('comment') }}</textarea>
+                            @error('comment')
+                                <small class="text-danger d-block">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <button type="submit" class="btn btn-sm" style="background-color: #00349C; color: white;">
+                            <i class="fa fa-paper-plane mr-1"></i>Post Comment
+                        </button>
+                    </form>
+
+                    <!-- Comments List -->
+                    <div class="comments-list">
+                        @if($case->comments->count() > 0)
+                            @foreach($case->comments as $comment)
+                                <div class="comment-item mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <strong>{{ $comment->user->name }}</strong>
+                                            <small class="text-muted ml-2">
+                                                {{ $comment->created_at->format('d M Y, h:i A') }}
+                                                @if($comment->updated_at != $comment->created_at)
+                                                    <span class="text-info">(Edited)</span>
+                                                @endif
+                                            </small>
+                                        </div>
+                                        @if($comment->user_id == auth()->id())
+                                            <div>
+                                                <button type="button" class="btn btn-sm btn-warning edit-comment-btn" 
+                                                        data-comment-id="{{ $comment->id }}"
+                                                        data-comment-text="{{ $comment->comment }}"
+                                                        title="Edit">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="comment-content" id="comment-content-{{ $comment->id }}">
+                                        <p class="mb-0">{{ $comment->comment }}</p>
+                                    </div>
+                                    
+                                    <!-- Edit Comment Form (Hidden by default) -->
+                                    <div class="edit-comment-form" id="edit-form-{{ $comment->id }}" style="display: none;">
+                                        <form method="POST" action="{{ route('cases.comments.update', [$case->id, $comment->id]) }}" class="mt-2">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="form-group mb-2">
+                                                <textarea name="comment" class="form-control" rows="3" required>{{ $comment->comment }}</textarea>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fa fa-save mr-1"></i>Save
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-secondary cancel-edit-btn" data-comment-id="{{ $comment->id }}">
+                                                    <i class="fa fa-times mr-1"></i>Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="text-muted text-center mb-0">No comments yet. Be the first to comment!</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+            
         </div>
     </div>
 </div>
@@ -460,6 +614,7 @@
     </div>
 </div>
 
+
 <script>
 $(document).ready(function() {
     // Handle delete notice button click
@@ -483,7 +638,41 @@ $(document).ready(function() {
         $('#deleteHearingForm').attr('action', url);
         $('#deleteHearingModal').modal('show');
     });
+    
+    // Handle edit comment button click
+    $('.edit-comment-btn').click(function() {
+        var commentId = $(this).data('comment-id');
+        $('#comment-content-' + commentId).hide();
+        $('#edit-form-' + commentId).show();
+        $(this).hide();
+    });
+    
+    // Handle cancel edit comment button click
+    $('.cancel-edit-btn').click(function() {
+        var commentId = $(this).data('comment-id');
+        $('#edit-form-' + commentId).hide();
+        $('#comment-content-' + commentId).show();
+        $('.edit-comment-btn[data-comment-id="' + commentId + '"]').show();
+    });
 });
 </script>
+
+<style>
+.comment-item {
+    transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.d-flex.gap-2 .btn {
+    margin-right: 0.5rem;
+}
+
+.d-flex.gap-2 .btn:last-child {
+    margin-right: 0;
+}
+</style>
 @endsection
 

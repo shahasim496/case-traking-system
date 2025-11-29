@@ -159,6 +159,9 @@ Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function
     // Notices and Hearings
     Route::post('/{id}/notices', [App\Http\Controllers\CourtCaseController::class, 'storeNotice'])->name('cases.notices.store');
     Route::post('/{id}/hearings', [App\Http\Controllers\CourtCaseController::class, 'storeHearing'])->name('cases.hearings.store');
+    Route::post('/{id}/forward', [App\Http\Controllers\CourtCaseController::class, 'forward'])->name('cases.forward');
+    Route::post('/{id}/comments', [App\Http\Controllers\CourtCaseController::class, 'storeComment'])->name('cases.comments.store');
+    Route::put('/{id}/comments/{commentId}', [App\Http\Controllers\CourtCaseController::class, 'updateComment'])->name('cases.comments.update');
 });
 
 // Notice Routes

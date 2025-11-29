@@ -52,7 +52,18 @@
                     <li>
                         <a href="javascript:;" onclick="markAsRead('{{ $notification->id }}')">
                             <span class="details">
-                                <strong>{{ $notification->data['message'] }}</strong>
+                                <strong>
+                                    @if(isset($notification->data['message']))
+                                        {{ $notification->data['message'] }}
+                                    @elseif(isset($notification->data['title']))
+                                        {{ $notification->data['title'] }}
+                                        @if(isset($notification->data['description']))
+                                            <br><small>{{ Str::limit($notification->data['description'], 50) }}</small>
+                                        @endif
+                                    @else
+                                        New Notification
+                                    @endif
+                                </strong>
                             </span>
                         </a>
                     </li>
@@ -63,7 +74,16 @@
                     <li>
                         <a href="javascript:;">
                             <span class="details">
-                                {{ $notification->data['message'] }}
+                                @if(isset($notification->data['message']))
+                                    {{ $notification->data['message'] }}
+                                @elseif(isset($notification->data['title']))
+                                    {{ $notification->data['title'] }}
+                                    @if(isset($notification->data['description']))
+                                        <br><small>{{ Str::limit($notification->data['description'], 50) }}</small>
+                                    @endif
+                                @else
+                                    Notification
+                                @endif
                             </span>
                         </a>
                     </li>

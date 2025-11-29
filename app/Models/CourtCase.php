@@ -68,5 +68,21 @@ class CourtCase extends Model
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
+
+    /**
+     * Get the forwards for the case.
+     */
+    public function forwards()
+    {
+        return $this->hasMany(CaseForward::class, 'case_id');
+    }
+
+    /**
+     * Get the comments for the case.
+     */
+    public function comments()
+    {
+        return $this->hasMany(CaseComment::class, 'case_id')->orderBy('created_at', 'DESC');
+    }
 }
 

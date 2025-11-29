@@ -6,11 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use App\Models\CourtCase;
 use App\Models\Notice;
 use App\Models\Hearing;
 use App\Models\Party;
 use App\Models\Department;
+use App\Models\CaseForward;
+use App\Models\CaseComment;
+use App\Models\User;
+use App\Notifications\AppNotification;
+use Illuminate\Support\Facades\Mail;
 
 class CourtCaseController extends Controller
 {
@@ -134,7 +141,7 @@ class CourtCaseController extends Controller
      */
     public function show($id)
     {
-        $case = CourtCase::with(['notices', 'hearings', 'department', 'parties'])->findOrFail($id);
+        $case = CourtCase::with(['notices', 'hearings', 'department', 'parties', 'comments.user'])->findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
@@ -162,7 +169,353 @@ class CourtCaseController extends Controller
             ->limit(5)
             ->get();
 
-        return view('cases.show', compact('case', 'upcomingHearings', 'recentNotices'));
+        // Get forwardable users based on role
+        $forwardableUsers = $this->getForwardableUsers($user, $case);
+        
+        // Debug: Log forwardable users count
+        Log::info('Forwardable users count: ' . $forwardableUsers->count(), [
+            'user_id' => $user->id,
+            'user_roles' => $user->roles->pluck('name')->toArray(),
+            'case_department_id' => $case->department_id
+        ]);
+
+        return view('cases.show', compact('case', 'upcomingHearings', 'recentNotices', 'forwardableUsers'));
+    }
+
+    /**
+     * Get forwardable users based on current user's role and case department.
+     */
+    private function getForwardableUsers($user, $case)
+    {
+        $forwardableUsers = collect();
+
+        // Load user roles to check
+        $user->load('roles');
+
+        // Get user's role names
+        $userRoleNames = $user->roles->pluck('name')->toArray();
+        
+        Log::info('User roles', ['user_id' => $user->id, 'roles' => $userRoleNames]);
+
+        if (in_array('SuperAdmin', $userRoleNames)) {
+            // SuperAdmin can forward to any role of case department user
+            if ($case->department_id) {
+                $forwardableUsers = User::where('department_id', $case->department_id)
+                    ->where('id', '!=', $user->id)
+                    ->with(['roles' => function($query) {
+                        $query->where('guard_name', 'web');
+                    }, 'department'])
+                    ->get();
+            } else {
+                // If case has no department, can forward to any user
+                $forwardableUsers = User::where('id', '!=', $user->id)
+                    ->with(['roles' => function($query) {
+                        $query->where('guard_name', 'web');
+                    }, 'department'])
+                    ->get();
+            }
+        } elseif (in_array('Legal Officer', $userRoleNames)) {
+            // Legal Officer can forward to Joint Secretary
+            $jointSecretaryRole = \Spatie\Permission\Models\Role::where('name', 'Joint Secretary')
+                ->where('guard_name', 'web')
+                ->first();
+            
+            if ($jointSecretaryRole) {
+                $forwardableUsers = $jointSecretaryRole->users()
+                    ->where('users.id', '!=', $user->id)
+                    ->with(['roles' => function($query) {
+                        $query->where('guard_name', 'web');
+                    }, 'department'])
+                    ->get();
+            }
+        } elseif (in_array('Joint Secretary', $userRoleNames)) {
+            // Joint Secretary can forward to Permanent Secretary or Secretary of that case department
+            $targetRoles = \Spatie\Permission\Models\Role::whereIn('name', ['Permanent Secretary', 'Secretary'])
+                ->where('guard_name', 'web')
+                ->pluck('id')
+                ->toArray();
+            
+            if (!empty($targetRoles)) {
+                $query = User::whereHas('roles', function($q) use ($targetRoles) {
+                    $q->whereIn('roles.id', $targetRoles)
+                      ->where('roles.guard_name', 'web');
+                })
+                ->where('id', '!=', $user->id);
+                
+                if ($case->department_id) {
+                    $query->where('department_id', $case->department_id);
+                }
+                
+                $forwardableUsers = $query->with(['roles' => function($query) {
+                    $query->where('guard_name', 'web');
+                }, 'department'])
+                ->get();
+            }
+        }
+
+        Log::info('Forwardable users found', [
+            'count' => $forwardableUsers->count(),
+            'user_ids' => $forwardableUsers->pluck('id')->toArray()
+        ]);
+
+        return $forwardableUsers;
+    }
+
+    /**
+     * Forward a case to another user.
+     */
+    public function forward(Request $request, $caseId)
+    {
+        $case = CourtCase::findOrFail($caseId);
+        $user = Auth::user();
+
+        // Check if user has access to this case
+        if (!$user->hasRole('SuperAdmin')) {
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to forward this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to forward this case.');
+            }
+        }
+
+        // Get forwardable users
+        $forwardableUsers = $this->getForwardableUsers($user, $case);
+        $forwardableUserIds = $forwardableUsers->pluck('id')->toArray();
+
+        $validatedData = $request->validate([
+            'forwarded_to' => 'required|exists:users,id|in:' . implode(',', $forwardableUserIds),
+            'message' => 'nullable|string|max:1000',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Create case forward record
+            $caseForward = CaseForward::create([
+                'case_id' => $caseId,
+                'forwarded_by' => $user->id,
+                'forwarded_to' => $validatedData['forwarded_to'],
+                'message' => $validatedData['message'] ?? null,
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+
+            // Get the receiver user
+            $receiver = User::findOrFail($validatedData['forwarded_to']);
+            
+            // Track email sending status
+            $emailSent = false;
+            $emailError = null;
+
+            // Send email notification if receiver has email and mail is configured
+            if ($receiver->email && !empty($receiver->email) && filter_var($receiver->email, FILTER_VALIDATE_EMAIL)) {
+                try {
+                    $fromEmail = env('MAIL_FROM_ADDRESS', config('mail.from.address'));
+                    $fromName = env('MAIL_FROM_NAME', config('mail.from.name', 'Court System'));
+                    
+                    // Only send email if MAIL_FROM_ADDRESS is configured
+                    if ($fromEmail && !empty($fromEmail) && $fromEmail !== 'hello@example.com') {
+                        $emailData = [
+                            'to_email' => $receiver->email,
+                            'subject' => 'Case Forwarded: ' . $case->case_number,
+                            'senderName' => $user->name,
+                            'receiverName' => $receiver->name,
+                            'case' => $case,
+                            'message' => $validatedData['message'] ?? null,
+                            'from_email' => $fromEmail,
+                        ];
+
+                        Mail::send('emails.case_forwarded', ['data' => $emailData], function($message) use ($emailData, $fromEmail, $fromName) {
+                            $message->from($fromEmail, $fromName);
+                            $message->to($emailData['to_email']);
+                            $message->subject($emailData['subject']);
+                        });
+
+                        // Check for mail failures
+                        if (Mail::failures()) {
+                            $failures = Mail::failures();
+                            $emailError = 'Email sending failed: ' . implode(', ', $failures);
+                            Log::error('Email sending failed', [
+                                'receiver_id' => $receiver->id,
+                                'receiver_email' => $receiver->email,
+                                'failures' => $failures
+                            ]);
+                        } else {
+                            $emailSent = true;
+                            Log::info('Email sent successfully', [
+                                'receiver_id' => $receiver->id,
+                                'receiver_email' => $receiver->email,
+                                'case_id' => $case->id
+                            ]);
+                        }
+                    } else {
+                        $emailError = 'MAIL_FROM_ADDRESS not configured';
+                        Log::warning('Email not sent: MAIL_FROM_ADDRESS not configured or using default', [
+                            'receiver_id' => $receiver->id,
+                            'receiver_email' => $receiver->email,
+                            'from_email' => $fromEmail
+                        ]);
+                    }
+                } catch (\Exception $emailException) {
+                    $emailError = $emailException->getMessage();
+                    // Log email error but don't fail the transaction
+                    Log::error('Failed to send forward email', [
+                        'error' => $emailException->getMessage(),
+                        'trace' => $emailException->getTraceAsString(),
+                        'receiver_id' => $receiver->id,
+                        'receiver_email' => $receiver->email
+                    ]);
+                }
+            } else {
+                $emailError = 'Invalid or missing receiver email';
+                Log::warning('Email not sent: Invalid or missing receiver email', [
+                    'receiver_id' => $receiver->id,
+                    'receiver_email' => $receiver->email ?? 'null'
+                ]);
+            }
+
+            // Create in-app notification
+            $receiver->notify(new AppNotification(
+                $user->id,
+                $receiver->id,
+                'Case Forwarded',
+                'Case ' . $case->case_number . ' has been forwarded to you by ' . $user->name . ($validatedData['message'] ? '. Message: ' . Str::limit($validatedData['message'], 100) : ''),
+                'case_forwarded',
+                $case->id
+            ));
+
+            DB::commit();
+
+            // Prepare success message with email status
+            $successMessage = 'Case forwarded successfully.';
+            if ($emailSent) {
+                $successMessage .= ' Email notification sent to ' . $receiver->email . '.';
+            } else {
+                $successMessage .= ' (Email notification could not be sent';
+                if ($emailError) {
+                    $successMessage .= ': ' . $emailError;
+                }
+                $successMessage .= ' - please check mail configuration and logs)';
+            }
+
+            return redirect()->route('cases.show', $caseId)->with('success', $successMessage);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Failed to forward case: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Store a comment for a case.
+     */
+    public function storeComment(Request $request, $caseId)
+    {
+        $case = CourtCase::findOrFail($caseId);
+        $user = Auth::user();
+
+        // Check if user has access to this case (must be from same department or SuperAdmin)
+        if (!$user->hasRole('SuperAdmin')) {
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to comment on this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to comment on this case.');
+            }
+        }
+
+        $validatedData = $request->validate([
+            'comment' => 'required|string|max:2000',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            CaseComment::create([
+                'case_id' => $caseId,
+                'user_id' => $user->id,
+                'comment' => $validatedData['comment'],
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('cases.show', $caseId)->with('success', 'Comment added successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Failed to add comment: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Update a comment for a case.
+     */
+    public function updateComment(Request $request, $caseId, $commentId)
+    {
+        $case = CourtCase::findOrFail($caseId);
+        $comment = CaseComment::findOrFail($commentId);
+        $user = Auth::user();
+
+        // Check if user owns this comment
+        if ($comment->user_id != $user->id) {
+            abort(403, 'You can only edit your own comments.');
+        }
+
+        // Check if user has access to this case
+        if (!$user->hasRole('SuperAdmin')) {
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to edit comments on this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to edit comments on this case.');
+            }
+        }
+
+        $validatedData = $request->validate([
+            'comment' => 'required|string|max:2000',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $comment->update([
+                'comment' => $validatedData['comment'],
+                'updated_by' => $user->id,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('cases.show', $caseId)->with('success', 'Comment updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Failed to update comment: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Delete a comment for a case.
+     */
+    public function deleteComment($caseId, $commentId)
+    {
+        $case = CourtCase::findOrFail($caseId);
+        $comment = CaseComment::findOrFail($commentId);
+        $user = Auth::user();
+
+        // Check if user owns this comment
+        if ($comment->user_id != $user->id && !$user->hasRole('SuperAdmin')) {
+            abort(403, 'You can only delete your own comments.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $comment->delete();
+
+            DB::commit();
+
+            return redirect()->route('cases.show', $caseId)->with('success', 'Comment deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Failed to delete comment: ' . $e->getMessage());
+        }
     }
 
     /**
