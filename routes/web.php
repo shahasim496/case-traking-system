@@ -50,11 +50,7 @@ Route::post('/reset_password', [App\Http\Controllers\SendCodeController::class, 
 // Route::post('/register', [App\Http\Controllers\RegistrationController::class, 'userRegister'])->name('userRegister');
 Route::get('/resend_code', [App\Http\Controllers\SendCodeController::class, 'resendCode'])->name('resendCode');
 
-Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function () {
-    Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users')->middleware('permission:view user');
-    Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->name('user.create')->middleware('permission:create user');
-    Route::get('/edit/{id}', [App\Http\Controllers\UserController::class, 'edit'])->name('user.edit')->middleware('permission:edit user'); 
-});
+
 
 
 
@@ -70,10 +66,12 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
     Route::get('/verifycode', [App\Http\Controllers\UserController::class, 'verifyCode'])->name('user.verifyCode');
     Route::post('/verifyUserCode', [App\Http\Controllers\UserController::class, 'verifyUserCode'])->name('user.verifyUserCode');
     Route::post('/reset_password', [App\Http\Controllers\UserController::class, 'resetPassword'])->name('user.resetPassword');
+
+    Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users')->middleware('permission:view user');
+    Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->name('user.create')->middleware('permission:create user');
     Route::post('/store', [App\Http\Controllers\UserController::class, 'store'])->name('user.store')->middleware('permission:create user');
-    Route::post('/storeOfficer', [App\Http\Controllers\UserController::class, 'storeOfficer'])->name('user.storeOfficer')->middleware('permission:create user');
+    Route::get('/edit/{id}', [App\Http\Controllers\UserController::class, 'edit'])->name('user.edit')->middleware('permission:edit user'); 
     Route::put('/update/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('user.update')->middleware('permission:edit user');
-    Route::put('/updateOfficer/{id}', [App\Http\Controllers\UserController::class, 'updateOfficer'])->name('user.updateOfficer')->middleware('role:SuperAdmin|Admin');
     Route::get('/delete/{id}', [App\Http\Controllers\UserController::class, 'delete'])->name('user.delete')->middleware('permission:delete user');
 
     Route::get('/markNotification', [App\Http\Controllers\UserController::class, 'markNotification'])->name('user.markNotification');
@@ -111,14 +109,14 @@ Route::group(['prefix' => 'designations', 'middleware' => ['auth', 'banned', 'pe
 
 
 
-Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned', 'permission:manage role and permissions']], function () {
+Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/', [App\Http\Controllers\RoleController::class, 'index'])->name('roles')->middleware('permission:view role');
     Route::get('/create', [App\Http\Controllers\RoleController::class, 'create'])->name('roles.create')->middleware('permission:create role');
     Route::post('/store', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store')->middleware('permission:create role');
     Route::get('/edit/{id}', [App\Http\Controllers\RoleController::class, 'edit'])->name('roles.edit')->middleware('permission:edit role');
     Route::put('/update/{id}', [App\Http\Controllers\RoleController::class, 'update'])->name('roles.update')->middleware('permission:edit role');
     Route::delete('/delete/{id}', [App\Http\Controllers\RoleController::class, 'delete'])->name('roles.delete')->middleware('permission:delete role');
- 
+    
     Route::get('/assign-permissions/{id}', [App\Http\Controllers\RoleController::class, 'assignPermissions'])->name('roles.assignPermissions')->middleware('permission:manage permission assignment');
     Route::get('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'managePermissions'])->name('roles.managePermissions')->middleware('permission:manage permission assignment');
     Route::post('/roles/assign-permissions', [App\Http\Controllers\RoleController::class, 'storeAssignedPermissions'])->name('roles.storeAssignedPermissions')->middleware('permission:manage permission assignment');
@@ -128,14 +126,7 @@ Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned', 'permissio
 
 
 
-Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned']], function () {
-    Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions')->middleware('permission:view permission');
-    Route::get('/create', [App\Http\Controllers\PermissionController::class, 'create'])->name('permissions.create')->middleware('permission:create permission');
-    Route::post('/store', [App\Http\Controllers\PermissionController::class, 'store'])->name('permissions.store')->middleware('permission:create permission');
-    Route::get('/edit/{id}', [App\Http\Controllers\PermissionController::class, 'edit'])->name('permissions.edit')->middleware('permission:edit permission');
-    Route::put('/update/{id}', [App\Http\Controllers\PermissionController::class, 'update'])->name('permissions.update')->middleware('permission:edit permission');
-    Route::delete('/delete/{id}', [App\Http\Controllers\PermissionController::class, 'delete'])->name('permissions.delete')->middleware('permission:delete permission');
-});
+
 
 
 

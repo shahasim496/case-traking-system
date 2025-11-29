@@ -448,36 +448,6 @@ class UserController extends Controller
 
     } //end of function
 
-    public function assignPermissions()
-    {
-
-
-        $modules = array(
-            'Officer'
-        );
-
-
-        $subModules = array(
-            'Personal Information',
-            'Qualification',
-            'Foreign Visits',
-            'Mandatory Training',
-            'Training',
-            'Spouse Info',
-            'Promotion',
-            'Contact Information',
-            'Achievements',
-            'Service/Posting History',
-        );
-
-        $permissions = array(
-            'Read',
-            'Write',
-            'Edit',
-            'Delete',
-        );
-    } //end of function
-
     public function changePassword(Request $request)
     {
 
