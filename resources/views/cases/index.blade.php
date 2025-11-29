@@ -112,8 +112,8 @@
                                         <td>
                                             <div class="d-flex gap-1">
                                                 <a href="{{ route('cases.show', $case->id) }}" 
-                                                   class="btn btn-sm btn-info d-flex align-items-center justify-content-center" 
-                                                   style="width: 80px;"
+                                                   class="btn btn-sm d-flex align-items-center justify-content-center" 
+                                                   style="width: 80px; background-color: #17a2b8; color: white;"
                                                    title="View">
                                                     <i class="fa fa-eye mr-1"></i>View
                                                 </a>

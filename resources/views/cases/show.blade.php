@@ -11,14 +11,7 @@
                     <h4 class="mb-0">
                         <i class="fa fa-gavel mr-2"></i>Case Details
                     </h4>
-                    <div>
-                        <a href="{{ route('cases.edit', $case->id) }}" class="btn btn-light btn-sm">
-                            <i class="fa fa-edit mr-1"></i>Edit
-                        </a>
-                        <a href="{{ route('cases.index') }}" class="btn btn-light btn-sm">
-                            <i class="fa fa-arrow-left mr-1"></i>Back
-                        </a>
-                    </div>
+                  
                 </div>
                 <div class="card-body">
                     @include('components.toaster')
@@ -82,7 +75,7 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #00349C;">
                     <h5 class="mb-0">
-                        <i class="fa fa-file-text mr-2"></i>Notices ({{ $case->notices->count() }})
+                        <i class="fa fa-file-text mr-2"></i>Notices 
                     </h5>
                     <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addNoticeModal">
                         <i class="fa fa-plus mr-1"></i>Add Notice
@@ -128,7 +121,7 @@
             <div class="card shadow-sm">
                 <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #00349C;">
                     <h5 class="mb-0">
-                        <i class="fa fa-calendar mr-2"></i>Hearings ({{ $case->hearings->count() }})
+                        <i class="fa fa-calendar mr-2"></i>Hearings 
                     </h5>
                     <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addHearingModal">
                         <i class="fa fa-plus mr-1"></i>Add Hearing
@@ -177,7 +170,7 @@
         <div class="col-lg-4">
             <!-- Upcoming Hearings -->
             <div class="card shadow-sm mb-4">
-                <div class="card-header text-white" style="background-color: #28a745;">
+                <div class="card-header text-white" style="background-color: #00349C;">
                     <h5 class="mb-0">
                         <i class="fa fa-calendar-check-o mr-2"></i>Upcoming Hearings
                     </h5>
@@ -203,7 +196,7 @@
             
             <!-- Recent Notices -->
             <div class="card shadow-sm">
-                <div class="card-header text-white" style="background-color: #17a2b8;">
+                <div class="card-header text-white" style="background-color: #00349C;">
                     <h5 class="mb-0">
                         <i class="fa fa-bell mr-2"></i>Recent Notices
                     </h5>
@@ -247,7 +240,7 @@
 <div class="modal fade" id="addNoticeModal" tabindex="-1" role="dialog" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header text-white" style="background-color: #00349C;">
                 <h5 class="modal-title" id="addNoticeModalLabel">
                     <i class="fa fa-file-text mr-2"></i>Add Notice
                 </h5>
@@ -288,8 +281,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-save mr-1"></i>Save Notice
+                    <button type="submit" class="btn" style="background-color: #00349C; color: white;">
+                        <i class="fa fa-save mr-1" style="color: white; background-color: #00349C;"></i>Save Notice
                     </button>
                 </div>
             </form>
@@ -301,7 +294,7 @@
 <div class="modal fade" id="addHearingModal" tabindex="-1" role="dialog" aria-labelledby="addHearingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-success text-white">
+            <div class="modal-header text-white" style="background-color: #00349C;">
                 <h5 class="modal-title" id="addHearingModalLabel">
                     <i class="fa fa-calendar mr-2"></i>Add Hearing
                 </h5>
@@ -375,8 +368,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fa fa-save mr-1"></i>Save Hearing
+                    <button type="submit" class="btn" style="background-color: #00349C; color: white;">
+                        <i class="fa fa-save mr-1" style="color: white; background-color: #00349C;"></i>Save Hearing
                     </button>
                 </div>
             </form>

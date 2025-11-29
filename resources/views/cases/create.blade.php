@@ -179,11 +179,11 @@
                         <!-- Form Actions -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                <div class="form-group mb-0 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary btn-lg mr-2" style="background-color: #00349C; color: white;">
                                         <i class="fa fa-save mr-2"></i>Save Case
                                     </button>
-                                    <a href="{{ route('cases.index') }}" class="btn btn-secondary btn-lg">
+                                    <a href="{{ route('cases.index') }}" class="btn btn-secondary btn-lg" style="min-width: 150px;">
                                         <i class="fa fa-times mr-2"></i>Cancel
                                     </a>
                                 </div>

@@ -8,7 +8,7 @@
             <div class="card shadow-sm">
                 <div class="card-header text-white" style="background-color: #00349C;">
                     <h4 class="mb-0">
-                        <i class="fa fa-edit mr-2"></i>Edit Case: {{ $case->case_number }}
+                        <i class="fa fa-edit mr-2"></i>Edit Case
                     </h4>
                 </div>
                 <div class="card-body p-4">
@@ -180,11 +180,11 @@
                         <!-- Form Actions -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group mb-0">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                <div class="form-group mb-0 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary btn-lg mr-2" style="min-width: 150px;">
                                         <i class="fa fa-save mr-2"></i>Update Case
                                     </button>
-                                    <a href="{{ route('cases.index') }}" class="btn btn-secondary btn-lg">
+                                    <a href="{{ route('cases.index') }}" class="btn btn-secondary btn-lg" style="min-width: 150px;">
                                         <i class="fa fa-times mr-2"></i>Cancel
                                     </a>
                                 </div>
