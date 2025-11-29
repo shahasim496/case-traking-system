@@ -46,68 +46,110 @@ class HomeController extends Controller
 
     public function admin_dashboard()
     {
+        $user = Auth::user();
+        $query = CourtCase::query();
+        $hearingQuery = Hearing::query();
+        $noticeQuery = Notice::query();
+
+        // Filter by department - users can only see their department cases, SuperAdmin sees all
+        if (!$user->hasRole('SuperAdmin')) {
+            // Regular users can only see cases from their department
+            if ($user->department_id) {
+                $query->where('department_id', $user->department_id);
+                
+                // Filter hearings and notices by case department
+                $hearingQuery->whereHas('courtCase', function($q) use ($user) {
+                    $q->where('department_id', $user->department_id);
+                });
+                
+                $noticeQuery->whereHas('courtCase', function($q) use ($user) {
+                    $q->where('department_id', $user->department_id);
+                });
+            } else {
+                // If user has no department, show no data
+                $query->whereRaw('1 = 0');
+                $hearingQuery->whereRaw('1 = 0');
+                $noticeQuery->whereRaw('1 = 0');
+            }
+        }
+        // SuperAdmin can see all cases, so no filter applied
+
         // Total Statistics
-        $totalCases = CourtCase::count();
-        $openCases = CourtCase::where('status', 'Open')->count();
-        $closedCases = CourtCase::where('status', 'Closed')->count();
-        $totalNotices = Notice::count();
-        $totalHearings = Hearing::count();
+        $totalCases = $query->count();
+        $openCases = (clone $query)->where('status', 'Open')->count();
+        $closedCases = (clone $query)->where('status', 'Closed')->count();
+        $totalNotices = $noticeQuery->count();
+        $totalHearings = $hearingQuery->count();
         
-        // Recent Cases (last 10)
-        $recentCases = CourtCase::with('department')->orderBy('created_at', 'DESC')->limit(10)->get();
+        // Recent Cases (max 5)
+        $recentCases = (clone $query)->with('department')->orderBy('created_at', 'DESC')->limit(5)->get();
         
-        // Upcoming Hearings (next 7 days)
-        $upcomingHearings = Hearing::with('courtCase')
-            ->where(function($query) {
-                $query->where('next_hearing_date', '>=', now())
-                      ->orWhere('hearing_date', '>=', now());
+        // Upcoming Hearings (next 7 days, max 5)
+        $upcomingHearings = (clone $hearingQuery)->with('courtCase')
+            ->where(function($q) {
+                $q->where('next_hearing_date', '>=', now())
+                  ->orWhere('hearing_date', '>=', now());
             })
-            ->where(function($query) {
-                $query->where('next_hearing_date', '<=', now()->addDays(7))
-                      ->orWhere('hearing_date', '<=', now()->addDays(7));
+            ->where(function($q) {
+                $q->where('next_hearing_date', '<=', now()->addDays(7))
+                  ->orWhere('hearing_date', '<=', now()->addDays(7));
             })
             ->orderBy('hearing_date', 'ASC')
-            ->limit(10)
+            ->limit(5)
             ->get();
         
-        // Recent Notices (last 10)
-        $recentNotices = Notice::with('courtCase')
+        // Recent Notices (max 5)
+        $recentNotices = (clone $noticeQuery)->with('courtCase')
             ->orderBy('notice_date', 'DESC')
-            ->limit(10)
+            ->limit(5)
             ->get();
         
         // Case Status Distribution
         $statusDistribution = [
-            'Open' => CourtCase::where('status', 'Open')->count(),
-            'Closed' => CourtCase::where('status', 'Closed')->count(),
+            'Open' => (clone $query)->where('status', 'Open')->count(),
+            'Closed' => (clone $query)->where('status', 'Closed')->count(),
         ];
         
         // Court Type Distribution
-        $courtTypeDistribution = CourtCase::select('court_type', DB::raw('count(*) as total'))
+        $courtTypeDistribution = (clone $query)->select('court_type', DB::raw('count(*) as total'))
             ->groupBy('court_type')
             ->pluck('total', 'court_type')
             ->toArray();
         
-        // Department-wise Cases
-        $departmentCases = CourtCase::select('department_id', DB::raw('count(*) as total'))
-            ->whereNotNull('department_id')
-            ->with('department')
-            ->groupBy('department_id')
-            ->get()
-            ->map(function($item) {
-                return [
-                    'name' => $item->department->name ?? 'Unknown',
-                    'total' => $item->total
-                ];
-            });
+        // Department-wise Cases (only show if SuperAdmin, otherwise show only user's department)
+        if ($user->hasRole('SuperAdmin')) {
+            $departmentCases = CourtCase::select('department_id', DB::raw('count(*) as total'))
+                ->whereNotNull('department_id')
+                ->with('department')
+                ->groupBy('department_id')
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'name' => $item->department->name ?? 'Unknown',
+                        'total' => $item->total
+                    ];
+                });
+        } else {
+            // For regular users, show only their department
+            if ($user->department_id) {
+                $deptTotal = (clone $query)->count();
+                $departmentCases = collect([[
+                    'name' => $user->department->name ?? 'Unknown',
+                    'total' => $deptTotal
+                ]]);
+            } else {
+                $departmentCases = collect([]);
+            }
+        }
         
         // Monthly Case Trends (last 6 months)
         $monthlyTrends = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
+            $monthQuery = clone $query;
             $monthlyTrends[] = [
                 'month' => $date->format('M Y'),
-                'count' => CourtCase::whereYear('created_at', $date->year)
+                'count' => $monthQuery->whereYear('created_at', $date->year)
                     ->whereMonth('created_at', $date->month)
                     ->count()
             ];
@@ -120,12 +162,12 @@ class HomeController extends Controller
         ];
         
         // Cases added this month
-        $casesThisMonth = CourtCase::whereMonth('created_at', now()->month)
+        $casesThisMonth = (clone $query)->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
         
         // Cases added last month
-        $casesLastMonth = CourtCase::whereMonth('created_at', now()->subMonth()->month)
+        $casesLastMonth = (clone $query)->whereMonth('created_at', now()->subMonth()->month)
             ->whereYear('created_at', now()->subMonth()->year)
             ->count();
         

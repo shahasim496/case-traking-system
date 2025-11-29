@@ -86,9 +86,13 @@
                     <h5 class="mb-0">
                         <i class="fa fa-file-text mr-2"></i>Notices 
                     </h5>
-                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addNoticeModal">
-                        <i class="fa fa-plus mr-1"></i>Add Notice
-                    </button>
+                    @if($case->status == 'Open')
+                        <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addNoticeModal">
+                            <i class="fa fa-plus mr-1"></i>Add Notice
+                        </button>
+                    @else
+                        <span class="badge badge-secondary">Case Closed - Cannot Add Notice</span>
+                    @endif
                 </div>
                 <div class="card-body">
                     @if($case->notices->count() > 0)
@@ -142,9 +146,13 @@
                     <h5 class="mb-0">
                         <i class="fa fa-calendar mr-2"></i>Hearings 
                     </h5>
-                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addHearingModal">
-                        <i class="fa fa-plus mr-1"></i>Add Hearing
-                    </button>
+                    @if($case->status == 'Open')
+                        <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addHearingModal">
+                            <i class="fa fa-plus mr-1"></i>Add Hearing
+                        </button>
+                    @else
+                        <span class="badge badge-secondary">Case Closed - Cannot Add Hearing</span>
+                    @endif
                 </div>
                 <div class="card-body">
                     @if($case->hearings->count() > 0)

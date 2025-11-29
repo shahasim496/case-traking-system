@@ -26,6 +26,19 @@ class CourtCaseController extends Controller
     {
         $query = CourtCase::query();
 
+        // Filter by department - users can only see their department cases, SuperAdmin sees all
+        $user = Auth::user();
+        if (!$user->hasRole('SuperAdmin')) {
+            // Regular users can only see cases from their department
+            if ($user->department_id) {
+                $query->where('department_id', $user->department_id);
+            } else {
+                // If user has no department, show no cases
+                $query->whereRaw('1 = 0');
+            }
+        }
+        // SuperAdmin can see all cases, so no filter applied
+
         // Search functionality
         if ($request->has('search') && $request->search) {
             $search = $request->search;
@@ -49,7 +62,7 @@ class CourtCaseController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Filter by department
+        // Filter by department (only for SuperAdmin or if they want to filter further)
         if ($request->has('department_id') && $request->department_id) {
             $query->where('department_id', $request->department_id);
         }
@@ -123,6 +136,17 @@ class CourtCaseController extends Controller
     {
         $case = CourtCase::with(['notices', 'hearings', 'department', 'parties'])->findOrFail($id);
         
+        // Check if user has access to this case
+        $user = Auth::user();
+        if (!$user->hasRole('SuperAdmin')) {
+            // Regular users can only view cases from their department
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to view this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to view this case.');
+            }
+        }
+        
         // Get upcoming hearings
         $upcomingHearings = Hearing::where('case_id', $id)
             ->where(function($query) {
@@ -147,6 +171,18 @@ class CourtCaseController extends Controller
     public function edit($id)
     {
         $case = CourtCase::with('parties')->findOrFail($id);
+        
+        // Check if user has access to this case
+        $user = Auth::user();
+        if (!$user->hasRole('SuperAdmin')) {
+            // Regular users can only edit cases from their department
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to edit this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to edit this case.');
+            }
+        }
+        
         $departments = Department::all();
         return view('cases.edit', compact('case', 'departments'));
     }
@@ -157,6 +193,17 @@ class CourtCaseController extends Controller
     public function update(Request $request, $id)
     {
         $case = CourtCase::findOrFail($id);
+        
+        // Check if user has access to this case
+        $user = Auth::user();
+        if (!$user->hasRole('SuperAdmin')) {
+            // Regular users can only update cases from their department
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to update this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to update this case.');
+            }
+        }
 
         $validatedData = $request->validate([
             'case_number' => 'required|string|max:100|unique:cases,case_number,' . $id,
@@ -209,6 +256,17 @@ class CourtCaseController extends Controller
     public function destroy($id)
     {
         $case = CourtCase::findOrFail($id);
+        
+        // Check if user has access to this case
+        $user = Auth::user();
+        if (!$user->hasRole('SuperAdmin')) {
+            // Regular users can only delete cases from their department
+            if ($user->department_id && $case->department_id != $user->department_id) {
+                abort(403, 'You do not have permission to delete this case.');
+            } elseif (!$user->department_id) {
+                abort(403, 'You do not have permission to delete this case.');
+            }
+        }
 
         DB::beginTransaction();
 
@@ -244,6 +302,11 @@ class CourtCaseController extends Controller
     public function storeNotice(Request $request, $caseId)
     {
         $case = CourtCase::findOrFail($caseId);
+
+        // Check if case is closed
+        if ($case->status == 'Closed') {
+            return redirect()->back()->with('error', 'Cannot add notice to a closed case.');
+        }
 
         $validatedData = $request->validate([
             'notice_date' => 'required|date',
@@ -283,6 +346,11 @@ class CourtCaseController extends Controller
     public function storeHearing(Request $request, $caseId)
     {
         $case = CourtCase::findOrFail($caseId);
+
+        // Check if case is closed
+        if ($case->status == 'Closed') {
+            return redirect()->back()->with('error', 'Cannot add hearing to a closed case.');
+        }
 
         $validatedData = $request->validate([
             'hearing_date' => 'required|date',

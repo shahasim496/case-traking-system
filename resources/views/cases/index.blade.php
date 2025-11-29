@@ -78,14 +78,12 @@
                             <thead class="thead-dark">
                                 <tr>
                                     <th width="5%">#</th>
-                                    <th width="10%">Case Number</th>
-                                    <th width="10%">Court Type</th>
-                                    <th width="20%">Case Title</th>
-                                    <th width="18%">Parties</th>
-                                    <th width="10%">Department</th>
-                                    <th width="8%">Status</th>
-                                    <th width="8%">Notices</th>
-                                    <th width="11%">Actions</th>
+                                    <th width="15%">Case Number</th>
+                                    <th width="15%">Court Type</th>
+                                    <th width="15%">Department</th>
+                                    <th width="10%">Status</th>
+                                    <th width="10%">Notices</th>
+                                    <th width="30%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,21 +92,6 @@
                                         <td>{{ $index + 1 + ($cases->currentPage() - 1) * $cases->perPage() }}</td>
                                         <td><strong>{{ $case->case_number }}</strong></td>
                                         <td>{{ $case->court_type }}</td>
-                                        <td>{{ $case->case_title }}</td>
-                                        <td>
-                                            @if($case->parties->count() > 0)
-                                                @foreach($case->parties as $party)
-                                                    <div class="mb-1">
-                                                        <strong>{{ $party->party_name }}</strong>
-                                                        @if($party->party_details)
-                                                            <br><small class="text-muted">{{ Str::limit($party->party_details, 30) }}</small>
-                                                        @endif
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
                                         <td>{{ $case->department->name ?? '-' }}</td>
                                         <td>
                                             @if($case->status == 'Open')
@@ -121,7 +104,7 @@
                                             <span class="badge badge-info">{{ $case->notices->count() }}</span>
                                         </td>
                                         <td>
-                                            <div class="d-flex gap-1">
+                                            <div class="d-flex gap-1 justify-content-center">
                                                 <a href="{{ route('cases.show', $case->id) }}" 
                                                    class="btn btn-sm d-flex align-items-center justify-content-center" 
                                                    style="width: 80px; background-color: #17a2b8; color: white;"
@@ -148,7 +131,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">No cases found.</td>
+                                        <td colspan="7" class="text-center">No cases found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -410,7 +393,7 @@ $(document).ready(function() {
             
             // Get text content from each cell (excluding actions column)
             row.find('td').each(function(index) {
-                if (index < 9) { // Exclude actions column
+                if (index < 6) { // Exclude actions column (6 data columns: #, Case Number, Court Type, Department, Status, Notices)
                     var cellText = $(this).text().trim();
                     rowData.push(cellText);
                 }
@@ -436,7 +419,7 @@ $(document).ready(function() {
         doc.text('Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(), 105, 30, { align: 'center' });
         
         // Define table headers
-        var headers = ['#', 'Case Number', 'Court Type', 'Case Title', 'Party Name', 'Lawyer Name', 'Department', 'Status', 'Notices'];
+        var headers = ['#', 'Case Number', 'Court Type', 'Department', 'Status', 'Notices'];
         
         // Add table
         doc.autoTable({
@@ -459,14 +442,11 @@ $(document).ready(function() {
             },
             columnStyles: {
                 0: { cellWidth: 10 }, // #
-                1: { cellWidth: 25 }, // Case Number
-                2: { cellWidth: 25 }, // Court Type
-                3: { cellWidth: 40 }, // Case Title
-                4: { cellWidth: 30 }, // Party Name
-                5: { cellWidth: 30 }, // Lawyer Name
-                6: { cellWidth: 25 }, // Department
-                7: { cellWidth: 20 }, // Status
-                8: { cellWidth: 15 }, // Notices
+                1: { cellWidth: 30 }, // Case Number
+                2: { cellWidth: 30 }, // Court Type
+                3: { cellWidth: 30 }, // Department
+                4: { cellWidth: 20 }, // Status
+                5: { cellWidth: 20 }, // Notices
             },
             didDrawPage: function(data) {
                 // Add footer
