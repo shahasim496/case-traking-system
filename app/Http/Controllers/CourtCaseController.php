@@ -16,6 +16,7 @@ use App\Models\Department;
 use App\Models\CaseForward;
 use App\Models\CaseComment;
 use App\Models\User;
+use App\Models\TaskLog;
 use App\Notifications\AppNotification;
 use Illuminate\Support\Facades\Mail;
 use App\Traits\LogsActivity;
@@ -193,7 +194,23 @@ class CourtCaseController extends Controller
             'case_department_id' => $case->department_id
         ]);
 
-        return view('cases.show', compact('case', 'upcomingHearings', 'recentNotices', 'forwardableUsers'));
+        // Get task logs for forwarding (last 5)
+        $forwardingLogs = TaskLog::where('case_id', $id)
+            ->where('category', 'forwarding')
+            ->with('user')
+            ->orderBy('created_at', 'DESC')
+            ->limit(5)
+            ->get();
+
+        // Get task logs for comments (last 5)
+        $commentLogs = TaskLog::where('case_id', $id)
+            ->where('category', 'comment')
+            ->with('user')
+            ->orderBy('created_at', 'DESC')
+            ->limit(5)
+            ->get();
+
+        return view('cases.show', compact('case', 'upcomingHearings', 'recentNotices', 'forwardableUsers', 'forwardingLogs', 'commentLogs'));
     }
 
     /**
