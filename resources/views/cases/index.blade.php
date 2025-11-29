@@ -80,13 +80,12 @@
                                     <th width="5%">#</th>
                                     <th width="10%">Case Number</th>
                                     <th width="10%">Court Type</th>
-                                    <th width="18%">Case Title</th>
-                                    <th width="12%">Party Name</th>
-                                    <th width="12%">Lawyer Name</th>
+                                    <th width="20%">Case Title</th>
+                                    <th width="18%">Parties</th>
                                     <th width="10%">Department</th>
                                     <th width="8%">Status</th>
                                     <th width="8%">Notices</th>
-                                    <th width="7%">Actions</th>
+                                    <th width="11%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -96,8 +95,20 @@
                                         <td><strong>{{ $case->case_number }}</strong></td>
                                         <td>{{ $case->court_type }}</td>
                                         <td>{{ $case->case_title }}</td>
-                                        <td>{{ $case->party_name }}</td>
-                                        <td>{{ $case->lawyer_name ?? '-' }}</td>
+                                        <td>
+                                            @if($case->parties->count() > 0)
+                                                @foreach($case->parties as $party)
+                                                    <div class="mb-1">
+                                                        <strong>{{ $party->party_name }}</strong>
+                                                        @if($party->party_details)
+                                                            <br><small class="text-muted">{{ Str::limit($party->party_details, 30) }}</small>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td>{{ $case->department->name ?? '-' }}</td>
                                         <td>
                                             @if($case->status == 'Open')
@@ -137,7 +148,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center">No cases found.</td>
+                                        <td colspan="9" class="text-center">No cases found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

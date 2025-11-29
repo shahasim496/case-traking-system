@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\CourtCase;
 use App\Models\Notice;
 use App\Models\Hearing;
+use App\Models\Party;
 use App\Models\Department;
 
 class CourtCaseController extends Controller
@@ -31,8 +32,10 @@ class CourtCaseController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('case_number', 'like', "%{$search}%")
                   ->orWhere('case_title', 'like', "%{$search}%")
-                  ->orWhere('party_name', 'like', "%{$search}%")
-                  ->orWhere('lawyer_name', 'like', "%{$search}%");
+                  ->orWhereHas('parties', function($partyQuery) use ($search) {
+                      $partyQuery->where('party_name', 'like', "%{$search}%")
+                                 ->orWhere('party_details', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -51,7 +54,7 @@ class CourtCaseController extends Controller
             $query->where('department_id', $request->department_id);
         }
 
-        $cases = $query->with(['department', 'notices'])->orderBy('created_at', 'DESC')->paginate(10);
+        $cases = $query->with(['department', 'notices', 'parties'])->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('cases.index', compact('cases'));
     }
@@ -74,10 +77,11 @@ class CourtCaseController extends Controller
             'case_number' => 'required|string|max:100|unique:cases,case_number',
             'court_type' => 'required|in:High Court,Supreme Court,Session Court',
             'case_title' => 'required|string|max:255',
-            'party_name' => 'required|string|max:255',
-            'lawyer_name' => 'nullable|string|max:255',
             'department_id' => 'nullable|exists:departments,id',
             'status' => 'required|in:Open,Closed',
+            'parties' => 'required|array|min:1',
+            'parties.*.party_name' => 'required|string|max:255',
+            'parties.*.party_details' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -85,8 +89,23 @@ class CourtCaseController extends Controller
         try {
             $validatedData['created_by'] = auth()->id();
             $validatedData['updated_by'] = auth()->id();
+            
+            // Remove parties from validated data before creating case
+            $parties = $validatedData['parties'];
+            unset($validatedData['parties']);
 
             $case = CourtCase::create($validatedData);
+
+            // Create parties
+            foreach ($parties as $partyData) {
+                Party::create([
+                    'case_id' => $case->id,
+                    'party_name' => $partyData['party_name'],
+                    'party_details' => $partyData['party_details'] ?? null,
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+            }
 
             DB::commit();
 
@@ -102,7 +121,7 @@ class CourtCaseController extends Controller
      */
     public function show($id)
     {
-        $case = CourtCase::with(['notices', 'hearings', 'department'])->findOrFail($id);
+        $case = CourtCase::with(['notices', 'hearings', 'department', 'parties'])->findOrFail($id);
         
         // Get upcoming hearings
         $upcomingHearings = Hearing::where('case_id', $id)
@@ -127,7 +146,7 @@ class CourtCaseController extends Controller
      */
     public function edit($id)
     {
-        $case = CourtCase::findOrFail($id);
+        $case = CourtCase::with('parties')->findOrFail($id);
         $departments = Department::all();
         return view('cases.edit', compact('case', 'departments'));
     }
@@ -143,18 +162,37 @@ class CourtCaseController extends Controller
             'case_number' => 'required|string|max:100|unique:cases,case_number,' . $id,
             'court_type' => 'required|in:High Court,Supreme Court,Session Court',
             'case_title' => 'required|string|max:255',
-            'party_name' => 'required|string|max:255',
-            'lawyer_name' => 'nullable|string|max:255',
             'department_id' => 'nullable|exists:departments,id',
             'status' => 'required|in:Open,Closed',
+            'parties' => 'required|array|min:1',
+            'parties.*.party_name' => 'required|string|max:255',
+            'parties.*.party_details' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
 
         try {
             $validatedData['updated_by'] = auth()->id();
+            
+            // Remove parties from validated data before updating case
+            $parties = $validatedData['parties'];
+            unset($validatedData['parties']);
 
             $case->update($validatedData);
+
+            // Delete existing parties
+            $case->parties()->delete();
+
+            // Create new parties
+            foreach ($parties as $partyData) {
+                Party::create([
+                    'case_id' => $case->id,
+                    'party_name' => $partyData['party_name'],
+                    'party_details' => $partyData['party_details'] ?? null,
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+            }
 
             DB::commit();
 

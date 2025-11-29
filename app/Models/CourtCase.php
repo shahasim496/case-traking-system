@@ -15,8 +15,6 @@ class CourtCase extends Model
         'case_number',
         'court_type',
         'case_title',
-        'party_name',
-        'lawyer_name',
         'department_id',
         'status',
         'created_by',
@@ -37,6 +35,14 @@ class CourtCase extends Model
     public function hearings()
     {
         return $this->hasMany(Hearing::class, 'case_id');
+    }
+
+    /**
+     * Get the parties for the case.
+     */
+    public function parties()
+    {
+        return $this->hasMany(Party::class, 'case_id');
     }
 
     /**
