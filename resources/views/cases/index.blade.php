@@ -17,9 +17,9 @@
                 <div class="card-body p-4">
                     @include('components.toaster')
                     
-                    <!-- Search and Filter Section -->
+                    <!-- Search, Filters and Export Section -->
                     <div class="row mb-4">
-                        <div class="col-lg-4 col-md-6 mb-3 mb-md-0">
+                        <div class="col-lg-3 col-md-6 mb-3 mb-md-0">
                             <div class="search-container">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -27,37 +27,48 @@
                                             <i class="fa fa-search text-muted"></i>
                                         </span>
                                     </div>
-                                    <input type="text" 
-                                           id="searchInput" 
-                                           class="form-control border-left-0" 
-                                           placeholder="Search cases..." 
-                                           value="{{ request('search') }}">
+                                    <input type="text" id="searchInput" class="form-control border-left-0" placeholder="Search cases..." value="{{ request('search') }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary border-left-0" type="button" id="clearSearchBtn" title="Clear Search">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-3 mb-3 mb-md-0">
-                            <select class="form-control" id="courtTypeFilter" name="court_type">
+                        <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
+                            <select class="form-control filter-select" id="courtTypeFilter" name="court_type">
                                 <option value="">All Court Types</option>
                                 <option value="High Court" {{ request('court_type') == 'High Court' ? 'selected' : '' }}>High Court</option>
                                 <option value="Supreme Court" {{ request('court_type') == 'Supreme Court' ? 'selected' : '' }}>Supreme Court</option>
                                 <option value="Session Court" {{ request('court_type') == 'Session Court' ? 'selected' : '' }}>Session Court</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 col-md-3 mb-3 mb-md-0">
-                            <select class="form-control" id="statusFilter" name="status">
+                        <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
+                            <select class="form-control filter-select" id="statusFilter" name="status">
                                 <option value="">All Status</option>
                                 <option value="Open" {{ request('status') == 'Open' ? 'selected' : '' }}>Open</option>
                                 <option value="Closed" {{ request('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
                             </select>
                         </div>
-                        <div class="col-lg-4 col-md-12">
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-primary" id="applyFilters">
-                                    <i class="fa fa-filter mr-1"></i>Apply Filters
+                        <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
+                            <select class="form-control filter-select" id="departmentFilter" name="department_id">
+                                <option value="">All Departments</option>
+                                @foreach(\App\Models\Department::all() as $dept)
+                                    <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="export-container d-flex justify-content-end">
+                                <button type="button" class="btn btn-success mr-2" id="exportExcelBtn">
+                                    <i class="fa fa-file-excel-o mr-1"></i>Excel
                                 </button>
-                                <a href="{{ route('cases.index') }}" class="btn btn-secondary">
-                                    <i class="fa fa-refresh mr-1"></i>Reset
-                                </a>
+                                <button type="button" class="btn btn-danger" id="exportPdfBtn">
+                                    <i class="fa fa-file-pdf-o mr-1"></i>PDF
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -231,7 +242,65 @@
     border-left: none;
     padding: 0.75rem 1rem;
 }
+
+.search-container .form-control:focus {
+    box-shadow: none;
+    border-color: #00349C;
+}
+
+.search-container .btn {
+    border: 1px solid #ced4da;
+    border-left: none;
+    padding: 0.75rem 1rem;
+}
+
+.export-container .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.export-container .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.export-container .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.export-container .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .d-flex.gap-1 .btn {
+        margin-bottom: 0.25rem;
+        margin-right: 0.25rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9em;
+    }
+    
+    .export-container {
+        justify-content: center !important;
+        margin-top: 15px;
+    }
+    
+    .search-container {
+        margin-bottom: 15px;
+    }
+}
 </style>
+
+<!-- Include jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 <script>
 $(document).ready(function() {
@@ -245,11 +314,12 @@ $(document).ready(function() {
         $('#deleteForm').attr('action', url);
     });
     
-    // Apply filters
-    $('#applyFilters').click(function() {
+    // Server-side filtering function
+    function applyFilters() {
         var search = $('#searchInput').val();
         var courtType = $('#courtTypeFilter').val();
         var status = $('#statusFilter').val();
+        var department = $('#departmentFilter').val();
         
         var url = "{{ route('cases.index') }}?";
         var params = [];
@@ -257,20 +327,147 @@ $(document).ready(function() {
         if (search) params.push('search=' + encodeURIComponent(search));
         if (courtType) params.push('court_type=' + encodeURIComponent(courtType));
         if (status) params.push('status=' + encodeURIComponent(status));
+        if (department) params.push('department_id=' + encodeURIComponent(department));
         
         if (params.length > 0) {
             url += params.join('&');
         }
         
         window.location.href = url;
+    }
+    
+    // Clear search button
+    $('#clearSearchBtn').click(function() {
+        $('#searchInput').val('');
+        applyFilters();
+    });
+    
+    // Search input with debounce (server-side)
+    var searchTimeout;
+    $('#searchInput').on('keyup', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            applyFilters();
+        }, 500); // Wait 500ms after user stops typing
     });
     
     // Enter key on search input
     $('#searchInput').on('keypress', function(e) {
         if (e.which === 13) {
-            $('#applyFilters').click();
+            clearTimeout(searchTimeout);
+            applyFilters();
         }
     });
+    
+    // Filter selects change event (server-side)
+    $('.filter-select').on('change', function() {
+        applyFilters();
+    });
+    
+    // Export to Excel functionality
+    $('#exportExcelBtn').click(function() {
+        exportToExcel();
+    });
+    
+    function exportToExcel() {
+        var table = document.getElementById('casesTable');
+        var html = table.outerHTML;
+        
+        // Create a temporary link element
+        var link = document.createElement('a');
+        link.download = 'cases_export.xls';
+        link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    // Export to PDF functionality
+    $('#exportPdfBtn').click(function() {
+        exportToPDF();
+    });
+    
+    function exportToPDF() {
+        // Get all rows from current page (server-side filtered data)
+        var rows = $('#casesTable tbody tr:not(.no-results)');
+        
+        // Prepare data for PDF
+        var data = [];
+        rows.each(function() {
+            var row = $(this);
+            var rowData = [];
+            
+            // Get text content from each cell (excluding actions column)
+            row.find('td').each(function(index) {
+                if (index < 9) { // Exclude actions column
+                    var cellText = $(this).text().trim();
+                    rowData.push(cellText);
+                }
+            });
+            
+            if (rowData.length > 0) {
+                data.push(rowData);
+            }
+        });
+        
+        // Create PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Add title
+        doc.setFontSize(20);
+        doc.setTextColor(0, 52, 156); // #00349C
+        doc.text('Cases Report', 105, 20, { align: 'center' });
+        
+        // Add date
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(), 105, 30, { align: 'center' });
+        
+        // Define table headers
+        var headers = ['#', 'Case Number', 'Court Type', 'Case Title', 'Party Name', 'Lawyer Name', 'Department', 'Status', 'Notices'];
+        
+        // Add table
+        doc.autoTable({
+            head: [headers],
+            body: data,
+            startY: 40,
+            styles: {
+                fontSize: 9,
+                cellPadding: 3,
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1,
+            },
+            headStyles: {
+                fillColor: [52, 58, 64], // Dark gray
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+            },
+            alternateRowStyles: {
+                fillColor: [248, 249, 250], // Light gray
+            },
+            columnStyles: {
+                0: { cellWidth: 10 }, // #
+                1: { cellWidth: 25 }, // Case Number
+                2: { cellWidth: 25 }, // Court Type
+                3: { cellWidth: 40 }, // Case Title
+                4: { cellWidth: 30 }, // Party Name
+                5: { cellWidth: 30 }, // Lawyer Name
+                6: { cellWidth: 25 }, // Department
+                7: { cellWidth: 20 }, // Status
+                8: { cellWidth: 15 }, // Notices
+            },
+            didDrawPage: function(data) {
+                // Add footer
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Page ' + doc.internal.getCurrentPageInfo().pageNumber, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+            }
+        });
+        
+        // Save the PDF
+        doc.save('cases_report.pdf');
+    }
 });
 </script>
 @endsection

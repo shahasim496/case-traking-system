@@ -30,7 +30,9 @@
         @include('layouts.sidebar')
         <!-- start page content -->
         <div class="page-content-wrapper homepage">
-            @yield('content')
+            <div class="page-content pt-4">
+                @yield('content')
+            </div>
         </div>
         <!-- end page content -->
     </div>

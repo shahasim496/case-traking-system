@@ -46,6 +46,11 @@ class CourtCaseController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter by department
+        if ($request->has('department_id') && $request->department_id) {
+            $query->where('department_id', $request->department_id);
+        }
+
         $cases = $query->with(['department', 'notices'])->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('cases.index', compact('cases'));
