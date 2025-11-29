@@ -43,8 +43,25 @@ class PermissionSeeder extends Seeder
             'forward to secretary' => 'Can forward cases to Secretary',
             'forward to legal officer' => 'Can forward cases to Legal Officer',
             'forward to any role' => 'Can forward cases to any role (SuperAdmin only)',
+            //case management permissions
+            'add case' => 'Can add new cases',
+            'edit case' => 'Can edit existing cases',
+            'delete case' => 'Can delete cases',
+            'view case' => 'Can view cases',
 
-       
+//notice management permissions
+            'add notice' => 'Can add new notices',
+            'edit notice' => 'Can edit existing notices',
+            'delete notice' => 'Can delete notices',
+            'view notice' => 'Can view notices',
+
+//hearing management permissions
+            'add hearing' => 'Can add new hearings',
+            'edit hearing' => 'Can edit existing hearings',
+            'delete hearing' => 'Can delete hearings',
+            'view hearing' => 'Can view hearings',
+
+
         ];
 
         // Create permissions
@@ -57,12 +74,100 @@ class PermissionSeeder extends Seeder
             ]);
         }
 
-       
+        // Define role permissions mapping
+        $rolePermissions = [
+            'SuperAdmin' => [
+                // User Management
+                'create user',
+                'edit user',
+                'delete user',
+                'view user',
+                'ban user',
+                // Role Management
+                'create role',
+                'edit role',
+                'delete role',
+                'view role',
+                // Permission Management
+                'manage permission assignment',
+                // Settings
+                'manage settings',
+                // Case Forwarding
+                'forward to any role',
+                // Case Management
+                'add case',
+                'edit case',
+                'delete case',
+                'view case',
+                // Notice Management
+                'add notice',
+                'edit notice',
+                'delete notice',
+                'view notice',
+                // Hearing Management
+                'add hearing',
+                'edit hearing',
+                'delete hearing',
+                'view hearing',
+            ],
 
-        // Also assign to SuperAdmin role if it exists
-        $superAdminRole = Role::where('name', 'SuperAdmin')->where('guard_name', 'web')->first();
-        if ($superAdminRole) {
-            $superAdminRole->givePermissionTo($permission);
+
+            'Legal Officer' => [
+                // Case Forwarding
+                'forward to joint secretary',
+                // Case Management
+                'add case',
+                'edit case',
+                'view case',
+                // Notice Management
+                'add notice',
+                'edit notice',
+                'view notice',
+                // Hearing Management
+                'add hearing',
+                'edit hearing',
+                'view hearing',
+            ],
+            'Joint Secretary' => [
+                // Case Forwarding
+                'forward to permanent secretary',
+                'forward to secretary',
+              
+                'view case',
+                
+                'view notice',
+              
+                'view hearing',
+            ],
+            'Permanent Secretary' => [
+               
+                'view case',
+                // Notice Management
+             
+                'view notice',
+                // Hearing Management
+               
+                'view hearing',
+            ],
+            'Secretary' => [
+                // Case Management
+               
+                'view case',
+                // Notice Management
+             
+                'view notice',
+                // Hearing Management
+               
+                'view hearing',
+            ],
+        ];
+
+        // Assign permissions to each role
+        foreach ($rolePermissions as $roleName => $permissionNames) {
+            $role = Role::where('name', $roleName)->where('guard_name', 'web')->first();
+            if ($role) {
+                $role->syncPermissions($permissionNames);
+            }
         }
     }
 }

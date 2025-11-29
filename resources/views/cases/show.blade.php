@@ -87,9 +87,11 @@
                         <i class="fa fa-file-text mr-2"></i>Notices 
                     </h5>
                     @if($case->status == 'Open')
+                    @if(auth()->user()->can('add notice'))
                         <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addNoticeModal">
                             <i class="fa fa-plus mr-1"></i>Add Notice
                         </button>
+                        @endif
                     @else
                         <span class="badge badge-secondary">Case Closed - Cannot Add Notice</span>
                     @endif
@@ -119,15 +121,21 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                @if(auth()->user()->can('view notice'))
                                                 <a href="{{ route('notices.show', $notice->id) }}" class="btn" title="View"   style="background-color: #17a2b8; color: white;">
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
+                                                @endif
+                                                @if(auth()->user()->can('edit notice'))
                                                 <a href="{{ route('notices.edit', $notice->id) }}" class="btn btn-warning" title="Edit">
                                                     <i class="fa fa-edit"></i> Edit
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-danger delete-notice-btn" data-id="{{ $notice->id }}" data-details="{{ Str::limit($notice->notice_details, 30) }}" title="Delete">
-                                                    <i class="fa fa-trash"></i> Delete
-                                                </button>
+                                                @endif
+                                                @if(auth()->user()->can('delete notice'))
+                                                        <button type="button" class="btn btn-sm btn-danger delete-notice-btn" data-id="{{ $notice->id }}" data-details="{{ Str::limit($notice->notice_details, 30) }}" title="Delete">
+                                                        <i class="fa fa-trash"></i> Delete
+                                                    </button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -147,9 +155,12 @@
                         <i class="fa fa-calendar mr-2"></i>Hearings 
                     </h5>
                     @if($case->status == 'Open')
+
+                    @if(auth()->user()->can('add hearing'))
                         <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#addHearingModal">
                             <i class="fa fa-plus mr-1"></i>Add Hearing
                         </button>
+                        @endif
                     @else
                         <span class="badge badge-secondary">Case Closed - Cannot Add Hearing</span>
                     @endif
@@ -171,15 +182,21 @@
                                             <td>{{ $hearing->hearing_date->format('d M Y') }}</td>
                                             <td>{{ $hearing->person_appearing ?? '-' }}</td>
                                             <td>
+                                                @if(auth()->user()->can('view hearing'))
                                                 <a href="{{ route('hearings.show', $hearing->id) }}" class="btn" title="View" style="background-color: #17a2b8; color: white;">
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
+                                                @endif
+                                                @if(auth()->user()->can('edit hearing'))
                                                 <a href="{{ route('hearings.edit', $hearing->id) }}" class="btn btn-warning" title="Edit">
                                                     <i class="fa fa-edit"></i> Edit
                                                 </a>
+                                                @endif
+                                                @if(auth()->user()->can('delete hearing'))
                                                 <button type="button" class="btn btn-sm btn-danger delete-hearing-btn" data-id="{{ $hearing->id }}" data-date="{{ $hearing->hearing_date->format('d M Y') }}" title="Delete">
                                                     <i class="fa fa-trash"></i> Delete
                                                 </button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

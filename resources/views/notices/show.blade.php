@@ -59,7 +59,8 @@
                                 <strong>Attachment:</strong>
                                 <div class="mt-2">
                                     @if($notice->attachment)
-                                        <a href="{{ Storage::url($notice->attachment) }}" target="_blank" class="btn btn-info">
+                                      
+                                        <a href="{{ Storage::url($notice->attachment) }}" target="_blank" class="btn" style="background-color: #17a2b8; color: white;">
                                             <i class="fa fa-download mr-2"></i>Download Attachment
                                         </a>
                                     @else
@@ -91,13 +92,16 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="d-flex justify-content-end">
+                                @if(auth()->user()->can('edit notice'))
                                 <a href="{{ route('notices.edit', $notice->id) }}" class="btn btn-warning mr-2">
                                     <i class="fa fa-edit mr-2"></i>Edit Notice
                                 </a>
+                                @endif
+                                @if(auth()->user()->can('delete notice'))
                                 <button type="button" class="btn btn-danger mr-2" data-toggle="modal" data-target="#deleteNoticeModal">
                                     <i class="fa fa-trash mr-2"></i>Delete Notice
                                 </button>
-                               
+                                @endif
                             </div>
                         </div>
                     </div>

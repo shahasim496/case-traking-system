@@ -70,7 +70,7 @@
                                 <strong>Court Order:</strong>
                                 <div class="mt-2">
                                     @if($hearing->court_order)
-                                        <a href="{{ Storage::url($hearing->court_order) }}" target="_blank" class="btn btn-info">
+                                        <a href="{{ Storage::url($hearing->court_order) }}" target="_blank" class="btn" style="background-color: #17a2b8; color: white;">
                                             <i class="fa fa-download mr-2"></i>Download Court Order
                                         </a>
                                     @else
@@ -102,13 +102,16 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="d-flex justify-content-end">
+                                @if(auth()->user()->can('edit hearing'))
                                 <a href="{{ route('hearings.edit', $hearing->id) }}" class="btn btn-warning mr-2">
                                     <i class="fa fa-edit mr-2"></i>Edit Hearing
                                 </a>
+                                @endif
+                                @if(auth()->user()->can('delete hearing'))
                                 <button type="button" class="btn btn-danger mr-2" data-toggle="modal" data-target="#deleteHearingModal">
                                     <i class="fa fa-trash mr-2"></i>Delete Hearing
                                 </button>
-                               
+                                @endif
                             </div>
                         </div>
                     </div>

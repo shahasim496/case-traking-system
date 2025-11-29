@@ -10,9 +10,11 @@
                     <h4 class="mb-0">
                         <i class="fa fa-gavel mr-2"></i>Case Tracking
                     </h4>
+                    @if(auth()->user()->can('add case'))
                     <a href="{{ route('cases.create') }}" class="btn btn-light btn-sm">
                         <i class="fa fa-plus mr-1"></i>Add Case
                     </a>
+                    @endif
                 </div>
                 <div class="card-body p-4">
                     @include('components.toaster')
@@ -105,18 +107,23 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-1 justify-content-center">
+                                                @if(auth()->user()->can('view case'))
                                                 <a href="{{ route('cases.show', $case->id) }}" 
                                                    class="btn btn-sm d-flex align-items-center justify-content-center" 
                                                    style="width: 80px; background-color: #17a2b8; color: white;"
                                                    title="View">
                                                     <i class="fa fa-eye mr-1"></i>View
                                                 </a>
+                                                @endif
+                                                @if(auth()->user()->can('edit case'))
                                                 <a href="{{ route('cases.edit', $case->id) }}" 
                                                    class="btn btn-sm d-flex align-items-center justify-content-center" 
                                                    style="width: 80px; background-color: #00349C; color: white;" 
                                                    title="Edit">
                                                     <i class="fa fa-edit mr-1"></i>Edit
                                                 </a>
+                                                @endif
+                                                @if(auth()->user()->can('delete case'))
                                                 <button class="btn btn-sm btn-danger delete-btn d-flex align-items-center justify-content-center" 
                                                         style="width: 80px;"
                                                         data-id="{{ $case->id }}" 
@@ -126,6 +133,7 @@
                                                         title="Delete">
                                                     <i class="fa fa-trash mr-1"></i>Delete
                                                 </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>

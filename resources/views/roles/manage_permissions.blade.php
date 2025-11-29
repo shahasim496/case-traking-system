@@ -69,22 +69,42 @@
                                 @php
                                     // Only show permissions that are defined in PermissionSeeder
                                     $allowedPermissions = [
+                                        // User Management
                                         'create user',
                                         'edit user',
                                         'delete user',
                                         'view user',
                                         'ban user',
+                                        // Role Management
                                         'create role',
                                         'edit role',
                                         'delete role',
                                         'view role',
+                                        // Permission Management
                                         'manage permission assignment',
+                                        // Settings
                                         'manage settings',
+                                        // Case Forwarding
                                         'forward to joint secretary',
                                         'forward to permanent secretary',
                                         'forward to secretary',
                                         'forward to legal officer',
-                                        'forward to any role'
+                                        'forward to any role',
+                                        // Case Management
+                                        'add case',
+                                        'edit case',
+                                        'delete case',
+                                        'view case',
+                                        // Notice Management
+                                        'add notice',
+                                        'edit notice',
+                                        'delete notice',
+                                        'view notice',
+                                        // Hearing Management
+                                        'add hearing',
+                                        'edit hearing',
+                                        'delete hearing',
+                                        'view hearing'
                                     ];
                                     
                                     // Filter permissions to only include those in seeder
@@ -98,6 +118,9 @@
                                         'permission' => ['name' => 'Permission Management', 'badge' => 'badge-info', 'icon' => 'fa fa-shield'],
                                         'settings' => ['name' => 'System Settings', 'badge' => 'badge-secondary', 'icon' => 'fa fa-cog'],
                                         'forward' => ['name' => 'Case Forwarding', 'badge' => 'badge-warning', 'icon' => 'fa fa-share'],
+                                        'case' => ['name' => 'Case Management', 'badge' => 'badge-danger', 'icon' => 'fa fa-gavel'],
+                                        'notice' => ['name' => 'Notice Management', 'badge' => 'badge-info', 'icon' => 'fa fa-file-text'],
+                                        'hearing' => ['name' => 'Hearing Management', 'badge' => 'badge-primary', 'icon' => 'fa fa-calendar-check-o'],
                                         'other' => ['name' => 'Other Permissions', 'badge' => 'badge-light', 'icon' => 'fa fa-ellipsis-h']
                                     ];
                                     
