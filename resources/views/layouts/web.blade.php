@@ -5,7 +5,7 @@
 <head>
 	<base href="">
 	<meta charset="utf-8" />
-	<title>Personnel Information Management System</title>
+	<title>Case Tracking System</title>
 	<meta name="description" content="Standard HTML" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link href="{{asset('assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
@@ -65,8 +65,6 @@
       <script src="{{asset('assets/js/app.js')}}"></script>
       <script src="{{asset('assets/js/layout.js')}}"></script>
       <script src="{{asset('assets/plugins/bootstrap/js/bootstrap.min.js')}}"></script>
-      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
-
 
    </body>
 <!--end::Body-->

@@ -77,7 +77,7 @@
                     <li class="dropdown dropdown-user pt-0" >
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
                         data-close-others="true">
-                        <img alt="" class="img-circle img-2" src="{{Auth::user()->profile ? Auth::user()->profile->picture_attachment_id : '/images/profile.jpg'}}" />
+                        <img alt="" class="img-circle img-2" src="/images/profile.jpg" />
                         <span class="username username-hide-on-mobile img-text"> <b>{{Auth::user()->name}} </b>  <br>Police Officer<i class="fa fa-angle-down" aria-hidden="true"></i> </span>
 
 

@@ -27,27 +27,13 @@
 <!-- manage user -->
 
                 <li class="nav-item">
-                    <a class="nav-link nav-toggle">
+                    <a href="{{route('users')}}" class="nav-link nav-toggle">
                         <i class="fa fa-user " style="font-size: 18px; color: gray;"></i>
                         <span class="title">User Management</span>
                         <span class="arrow"></span>
 
                     </a>
-                    <ul class="sub-menu">
-                        <li class="nav-item">
-                            <a href="{{route('users')}}" class="nav-link">
-                                <span class="title">View Users</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('user.create')}}" class="nav-link">
-                                <span class="title">Add User</span>
-                            </a>
-                        </li>
-
-
-                    </ul>
-                </li>
+                   
                 @endif
                 
                 @if(auth()->user()->can('manage role and permissions'))
@@ -62,28 +48,15 @@
                     <ul class="sub-menu">
                         <li class="nav-item">
                             <a href="{{ route('roles') }}" class="nav-link">
-                                <span class="title">View Roles</span>
+                                <span class="title">Manage Roles</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('roles.create') }}" class="nav-link">
-                                <span class="title">Add Role</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('permissions') }}" class="nav-link">
-                                <span class="title">View Permission</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('permissions.create') }}" class="nav-link">
-                                <span class="title">Add Permission</span>
-                            </a>
-                        </li>
+                      
+                       
 
                         <li class="nav-item">
                             <a href="{{ route('roles.managePermissions') }}" class="nav-link">
-                                <span class="title">Manage Permissions</span>
+                                <span class="title">Manage Permissions Assignment</span>
                             </a>
                         </li>
                     </ul>
@@ -124,22 +97,7 @@
                 @endif
 
 
-                <li class="nav-item">
-                    <a href="{{ route('job.posting') }}" class="nav-link">
-                        <i class="fa fa-key" style="font-size: 18px; color: gray;"></i>
-                        <span class="title">Post Job</span>
-                        <span class="selected"></span>
-                    </a>
-                </li>
-
-                
-                <li class="nav-item">
-                    <a href="{{ route('job-posting.index') }}" class="nav-link">
-                        <i class="fa fa-briefcase" style="font-size: 18px; color: gray;"></i>
-                        <span class="title">Manage Jobs</span>
-                        <span class="selected"></span>
-                    </a>
-                </li>
+              
 
 
 

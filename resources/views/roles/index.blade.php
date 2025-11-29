@@ -60,7 +60,36 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- DataTable will populate this -->
+                                @forelse($roles as $index => $role)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $role->name }}</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            @can('edit role')
+                                            <a href="{{ route('roles.edit', $role->id) }}" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
+                                                <i class="fa fa-edit mr-1"></i>Edit
+                                            </a>
+                                            @endcan
+                                            @can('delete role')
+                                            <button class="btn btn-danger d-flex align-items-center justify-content-center delete-btn" 
+                                                    style="width: 80px; background-color: #dc3545; color: white;"
+                                                    data-id="{{ $role->id }}" 
+                                                    data-name="{{ $role->name }}"
+                                                    data-toggle="modal" 
+                                                    data-target="#deleteModal" 
+                                                    title="Delete">
+                                                <i class="fa fa-trash mr-1"></i>Delete
+                                            </button>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="3" class="text-center">No roles found</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -299,37 +328,8 @@
 
 <script>
 $(document).ready(function() {
-    // Setup CSRF token for AJAX requests
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    
-    // Initialize DataTable
-    var table = $('#rolesTable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{ route('roles.getRoles') }}",
-        columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'name', name: 'name', orderable: true, searchable: true },
-            { data: 'action', name: 'action', orderable: false, searchable: false },
-        ],
-        pageLength: 50,
-        paging: false,
-        info: false,
-        searching: false,
-        responsive: true,
-        order: [[1, 'asc']], // Sort by name column (index 1) by default
-        language: {
-            emptyTable: "No roles found",
-            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
-        }
-    });
-
     // Handle delete button click
-    $('#rolesTable').on('click', '.delete-btn', function () {
+    $('.delete-btn').on('click', function () {
         var id = $(this).data('id');
         var name = $(this).data('name') || 'this role';
         var url = "{{ route('roles.delete', ':id') }}".replace(':id', id);
@@ -338,7 +338,26 @@ $(document).ready(function() {
         $('#deleteForm').attr('action', url);
     });
 
-    // Search functionality removed - using custom search bar instead
+    // Search functionality
+    $('#clearSearchBtn').click(function() {
+        $('#searchInput').val('');
+        filterTable('');
+    });
+    
+    $('#searchInput').on('keyup', function(e) {
+        filterTable($(this).val().toLowerCase());
+    });
+    
+    function filterTable(searchTerm) {
+        $('#rolesTable tbody tr').each(function() {
+            var roleName = $(this).find('td:eq(1)').text().toLowerCase();
+            if (roleName.indexOf(searchTerm) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
     
     // Export to Excel functionality
     $('#exportExcelBtn').click(function() {
@@ -364,13 +383,13 @@ $(document).ready(function() {
     });
     
     function exportToPDF() {
-        // Get all data from DataTable
+        // Get all data from table
         var data = [];
-        table.rows().every(function() {
-            var rowData = this.data();
+        $('#rolesTable tbody tr:visible').each(function(index) {
+            var roleName = $(this).find('td:eq(1)').text();
             data.push([
-                rowData.DT_RowIndex,
-                rowData.name
+                index + 1,
+                roleName
             ]);
         });
         

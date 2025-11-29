@@ -6,14 +6,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, HasApiTokens,SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
     // public static $guard_name = 'api';
 
@@ -72,11 +71,6 @@ class User extends Authenticatable
 
 
 
-
-    public function profile()
-    {
-        return $this->hasOne('App\Models\User_Profile', 'user_id', 'id');
-    }
 
     public function officer()
     {

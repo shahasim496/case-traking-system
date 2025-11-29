@@ -34,7 +34,6 @@ use App\Notifications\UserNotification;
 use App\Http\Requests\GenOfficerRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Spatie\Permission\Models\Permission;
-use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\OfficerUserRequest;
 use App\Http\Requests\UserProfileRequest;
 use App\Http\Requests\UserRegisterRequest;
@@ -171,7 +170,7 @@ class UserController extends Controller
             $user->save();
 
             DB::commit();
-            return redirect()->route('user.profile', $id)->with('success', 'User password updated.');
+            return redirect()->route('user.edit', $id)->with('success', 'User password updated.');
         } catch (\Exception $e) {
             DB::rollback();
             return  redirect()->back()->with('error', $e->getMessage());
@@ -403,8 +402,8 @@ class UserController extends Controller
             return redirect()->route('users')->with('error', 'User not found.');
         }
 
-        // Permanently delete the user
-        $user->forceDelete();
+        // Delete the user
+        $user->delete();
 
         return redirect()->route('users')->with('success', 'User permanently deleted successfully.');
     } //end of function

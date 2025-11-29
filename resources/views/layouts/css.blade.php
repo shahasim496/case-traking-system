@@ -3,7 +3,6 @@
       <link href="{{asset('assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
       <link href="{{asset('assets/css/pages/animate_page.css')}}" rel="stylesheet">
       <!-- Template Styles -->
-      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
       <link href="{{asset('assets/css/style.css')}}" rel="stylesheet" type="text/css" />
       <link href="{{asset('assets/css/responsive.css')}}" rel="stylesheet" type="text/css" />
       <link href="{{asset('assets/css/theme-color.css')}}" rel="stylesheet" type="text/css" />
@@ -16,9 +15,5 @@
 
 <!-- select2-bootstrap4-theme -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme/dist/select2-bootstrap4.min.css">
-
-<!-- datatable buttons -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
 
 

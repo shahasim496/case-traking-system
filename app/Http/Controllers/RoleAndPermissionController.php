@@ -33,7 +33,7 @@ class RoleAndPermissionController extends Controller
         }
         elseif (auth()->user()->hasRole('Cadre')){
             $roles = Role::where('user_id',auth()->user()->id)->get();
-            $serviceGroups = Group_Service::whereIn('id', auth()->user()->profile->allow_caders)->get(['name'])->toArray();
+            $serviceGroups = Group_Service::whereIn('id', [])->get(['name'])->toArray();
             $groupServicePermissions = Permission::whereIn('sub_module',array_column($serviceGroups, 'name'))->get();
         }
 

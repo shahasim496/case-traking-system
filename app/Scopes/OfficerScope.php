@@ -29,7 +29,7 @@ class OfficerScope implements Scope
 
            if (Auth::User()->hasRole('Cadre')) {
                 $user = Auth::user();
-                $allow_caders = $user->profile->allow_caders ?? array();
+                $allow_caders = array();
 
                 $builder->whereIn('group_service_id', $allow_caders);
 

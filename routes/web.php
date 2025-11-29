@@ -31,19 +31,7 @@ Route::get('/', function () {
 });
 
 // Public job portal routes (no authentication required)
-Route::get('/careers', [App\Http\Controllers\JobPostingController::class, 'publicIndex'])->name('careers');
-Route::get('/careers/{id}', [App\Http\Controllers\JobPostingController::class, 'publicShow'])->name('careers.show');
 
-Route::group(['prefix' => 'job', 'middleware' => ['auth', 'banned']], function () {
-    
-    Route::get('/', [App\Http\Controllers\JobPostingController::class, 'index'])->name('job-posting.index');
-    Route::get('/create-post', [App\Http\Controllers\JobPostingController::class, 'create'])->name('job.posting');
-    Route::post('/store-post', [App\Http\Controllers\JobPostingController::class, 'store'])->name('job-posting.store');
-    Route::get('/{id}', [App\Http\Controllers\JobPostingController::class, 'show'])->name('job-posting.show');
-    Route::get('/{id}/edit', [App\Http\Controllers\JobPostingController::class, 'edit'])->name('job-posting.edit');
-    Route::put('/{id}', [App\Http\Controllers\JobPostingController::class, 'update'])->name('job-posting.update');
-    Route::delete('/{id}', [App\Http\Controllers\JobPostingController::class, 'destroy'])->name('job-posting.destroy');
-});
 
 // Route to display the Create Case page
 
@@ -105,7 +93,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
 
 Route::group(['prefix' => 'departments', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
     Route::get('/', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
-    Route::get('/getDepartments', [App\Http\Controllers\DepartmentController::class, 'getDepartments'])->name('departments.getDepartments');
     Route::get('/create', [App\Http\Controllers\DepartmentController::class, 'create'])->name('departments.create');
     Route::post('/store', [App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');
     Route::get('/edit/{id}', [App\Http\Controllers\DepartmentController::class, 'edit'])->name('departments.edit');
@@ -115,7 +102,6 @@ Route::group(['prefix' => 'departments', 'middleware' => ['auth', 'banned', 'per
 
 Route::group(['prefix' => 'designations', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
     Route::get('/', [App\Http\Controllers\DesignationController::class, 'index'])->name('designations');
-    Route::get('/getDesignations', [App\Http\Controllers\DesignationController::class, 'getDesignations'])->name('designations.getDesignations');
     Route::get('/create', [App\Http\Controllers\DesignationController::class, 'create'])->name('designations.create');
     Route::post('/store', [App\Http\Controllers\DesignationController::class, 'store'])->name('designations.store');
     Route::get('/edit/{id}', [App\Http\Controllers\DesignationController::class, 'edit'])->name('designations.edit');
@@ -123,19 +109,10 @@ Route::group(['prefix' => 'designations', 'middleware' => ['auth', 'banned', 'pe
     Route::delete('/delete/{id}', [App\Http\Controllers\DesignationController::class, 'delete'])->name('designations.delete');
 });
 
-Route::get('/getModelData', [App\Http\Controllers\AppController::class, 'getModelData'])->name('getModelData');
-Route::group(['middleware' => ['role:SuperAdmin|Admin|Cadre', 'auth', 'banned']], function () {
-    Route::resource('roles-permissions', RoleAndPermissionController::class)->parameters(['roles-permissions' => 'role'])->only([
-        'index',
-        'show',
-        'store',
-        'update'
-    ]);
-});
+
 
 Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned', 'permission:manage role and permissions']], function () {
     Route::get('/', [App\Http\Controllers\RoleController::class, 'index'])->name('roles')->middleware('permission:view role');
-    Route::get('/getRoles', [App\Http\Controllers\RoleController::class, 'getRoles'])->name('roles.getRoles')->middleware('permission:view role');
     Route::get('/create', [App\Http\Controllers\RoleController::class, 'create'])->name('roles.create')->middleware('permission:create role');
     Route::post('/store', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store')->middleware('permission:create role');
     Route::get('/edit/{id}', [App\Http\Controllers\RoleController::class, 'edit'])->name('roles.edit')->middleware('permission:edit role');
@@ -153,7 +130,6 @@ Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned', 'permissio
 
 Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions')->middleware('permission:view permission');
-    Route::get('/getPermissions', [App\Http\Controllers\PermissionController::class, 'getPermissions'])->name('permissions.getPermissions')->middleware('permission:view permission')  ;
     Route::get('/create', [App\Http\Controllers\PermissionController::class, 'create'])->name('permissions.create')->middleware('permission:create permission');
     Route::post('/store', [App\Http\Controllers\PermissionController::class, 'store'])->name('permissions.store')->middleware('permission:create permission');
     Route::get('/edit/{id}', [App\Http\Controllers\PermissionController::class, 'edit'])->name('permissions.edit')->middleware('permission:edit permission');
@@ -164,16 +140,6 @@ Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned']], fu
 
 
 
-
-Route::group([ 'middleware' => ['auth', 'banned']], function () {
-    
-Route::get('/get-subdivisions/{unitId}', [AdministrativeUnitController::class, 'getSubdivisions']);
-
-Route::get('/get-police-stations/{subdivisionId}', [AdministrativeUnitController::class, 'getPoliceStations']);
-
-Route::resource('admin-units', AdministrativeUnitController::class)->middleware('permission:manage settings');
-Route::resource('subdivisions', SubdivisionController::class)->middleware('permission:manage settings');
-Route::resource('police-stations', PoliceStationController::class)->middleware('permission:manage settings');
 
 
 
@@ -189,7 +155,7 @@ Route::resource('police-stations', PoliceStationController::class)->middleware('
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
-});
+
 
 
 

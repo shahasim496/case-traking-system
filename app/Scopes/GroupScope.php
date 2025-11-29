@@ -33,7 +33,7 @@ class GroupScope implements Scope
 
         if (Auth::User()->hasRole('Cadre')) {
             $user = Auth::user();
-            $allow_caders = $user->profile->allow_caders ?? array();
+            $allow_caders = array();
             $builder->whereIn('id', $allow_caders);
         }elseif(Auth::User()->hasRole('Officer')){
             $group_service_id = auth()->user()->officer->group_service_id ?? '';

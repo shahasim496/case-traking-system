@@ -29,4 +29,5 @@ class AddDescriptionToPermissionsTable extends Migration
             $table->dropColumn('description');
         });
     }
-} 
+}
+

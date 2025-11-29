@@ -60,7 +60,36 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- DataTable will populate this -->
+                                @forelse($permissions as $index => $permission)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $permission->name }}</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            @can('edit permission')
+                                            <a href="{{ route('permissions.edit', $permission->id) }}" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
+                                                <i class="fa fa-edit mr-1"></i>Edit
+                                            </a>
+                                            @endcan
+                                            @can('delete permission')
+                                            <button class="btn btn-danger d-flex align-items-center justify-content-center delete-btn" 
+                                                    style="width: 80px;"
+                                                    data-id="{{ $permission->id }}" 
+                                                    data-name="{{ $permission->name }}"
+                                                    data-toggle="modal" 
+                                                    data-target="#deleteModal" 
+                                                    title="Delete">
+                                                <i class="fa fa-trash mr-1"></i>Delete
+                                            </button>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="3" class="text-center">No permissions found</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -299,29 +328,8 @@
 
 <script>
 $(document).ready(function() {
-    // Initialize DataTable
-    var table = $('#permissionsTable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{ route('permissions.getPermissions') }}",
-        columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'name', name: 'name' },
-            { data: 'action', name: 'action', orderable: false, searchable: false },
-        ],
-        pageLength: 50,
-        paging: false,
-        info: false,
-        searching: false,
-        responsive: true,
-        language: {
-            emptyTable: "No permissions found",
-            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>'
-        }
-    });
-
     // Handle delete button click
-    $('#permissionsTable').on('click', '.delete-btn', function () {
+    $('.delete-btn').on('click', function () {
         var id = $(this).data('id');
         var name = $(this).data('name') || 'this permission';
         var url = "{{ route('permissions.delete', ':id') }}".replace(':id', id);
@@ -333,12 +341,23 @@ $(document).ready(function() {
     // Search functionality
     $('#clearSearchBtn').click(function() {
         $('#searchInput').val('');
-        table.search('').draw();
+        filterTable('');
     });
     
     $('#searchInput').on('keyup', function(e) {
-        table.search(this.value).draw();
+        filterTable($(this).val().toLowerCase());
     });
+    
+    function filterTable(searchTerm) {
+        $('#permissionsTable tbody tr').each(function() {
+            var permissionName = $(this).find('td:eq(1)').text().toLowerCase();
+            if (permissionName.indexOf(searchTerm) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
     
     // Export to Excel functionality
     $('#exportExcelBtn').click(function() {
@@ -364,13 +383,13 @@ $(document).ready(function() {
     });
     
     function exportToPDF() {
-        // Get all data from DataTable
+        // Get all data from table
         var data = [];
-        table.rows().every(function() {
-            var rowData = this.data();
+        $('#permissionsTable tbody tr:visible').each(function(index) {
+            var permissionName = $(this).find('td:eq(1)').text();
             data.push([
-                rowData.DT_RowIndex,
-                rowData.name
+                index + 1,
+                permissionName
             ]);
         });
         
