@@ -298,11 +298,11 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted text-center mb-0">
-                        @if(auth()->user()->hasRole('SuperAdmin'))
+                        @if(auth()->user()->hasPermissionTo('forward to any role'))
                             No users available to forward in this case's department.
-                        @elseif(auth()->user()->hasRole('Legal Officer'))
-                            No Joint Secretary users found.
-                        @elseif(auth()->user()->hasRole('Joint Secretary'))
+                        @elseif(auth()->user()->hasPermissionTo('forward to joint secretary'))
+                            No Joint Secretary users found in this case's department.
+                        @elseif(auth()->user()->hasAnyPermission(['forward to permanent secretary', 'forward to secretary']))
                             No Permanent Secretary or Secretary users found in this case's department.
                         @else
                             You do not have permission to forward cases.

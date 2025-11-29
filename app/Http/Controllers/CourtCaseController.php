@@ -183,79 +183,113 @@ class CourtCaseController extends Controller
     }
 
     /**
-     * Get forwardable users based on current user's role and case department.
+     * Get forwardable users based on user's permissions and case department.
+     * Users can only forward to roles they have permission for, and must be in the same department as the case.
      */
     private function getForwardableUsers($user, $case)
     {
         $forwardableUsers = collect();
 
-        // Load user roles to check
-        $user->load('roles');
+        // Load user roles and permissions
+        $user->load('roles', 'permissions');
 
-        // Get user's role names
-        $userRoleNames = $user->roles->pluck('name')->toArray();
-        
-        Log::info('User roles', ['user_id' => $user->id, 'roles' => $userRoleNames]);
-
-        if (in_array('SuperAdmin', $userRoleNames)) {
-            // SuperAdmin can forward to any role of case department user
-            if ($case->department_id) {
-                $forwardableUsers = User::where('department_id', $case->department_id)
-                    ->where('id', '!=', $user->id)
-                    ->with(['roles' => function($query) {
-                        $query->where('guard_name', 'web');
-                    }, 'department'])
-                    ->get();
-            } else {
-                // If case has no department, can forward to any user
-                $forwardableUsers = User::where('id', '!=', $user->id)
-                    ->with(['roles' => function($query) {
-                        $query->where('guard_name', 'web');
-                    }, 'department'])
-                    ->get();
-            }
-        } elseif (in_array('Legal Officer', $userRoleNames)) {
-            // Legal Officer can forward to Joint Secretary
-            $jointSecretaryRole = \Spatie\Permission\Models\Role::where('name', 'Joint Secretary')
-                ->where('guard_name', 'web')
-                ->first();
-            
-            if ($jointSecretaryRole) {
-                $forwardableUsers = $jointSecretaryRole->users()
-                    ->where('users.id', '!=', $user->id)
-                    ->with(['roles' => function($query) {
-                        $query->where('guard_name', 'web');
-                    }, 'department'])
-                    ->get();
-            }
-        } elseif (in_array('Joint Secretary', $userRoleNames)) {
-            // Joint Secretary can forward to Permanent Secretary or Secretary of that case department
-            $targetRoles = \Spatie\Permission\Models\Role::whereIn('name', ['Permanent Secretary', 'Secretary'])
-                ->where('guard_name', 'web')
-                ->pluck('id')
-                ->toArray();
-            
-            if (!empty($targetRoles)) {
-                $query = User::whereHas('roles', function($q) use ($targetRoles) {
-                    $q->whereIn('roles.id', $targetRoles)
-                      ->where('roles.guard_name', 'web');
-                })
-                ->where('id', '!=', $user->id);
-                
-                if ($case->department_id) {
-                    $query->where('department_id', $case->department_id);
-                }
-                
-                $forwardableUsers = $query->with(['roles' => function($query) {
-                    $query->where('guard_name', 'web');
-                }, 'department'])
-                ->get();
+        // Check if user's department matches case's department (required for non-SuperAdmin)
+        if (!$user->hasPermissionTo('forward to any role')) {
+            if (!$case->department_id || $user->department_id != $case->department_id) {
+                // User's department must match case's department
+                Log::info('User department does not match case department', [
+                    'user_department_id' => $user->department_id,
+                    'case_department_id' => $case->department_id
+                ]);
+                return $forwardableUsers; // Return empty collection
             }
         }
 
+        // Define allowed roles from RoleSeeder
+        $allowedRoles = ['SuperAdmin', 'Legal Officer', 'Joint Secretary', 'Permanent Secretary', 'Secretary'];
+        
+        // Get role IDs for allowed roles
+        $allowedRoleIds = \Spatie\Permission\Models\Role::whereIn('name', $allowedRoles)
+            ->where('guard_name', 'web')
+            ->pluck('id')
+            ->toArray();
+
+        // Build list of target roles based on user's permissions
+        $targetRoleNames = [];
+
+        if ($user->hasPermissionTo('forward to any role')) {
+            // SuperAdmin can forward to any role of case department user
+            $targetRoleNames = $allowedRoles;
+        } else {
+            // Check specific forwarding permissions
+            if ($user->hasPermissionTo('forward to joint secretary')) {
+                $targetRoleNames[] = 'Joint Secretary';
+            }
+            if ($user->hasPermissionTo('forward to permanent secretary')) {
+                $targetRoleNames[] = 'Permanent Secretary';
+            }
+            if ($user->hasPermissionTo('forward to secretary')) {
+                $targetRoleNames[] = 'Secretary';
+            }
+            if ($user->hasPermissionTo('forward to legal officer')) {
+                $targetRoleNames[] = 'Legal Officer';
+            }
+        }
+
+        // If no permissions found, return empty collection
+        if (empty($targetRoleNames)) {
+            Log::info('User has no forwarding permissions', [
+                'user_id' => $user->id,
+                'user_permissions' => $user->permissions->pluck('name')->toArray()
+            ]);
+            return $forwardableUsers;
+        }
+
+        // Get role IDs for target roles
+        $targetRoleIds = \Spatie\Permission\Models\Role::whereIn('name', $targetRoleNames)
+            ->where('guard_name', 'web')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($targetRoleIds)) {
+            return $forwardableUsers;
+        }
+
+        // Build query for forwardable users
+        $query = User::where('id', '!=', $user->id)
+            ->whereHas('roles', function($q) use ($targetRoleIds) {
+                $q->whereIn('roles.id', $targetRoleIds)
+                  ->where('roles.guard_name', 'web');
+            });
+
+        // If user has "forward to any role" permission (SuperAdmin), they can forward to any department
+        // Otherwise, must match case's department
+        if (!$user->hasPermissionTo('forward to any role')) {
+            if ($case->department_id) {
+                $query->where('department_id', $case->department_id);
+            } else {
+                // If case has no department and user doesn't have "forward to any role", return empty
+                return $forwardableUsers;
+            }
+        } else {
+            // SuperAdmin can forward to case department if case has department
+            if ($case->department_id) {
+                $query->where('department_id', $case->department_id);
+            }
+        }
+
+        $forwardableUsers = $query->with(['roles' => function($query) {
+            $query->where('guard_name', 'web');
+        }, 'department'])
+        ->get();
+
         Log::info('Forwardable users found', [
             'count' => $forwardableUsers->count(),
-            'user_ids' => $forwardableUsers->pluck('id')->toArray()
+            'user_ids' => $forwardableUsers->pluck('id')->toArray(),
+            'user_permissions' => $user->permissions->pluck('name')->toArray(),
+            'target_roles' => $targetRoleNames,
+            'case_department_id' => $case->department_id,
+            'user_department_id' => $user->department_id
         ]);
 
         return $forwardableUsers;
@@ -269,10 +303,15 @@ class CourtCaseController extends Controller
         $case = CourtCase::findOrFail($caseId);
         $user = Auth::user();
 
-        // Check if user has access to this case
-        if (!$user->hasRole('SuperAdmin')) {
+        // Check if user has any forwarding permission
+        if (!$user->hasAnyPermission(['forward to any role', 'forward to joint secretary', 'forward to permanent secretary', 'forward to secretary', 'forward to legal officer'])) {
+            abort(403, 'You do not have permission to forward cases.');
+        }
+
+        // Check if user's department matches case's department (required for non-SuperAdmin)
+        if (!$user->hasPermissionTo('forward to any role')) {
             if ($user->department_id && $case->department_id != $user->department_id) {
-                abort(403, 'You do not have permission to forward this case.');
+                abort(403, 'You can only forward cases from your department.');
             } elseif (!$user->department_id) {
                 abort(403, 'You do not have permission to forward this case.');
             }

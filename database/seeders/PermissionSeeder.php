@@ -37,6 +37,13 @@ class PermissionSeeder extends Seeder
             
             'manage settings' => 'Can manage system settings and configurations',
 
+            // Case forwarding permissions
+            'forward to joint secretary' => 'Can forward cases to Joint Secretary',
+            'forward to permanent secretary' => 'Can forward cases to Permanent Secretary',
+            'forward to secretary' => 'Can forward cases to Secretary',
+            'forward to legal officer' => 'Can forward cases to Legal Officer',
+            'forward to any role' => 'Can forward cases to any role (SuperAdmin only)',
+
        
         ];
 

@@ -80,7 +80,11 @@
                                         'view role',
                                         'manage permission assignment',
                                         'manage settings',
-                                        'manage users'
+                                        'forward to joint secretary',
+                                        'forward to permanent secretary',
+                                        'forward to secretary',
+                                        'forward to legal officer',
+                                        'forward to any role'
                                     ];
                                     
                                     // Filter permissions to only include those in seeder
@@ -93,6 +97,7 @@
                                         'role' => ['name' => 'Role Management', 'badge' => 'badge-primary', 'icon' => 'fa fa-user-tag'],
                                         'permission' => ['name' => 'Permission Management', 'badge' => 'badge-info', 'icon' => 'fa fa-shield'],
                                         'settings' => ['name' => 'System Settings', 'badge' => 'badge-secondary', 'icon' => 'fa fa-cog'],
+                                        'forward' => ['name' => 'Case Forwarding', 'badge' => 'badge-warning', 'icon' => 'fa fa-share'],
                                         'other' => ['name' => 'Other Permissions', 'badge' => 'badge-light', 'icon' => 'fa fa-ellipsis-h']
                                     ];
                                     

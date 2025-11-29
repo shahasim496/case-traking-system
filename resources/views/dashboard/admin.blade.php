@@ -211,7 +211,7 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Case</th>
-                                    <th>Purpose</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -225,7 +225,11 @@
                                                 {{ Str::limit($hearing->courtCase->case_number, 15) }}
                                             </a>
                                         </td>
-                                        <td>{{ Str::limit($hearing->purpose, 20) ?? '-' }}</td>
+                                        <td>
+                                            <a href="{{ route('hearings.show', $hearing->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white;">
+                                                <i class="fa fa-eye mr-1"></i>View
+                                            </a>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -254,7 +258,7 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Case</th>
-                                    <th>Details</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -268,7 +272,11 @@
                                                 {{ Str::limit($notice->courtCase->case_number, 15) }}
                                             </a>
                                         </td>
-                                        <td>{{ Str::limit($notice->notice_details, 20) ?? '-' }}</td>
+                                        <td>
+                                            <a href="{{ route('notices.show', $notice->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white;">
+                                                <i class="fa fa-eye mr-1"></i>View
+                                            </a>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
