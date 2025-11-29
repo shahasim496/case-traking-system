@@ -11,7 +11,7 @@ class RoleController extends Controller
     public function index()
     {
         // Exclude the SuperAdmin role
-        $roles = Role::where('name', '!=', 'SuperAdmin')->orderBy('name', 'ASC')->get();
+        $roles = Role::where('name', '!=', 'SuperAdmin')->where('guard_name', 'web')->orderBy('name', 'ASC')->get();
         return view('roles.index', compact('roles'));
     }
 
@@ -23,12 +23,13 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:roles,name',
+            'name' => 'required|unique:roles,name,NULL,id,guard_name,web',
             'description' => 'nullable|string'
         ]);
 
         Role::create([
             'name' => $request->name,
+            'guard_name' => 'web',
             'description' => $request->description
         ]);
 
@@ -44,7 +45,7 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|unique:roles,name,' . $id,
+            'name' => 'required|unique:roles,name,' . $id . ',id,guard_name,web',
             'description' => 'nullable|string'
         ]);
 
@@ -68,13 +69,13 @@ class RoleController extends Controller
     public function managePermissions(Request $request)
     {
         // Exclude the SuperAdmin role
-        $roles = Role::where('name', '!=', 'SuperAdmin')->get(); // Fetch all roles except SuperAdmin
+        $roles = Role::where('name', '!=', 'SuperAdmin')->where('guard_name', 'web')->get(); // Fetch all roles except SuperAdmin
         $permissions = [];
         $assignedPermissions = [];
 
         if ($request->role_id) {
-            $role = Role::findById($request->role_id); // Use Spatie's findById method
-            $permissions = Permission::all(); // Fetch all permissions
+            $role = Role::findById($request->role_id, 'web'); // Use Spatie's findById method with guard
+            $permissions = Permission::where('guard_name', 'web')->get(); // Fetch all permissions for web guard
             $assignedPermissions = $role->permissions->pluck('id')->toArray(); // Get assigned permissions
         }
 
@@ -83,7 +84,7 @@ class RoleController extends Controller
 
     public function storeAssignedPermissions(Request $request)
     {
-        $role = Role::findById($request->role_id); // Use Spatie's findById method
+        $role = Role::findById($request->role_id, 'web'); // Use Spatie's findById method with guard
 
         // Sync permissions using Spatie's syncPermissions method
         $role->syncPermissions($request->permissions);

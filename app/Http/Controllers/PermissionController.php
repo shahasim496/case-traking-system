@@ -21,12 +21,13 @@ class PermissionController extends Controller
     {
       
         $request->validate([
-            'name' => 'required|unique:permissions,name',
+            'name' => 'required|unique:permissions,name,NULL,id,guard_name,web',
             'description' => 'nullable|string',
         ]);
 
         Permission::create([
             'name' => $request->name,
+            'guard_name' => 'web',
             'description' => $request->description
         ]);
 
@@ -42,13 +43,14 @@ class PermissionController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|unique:permissions,name,' . $id,
+            'name' => 'required|unique:permissions,name,' . $id . ',id,guard_name,web',
             'description' => 'nullable|string',
         ]);
 
         $permission = Permission::findOrFail($id);
         $permission->update([
             'name' => $request->name,
+            'guard_name' => 'web',
             'description' => $request->description
         ]);
 

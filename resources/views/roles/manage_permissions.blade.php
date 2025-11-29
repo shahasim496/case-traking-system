@@ -67,17 +67,37 @@
 
                                 <!-- Group permissions by category -->
                                 @php
+                                    // Only show permissions that are defined in PermissionSeeder
+                                    $allowedPermissions = [
+                                        'create user',
+                                        'edit user',
+                                        'delete user',
+                                        'view user',
+                                        'ban user',
+                                        'create role',
+                                        'edit role',
+                                        'delete role',
+                                        'view role',
+                                        'manage permission assignment',
+                                        'manage settings',
+                                        'manage users'
+                                    ];
+                                    
+                                    // Filter permissions to only include those in seeder
+                                    $filteredPermissions = $permissions->filter(function($permission) use ($allowedPermissions) {
+                                        return in_array($permission->name, $allowedPermissions);
+                                    });
+                                    
                                     $categories = [
                                         'user' => ['name' => 'User Management', 'badge' => 'badge-success', 'icon' => 'fa fa-users'],
                                         'role' => ['name' => 'Role Management', 'badge' => 'badge-primary', 'icon' => 'fa fa-user-tag'],
                                         'permission' => ['name' => 'Permission Management', 'badge' => 'badge-info', 'icon' => 'fa fa-shield'],
                                         'settings' => ['name' => 'System Settings', 'badge' => 'badge-secondary', 'icon' => 'fa fa-cog'],
-                                        'evidence' => ['name' => 'Evidence Management', 'badge' => 'badge-warning', 'icon' => 'fa fa-file-text'],
                                         'other' => ['name' => 'Other Permissions', 'badge' => 'badge-light', 'icon' => 'fa fa-ellipsis-h']
                                     ];
                                     
                                     $groupedPermissions = [];
-                                    foreach($permissions as $permission) {
+                                    foreach($filteredPermissions as $permission) {
                                         $category = 'other';
                                         foreach($categories as $key => $cat) {
                                             if($key !== 'other' && Str::contains($permission->name, $key)) {

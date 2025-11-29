@@ -23,20 +23,22 @@
 
 
 
-                @if(auth()->user()->can('manage users'))
-<!-- manage user -->
+              
+<!-- manage user -->  @if(auth()->user()->can('create user') || auth()->user()->can('edit user') || auth()->user()->can('delete user') || auth()->user()->can('view user') || auth()->user()->can('ban user'))
+               
 
                 <li class="nav-item">
                     <a href="{{route('users')}}" class="nav-link nav-toggle">
                         <i class="fa fa-user " style="font-size: 18px; color: gray;"></i>
                         <span class="title">User Management</span>
-                        <span class="arrow"></span>
-
+                       
                     </a>
                    
                 @endif
                 
-                @if(auth()->user()->can('manage role and permissions'))
+            
+ @if(auth()->user()->can('create role') || auth()->user()->can('edit role') || auth()->user()->can('delete role') || auth()->user()->can('view role') || auth()->user()->can('manage permission assignment'))
+                
 <!-- manage role and permissions -->
                 <li class="nav-item">
                     <a class="nav-link nav-toggle">
@@ -46,19 +48,22 @@
 
                     </a>
                     <ul class="sub-menu">
+
+                    @if(auth()->user()->can('create role') || auth()->user()->can('edit role') || auth()->user()->can('delete role') || auth()->user()->can('view role'))
                         <li class="nav-item">
                             <a href="{{ route('roles') }}" class="nav-link">
                                 <span class="title">Manage Roles</span>
                             </a>
                         </li>
-                      
+                        @endif
                        
-
+                    @if(auth()->user()->can('manage permission assignment'))
                         <li class="nav-item">
                             <a href="{{ route('roles.managePermissions') }}" class="nav-link">
                                 <span class="title">Manage Permissions Assignment</span>
                             </a>
                         </li>
+                        @endif
                     </ul>
                     @endif
 
