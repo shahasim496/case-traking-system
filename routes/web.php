@@ -155,6 +155,21 @@ Route::group(['prefix' => 'permissions', 'middleware' => ['auth', 'banned']], fu
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
+// Case Tracking Routes
+Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function () {
+    Route::get('/', [App\Http\Controllers\CourtCaseController::class, 'index'])->name('cases.index');
+    Route::get('/create', [App\Http\Controllers\CourtCaseController::class, 'create'])->name('cases.create');
+    Route::post('/store', [App\Http\Controllers\CourtCaseController::class, 'store'])->name('cases.store');
+    Route::get('/{id}', [App\Http\Controllers\CourtCaseController::class, 'show'])->name('cases.show');
+    Route::get('/{id}/edit', [App\Http\Controllers\CourtCaseController::class, 'edit'])->name('cases.edit');
+    Route::put('/{id}', [App\Http\Controllers\CourtCaseController::class, 'update'])->name('cases.update');
+    Route::delete('/{id}', [App\Http\Controllers\CourtCaseController::class, 'destroy'])->name('cases.destroy');
+    
+    // Notices and Hearings
+    Route::post('/{id}/notices', [App\Http\Controllers\CourtCaseController::class, 'storeNotice'])->name('cases.notices.store');
+    Route::post('/{id}/hearings', [App\Http\Controllers\CourtCaseController::class, 'storeHearing'])->name('cases.hearings.store');
+});
+
 
 
 

@@ -53,11 +53,14 @@
                                            id="cnic" 
                                            name="cnic" 
                                            class="form-control form-control-lg @error('cnic') is-invalid @enderror" 
-                                           placeholder="Enter National ID" 
+                                           placeholder="38302-6327920-5" 
                                            required 
-                                           value="{{ old('cnic', $user->cnic) }}">
+                                           value="{{ old('cnic', $user->cnic) }}"
+                                           pattern="\d{5}-\d{7}-\d{1}"
+                                           title="Format: XXXXX-XXXXXXX-X (e.g., 38302-6327920-5)">
+                                    <small class="text-muted">Format: XXXXX-XXXXXXX-X</small>
                                     @error('cnic')
-                                        <small class="text-danger">{{ $message }}</small>
+                                        <small class="text-danger d-block">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
@@ -98,11 +101,14 @@
                                            id="phone" 
                                            name="phone" 
                                            class="form-control form-control-lg @error('phone') is-invalid @enderror" 
-                                           placeholder="123456789012" 
+                                           placeholder="+923049972964" 
                                            required 
-                                           value="{{ old('phone', $user->phone) }}">
+                                           value="{{ old('phone', $user->phone) }}"
+                                           pattern="\+92\d{10}"
+                                           title="Format: +92XXXXXXXXXX (e.g., +923049972964)">
+                                    <small class="text-muted">Format: +92XXXXXXXXXX</small>
                                     @error('phone')
-                                        <small class="text-danger">{{ $message }}</small>
+                                        <small class="text-danger d-block">{{ $message }}</small>
                                     @enderror
                                 </div>
                             </div>
@@ -296,36 +302,83 @@ select[multiple] {
 
 <script>
 $(document).ready(function() {
-    // National ID formatting with 15 character limit
+    // National ID formatting: XXXXX-XXXXXXX-X
     $('#cnic').on('input', function() {
-        var value = $(this).val();
-        // Remove any non-alphanumeric characters except hyphens and spaces
-        value = value.replace(/[^a-zA-Z0-9\-\s]/g, '');
-        // Limit to 15 characters
-        if (value.length > 15) {
-            value = value.substring(0, 15);
+        var value = $(this).val().replace(/[^\d]/g, ''); // Remove all non-digits
+        
+        // Format as XXXXX-XXXXXXX-X
+        if (value.length > 0) {
+            if (value.length <= 5) {
+                value = value;
+            } else if (value.length <= 12) {
+                value = value.substring(0, 5) + '-' + value.substring(5);
+            } else {
+                value = value.substring(0, 5) + '-' + value.substring(5, 12) + '-' + value.substring(12, 13);
+            }
         }
+        
         $(this).val(value);
     });
     
-    // Phone number formatting - only numbers, max 12 digits
+    // Phone number formatting: +92XXXXXXXXXX
     $('#phone').on('input', function() {
         var value = $(this).val();
-        // Remove any non-digit characters (only allow numbers)
-        value = value.replace(/[^\d]/g, '');
-        // Limit to 12 digits
-        if (value.length > 12) {
-            value = value.substring(0, 12);
+        
+        // Remove all non-digit characters
+        value = value.replace(/[^\d+]/g, '');
+        
+        // Ensure it starts with +92
+        if (value.length === 0) {
+            value = '+92';
+        } else if (!value.startsWith('+92')) {
+            // If it doesn't start with +92, add it
+            if (value.startsWith('92')) {
+                value = '+' + value;
+            } else if (value.startsWith('0')) {
+                // If starts with 0, replace with +92
+                value = '+92' + value.substring(1);
+            } else {
+                value = '+92' + value;
+            }
         }
+        
+        // Limit to +92 followed by 10 digits (total 13 characters)
+        if (value.length > 13) {
+            value = value.substring(0, 13);
+        }
+        
         $(this).val(value);
     });
     
     // Form validation
     $('#userForm').on('submit', function(e) {
-        // Basic form validation - check if required fields are filled
-        var requiredFields = ['name', 'cnic', 'email', 'phone', 'department_id', 'designation_id'];
         var isValid = true;
+        var errorMessages = [];
         
+        // Validate CNIC format: XXXXX-XXXXXXX-X
+        var cnic = $('#cnic').val();
+        var cnicPattern = /^\d{5}-\d{7}-\d{1}$/;
+        if (!cnicPattern.test(cnic)) {
+            $('#cnic').addClass('is-invalid');
+            errorMessages.push('National ID must be in format: XXXXX-XXXXXXX-X (e.g., 38302-6327920-5)');
+            isValid = false;
+        } else {
+            $('#cnic').removeClass('is-invalid');
+        }
+        
+        // Validate Phone format: +92XXXXXXXXXX
+        var phone = $('#phone').val();
+        var phonePattern = /^\+92\d{10}$/;
+        if (!phonePattern.test(phone)) {
+            $('#phone').addClass('is-invalid');
+            errorMessages.push('Phone number must be in format: +92XXXXXXXXXX (e.g., +923049972964)');
+            isValid = false;
+        } else {
+            $('#phone').removeClass('is-invalid');
+        }
+        
+        // Check required fields
+        var requiredFields = ['name', 'email', 'department_id', 'designation_id'];
         requiredFields.forEach(function(field) {
             var value = $('#' + field).val();
             if (!value || value.trim() === '') {
@@ -347,7 +400,11 @@ $(document).ready(function() {
         
         if (!isValid) {
             e.preventDefault();
-            alert('Please fill in all required fields and select at least one role.');
+            if (errorMessages.length > 0) {
+                alert(errorMessages.join('\n'));
+            } else {
+                alert('Please fill in all required fields and select at least one role.');
+            }
             return false;
         }
     });

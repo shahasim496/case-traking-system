@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class CourtCase extends Model
+{
+    use HasFactory;
+
+    protected $table = 'cases';
+
+    protected $fillable = [
+        'case_number',
+        'court_type',
+        'case_title',
+        'party_name',
+        'lawyer_name',
+        'department_id',
+        'status',
+        'created_by',
+        'updated_by',
+    ];
+
+    /**
+     * Get the notices for the case.
+     */
+    public function notices()
+    {
+        return $this->hasMany(Notice::class, 'case_id');
+    }
+
+    /**
+     * Get the hearings for the case.
+     */
+    public function hearings()
+    {
+        return $this->hasMany(Hearing::class, 'case_id');
+    }
+
+    /**
+     * Get the user who created the case.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the user who last updated the case.
+     */
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Get the department for the case.
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+}
+

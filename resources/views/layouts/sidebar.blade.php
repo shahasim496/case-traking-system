@@ -96,9 +96,16 @@
 
                 @endif
 
+                <!-- Case Tracking -->
+                <li class="nav-item">
+                    <a href="{{ route('cases.index') }}" class="nav-link">
+                        <i class="fa fa-gavel" style="font-size: 18px; color: gray;"></i>
+                        <span class="title">Case Tracking</span>
+                        <span class="selected"></span>
+                    </a>
+                </li>
 
               
-
 
 
 

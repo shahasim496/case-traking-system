@@ -70,11 +70,7 @@
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200">Sign In</button>
       </form>
       
-      <div class="mt-6 text-center">
-        <a href="{{ route('careers') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-          <i class="fas fa-briefcase mr-1"></i>View Current Job Openings
-        </a>
-      </div>
+  
     </div>
   </div>
 

@@ -7,6 +7,7 @@ use DB;
 use Auth;
 
 use Excel;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 
 use App\Models\Grade;
@@ -111,12 +112,15 @@ class UserController extends Controller
         $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'cnic' => 'required|string|max:15|unique:users,cnic',
-            'phone' => 'required|string|max:12|regex:/^[0-9]+$/', // Only numbers, max 12 digits
+            'cnic' => ['required', 'string', 'regex:/^\d{5}-\d{7}-\d{1}$/', 'unique:users,cnic'],
+            'phone' => ['required', 'string', 'regex:/^\+92\d{10}$/'],
             'department_id' => 'required|integer',
             'designation_id' => 'required|integer',
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
+        ], [
+            'cnic.regex' => 'National ID must be in format: XXXXX-XXXXXXX-X (e.g., 38302-6327920-5)',
+            'phone.regex' => 'Phone number must be in format: +92XXXXXXXXXX (e.g., +923049972964)',
         ]);
 
         DB::beginTransaction();
@@ -145,7 +149,7 @@ class UserController extends Controller
             $user->assignRole($request->roles);
 
             // Send email to the created user
-            \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $password));
+            // \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $password));
 
             DB::commit();
 
@@ -350,13 +354,16 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
-            'cnic' => 'required|string|max:15|unique:users,cnic,' . $id,
-            'phone' => 'required|string|max:15',
+            'cnic' => ['required', 'string', 'regex:/^\d{5}-\d{7}-\d{1}$/', 'unique:users,cnic,' . $id],
+            'phone' => ['required', 'string', 'regex:/^\+92\d{10}$/'],
             'department_id' => 'required',
             'designation_id' => 'required',
 
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
+        ], [
+            'cnic.regex' => 'National ID must be in format: XXXXX-XXXXXXX-X (e.g., 38302-6327920-5)',
+            'phone.regex' => 'Phone number must be in format: +92XXXXXXXXXX (e.g., +923049972964)',
         ]);
 
         DB::beginTransaction();
@@ -383,7 +390,7 @@ class UserController extends Controller
             $user->syncRoles($request->roles);
 
             // Send email to the updated user
-            \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user, $request->password));
+            // \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user, $password));
 
             DB::commit();
 
