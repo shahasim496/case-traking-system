@@ -170,6 +170,22 @@ Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function
     Route::post('/{id}/hearings', [App\Http\Controllers\CourtCaseController::class, 'storeHearing'])->name('cases.hearings.store');
 });
 
+// Notice Routes
+Route::group(['prefix' => 'notices', 'middleware' => ['auth', 'banned']], function () {
+    Route::get('/{id}', [App\Http\Controllers\NoticeController::class, 'show'])->name('notices.show');
+    Route::get('/{id}/edit', [App\Http\Controllers\NoticeController::class, 'edit'])->name('notices.edit');
+    Route::put('/{id}', [App\Http\Controllers\NoticeController::class, 'update'])->name('notices.update');
+    Route::delete('/{id}', [App\Http\Controllers\NoticeController::class, 'destroy'])->name('notices.destroy');
+});
+
+// Hearing Routes
+Route::group(['prefix' => 'hearings', 'middleware' => ['auth', 'banned']], function () {
+    Route::get('/{id}', [App\Http\Controllers\HearingController::class, 'show'])->name('hearings.show');
+    Route::get('/{id}/edit', [App\Http\Controllers\HearingController::class, 'edit'])->name('hearings.edit');
+    Route::put('/{id}', [App\Http\Controllers\HearingController::class, 'update'])->name('hearings.update');
+    Route::delete('/{id}', [App\Http\Controllers\HearingController::class, 'destroy'])->name('hearings.destroy');
+});
+
 
 
 

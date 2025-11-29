@@ -97,23 +97,33 @@
                                 <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Details</th>
                                         <th>Attachment</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($case->notices as $notice)
                                         <tr>
                                             <td>{{ $notice->notice_date->format('d M Y') }}</td>
-                                            <td>{{ Str::limit($notice->notice_details, 50) }}</td>
                                             <td>
                                                 @if($notice->attachment)
-                                                    <a href="{{ Storage::url($notice->attachment) }}" target="_blank" class="btn btn-sm btn-info">
-                                                        <i class="fa fa-download"></i> View
+                                                    <a href="{{ Storage::url($notice->attachment) }}" target="_blank" class="btn btn-sm " style="background-color: #00349C; color: white;">
+                                                        <i class="fa fa-download"></i> Download
                                                     </a>
                                                 @else
-                                                    -
+                                                    <span class="text-muted">-</span>
                                                 @endif
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('notices.show', $notice->id) }}" class="btn" title="View"   style="background-color: #17a2b8; color: white;">
+                                                    <i class="fa fa-eye"></i> View
+                                                </a>
+                                                <a href="{{ route('notices.edit', $notice->id) }}" class="btn btn-warning" title="Edit">
+                                                    <i class="fa fa-edit"></i> Edit
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-danger delete-notice-btn" data-id="{{ $notice->id }}" data-details="{{ Str::limit($notice->notice_details, 30) }}" title="Delete">
+                                                    <i class="fa fa-trash"></i> Delete
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -143,25 +153,25 @@
                                 <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Purpose</th>
                                         <th>Person Appearing</th>
-                                        <th>Outcome</th>
-                                        <th>Next Hearing</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($case->hearings->sortByDesc('hearing_date') as $hearing)
                                         <tr>
                                             <td>{{ $hearing->hearing_date->format('d M Y') }}</td>
-                                            <td>{{ Str::limit($hearing->purpose, 30) }}</td>
                                             <td>{{ $hearing->person_appearing ?? '-' }}</td>
-                                            <td>{{ Str::limit($hearing->outcome, 30) ?? '-' }}</td>
                                             <td>
-                                                @if($hearing->next_hearing_date)
-                                                    {{ $hearing->next_hearing_date->format('d M Y') }}
-                                                @else
-                                                    -
-                                                @endif
+                                                <a href="{{ route('hearings.show', $hearing->id) }}" class="btn" title="View" style="background-color: #17a2b8; color: white;">
+                                                    <i class="fa fa-eye"></i> View
+                                                </a>
+                                                <a href="{{ route('hearings.edit', $hearing->id) }}" class="btn btn-warning" title="Edit">
+                                                    <i class="fa fa-edit"></i> Edit
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-danger delete-hearing-btn" data-id="{{ $hearing->id }}" data-date="{{ $hearing->hearing_date->format('d M Y') }}" title="Delete">
+                                                    <i class="fa fa-trash"></i> Delete
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -223,6 +233,34 @@
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Notice Modal -->
+<div class="modal fade" id="deleteNoticeModal" tabindex="-1" role="dialog" aria-labelledby="deleteNoticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #dc3545;">
+                <h5 class="modal-title" id="deleteNoticeModalLabel">
+                    <i class="fa fa-exclamation-triangle mr-2"></i>Delete Notice
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="" id="deleteNoticeForm">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this notice?</p>
+                    <p class="mb-0"><strong>Notice Details:</strong> <span id="deleteNoticeDetails"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -385,5 +423,59 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Hearing Modal -->
+<div class="modal fade" id="deleteHearingModal" tabindex="-1" role="dialog" aria-labelledby="deleteHearingModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: #dc3545;">
+                <h5 class="modal-title" id="deleteHearingModalLabel">
+                    <i class="fa fa-exclamation-triangle mr-2"></i>Delete Hearing
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="" id="deleteHearingForm">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this hearing?</p>
+                    <p class="mb-0"><strong>Hearing Date:</strong> <span id="deleteHearingDate"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Handle delete notice button click
+    $('.delete-notice-btn').click(function() {
+        var id = $(this).data('id');
+        var details = $(this).data('details');
+        var url = "{{ route('notices.destroy', ':id') }}".replace(':id', id);
+        
+        $('#deleteNoticeDetails').text(details || 'Notice');
+        $('#deleteNoticeForm').attr('action', url);
+        $('#deleteNoticeModal').modal('show');
+    });
+    
+    // Handle delete hearing button click
+    $('.delete-hearing-btn').click(function() {
+        var id = $(this).data('id');
+        var date = $(this).data('date');
+        var url = "{{ route('hearings.destroy', ':id') }}".replace(':id', id);
+        
+        $('#deleteHearingDate').text(date || 'Hearing');
+        $('#deleteHearingForm').attr('action', url);
+        $('#deleteHearingModal').modal('show');
+    });
+});
+</script>
 @endsection
 
