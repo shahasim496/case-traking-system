@@ -8,9 +8,9 @@
 
             
 
-                <li class="nav-item text-center mb-4">
+                <!-- <li class="nav-item text-center mb-4">
                 <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="sidebar-logo" style="margin-top: 40px; width: 120px; height: auto; max-width: 100%;">
-                </li>
+                </li> -->
 
 
                 <li class="nav-item">

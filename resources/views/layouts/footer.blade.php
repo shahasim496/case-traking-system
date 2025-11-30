@@ -7,7 +7,7 @@
 
    
     <div>
-    © 2025 MOHA. All rights reserved.
+    All rights reserved.
     </div>
    
 
