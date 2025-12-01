@@ -118,6 +118,15 @@ Route::group(['prefix' => 'courts', 'middleware' => ['auth', 'banned', 'permissi
     Route::delete('/delete/{id}', [App\Http\Controllers\CourtController::class, 'delete'])->name('courts.delete');
 });
 
+Route::group(['prefix' => 'work-benches', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
+    Route::get('/', [App\Http\Controllers\WorkBenchController::class, 'index'])->name('work_benches');
+    Route::get('/create', [App\Http\Controllers\WorkBenchController::class, 'create'])->name('work_benches.create');
+    Route::post('/store', [App\Http\Controllers\WorkBenchController::class, 'store'])->name('work_benches.store');
+    Route::get('/edit/{id}', [App\Http\Controllers\WorkBenchController::class, 'edit'])->name('work_benches.edit');
+    Route::put('/update/{id}', [App\Http\Controllers\WorkBenchController::class, 'update'])->name('work_benches.update');
+    Route::delete('/delete/{id}', [App\Http\Controllers\WorkBenchController::class, 'delete'])->name('work_benches.delete');
+});
+
 Route::group(['prefix' => 'case-types', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
     Route::get('/', [App\Http\Controllers\CaseTypeController::class, 'index'])->name('case_types');
     Route::get('/create', [App\Http\Controllers\CaseTypeController::class, 'create'])->name('case_types.create');

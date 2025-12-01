@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Court extends Model
+class WorkBench extends Model
 {
     use HasFactory;
    
@@ -14,21 +14,21 @@ class Court extends Model
      *
      * @var string
      */
-    protected $table = 'courts';
+    protected $table = 'work_benches';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'court_id', 'description'];
 
     /**
-     * Get the work benches for the court.
+     * Get the court that owns the work bench.
      */
-    public function workBenches()
+    public function court()
     {
-        return $this->hasMany(WorkBench::class, 'court_id');
+        return $this->belongsTo(Court::class, 'court_id');
     }
 }
 
