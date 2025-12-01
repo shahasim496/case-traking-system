@@ -108,6 +108,12 @@ class CourtCaseController extends Controller
             'remarks' => 'nullable|string',
             'case_title' => 'required|string|max:255',
             'case_description' => 'nullable|string',
+            'petitioner_name' => 'required|string|max:255',
+            'petitioner_id_number' => ['required', 'string', 'max:100', 'regex:/^\d{5}-\d{7}-\d{1}$/'],
+            'petitioner_gender' => 'required|in:Male,Female,Other',
+            'petitioner_contact_number' => ['required', 'string', 'max:50', 'regex:/^\+92\d{10}$/'],
+            'petitioner_date_of_birth' => 'required|date',
+            'petitioner_address' => 'nullable|string',
             'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
             'files' => 'nullable|array',
@@ -136,7 +142,12 @@ class CourtCaseController extends Controller
             $rules['judge_name'] = 'nullable|string|max:255';
         }
         
-        $validatedData = $request->validate($rules);
+        $messages = [
+            'petitioner_id_number.regex' => 'The ID Number must be in the format XXXXX-XXXXXXX-X (e.g., 38302-6327920-5).',
+            'petitioner_contact_number.regex' => 'The Contact Number must be in the format +92XXXXXXXXXX (e.g., +923049971963).',
+        ];
+        
+        $validatedData = $request->validate($rules, $messages);
 
         DB::beginTransaction();
 
@@ -746,6 +757,12 @@ class CourtCaseController extends Controller
             'remarks' => 'nullable|string',
             'case_title' => 'required|string|max:255',
             'case_description' => 'nullable|string',
+            'petitioner_name' => 'required|string|max:255',
+            'petitioner_id_number' => ['required', 'string', 'max:100', 'regex:/^\d{5}-\d{7}-\d{1}$/'],
+            'petitioner_gender' => 'required|in:Male,Female,Other',
+            'petitioner_contact_number' => ['required', 'string', 'max:50', 'regex:/^\+92\d{10}$/'],
+            'petitioner_date_of_birth' => 'required|date',
+            'petitioner_address' => 'nullable|string',
             'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
             'files' => 'nullable|array',
@@ -774,7 +791,12 @@ class CourtCaseController extends Controller
             $rules['judge_name'] = 'nullable|string|max:255';
         }
         
-        $validatedData = $request->validate($rules);
+        $messages = [
+            'petitioner_id_number.regex' => 'The ID Number must be in the format XXXXX-XXXXXXX-X (e.g., 38302-6327920-5).',
+            'petitioner_contact_number.regex' => 'The Contact Number must be in the format +92XXXXXXXXXX (e.g., +923049971963).',
+        ];
+        
+        $validatedData = $request->validate($rules, $messages);
 
         DB::beginTransaction();
 

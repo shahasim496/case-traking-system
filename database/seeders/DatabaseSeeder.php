@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             DesignationSeeder::class,
             CourtSeeder::class,
             CaseTypeSeeder::class,
+            WorkBenchSeeder::class,
         
             UserSeeder::class,
         ]);

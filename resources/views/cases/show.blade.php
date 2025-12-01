@@ -83,6 +83,47 @@
                         </div>
                     </div>
                     
+                    <!-- Petitioner Information Section -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                            <i class="fa fa-user mr-2"></i>Petitioner Information
+                        </h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Petitioner Name:</strong>
+                                <p class="mb-0">{{ $case->petitioner_name ?? '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Contact Number:</strong>
+                                <p class="mb-0">{{ $case->petitioner_contact_number ?? '-' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>ID Number:</strong>
+                                <p class="mb-0">{{ $case->petitioner_id_number ?? '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Date of Birth:</strong>
+                                <p class="mb-0">{{ $case->petitioner_date_of_birth ? \Carbon\Carbon::parse($case->petitioner_date_of_birth)->format('d M Y') : '-' }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Gender:</strong>
+                                <p class="mb-0">{{ $case->petitioner_gender ?? '-' }}</p>
+                            </div>
+                            @if($case->petitioner_address)
+                            <div class="col-md-6">
+                                <strong>Address:</strong>
+                                <p class="mb-0">{{ $case->petitioner_address }}</p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    
                     <!-- Court Information Section -->
                     <div class="mb-4">
                         <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">

@@ -264,6 +264,130 @@
                             </div>
                         </div>
                         
+                        <!-- Petitioner Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                                    <i class="fa fa-user mr-2"></i>Petitioner Information
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Petitioner Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="petitioner_name" 
+                                           name="petitioner_name" 
+                                           class="form-control form-control-lg @error('petitioner_name') is-invalid @enderror" 
+                                           placeholder="Enter petitioner name" 
+                                           required 
+                                           value="{{ old('petitioner_name') }}">
+                                    @error('petitioner_name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Contact Number <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="petitioner_contact_number" 
+                                           name="petitioner_contact_number" 
+                                           class="form-control form-control-lg @error('petitioner_contact_number') is-invalid @enderror" 
+                                           placeholder="+923049971963" 
+                                           pattern="^\+92\d{10}$"
+                                           required 
+                                           value="{{ old('petitioner_contact_number') }}">
+                                    <small class="text-muted">Format: +92XXXXXXXXXX (e.g., +923049971963)</small>
+                                    @error('petitioner_contact_number')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                    <small class="text-danger" id="contact_number_error" style="display: none;">Invalid format. Must be +92 followed by 10 digits.</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        ID Number <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="petitioner_id_number" 
+                                           name="petitioner_id_number" 
+                                           class="form-control form-control-lg @error('petitioner_id_number') is-invalid @enderror" 
+                                           placeholder="38302-6327920-5" 
+                                           pattern="^\d{5}-\d{7}-\d{1}$"
+                                           required 
+                                           value="{{ old('petitioner_id_number') }}">
+                                    <small class="text-muted">Format: XXXXX-XXXXXXX-X (e.g., 38302-6327920-5)</small>
+                                    @error('petitioner_id_number')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                    <small class="text-danger" id="id_number_error" style="display: none;">Invalid format. Must be XXXXX-XXXXXXX-X (5 digits, dash, 7 digits, dash, 1 digit).</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Date of Birth <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" 
+                                           id="petitioner_date_of_birth" 
+                                           name="petitioner_date_of_birth" 
+                                           class="form-control form-control-lg @error('petitioner_date_of_birth') is-invalid @enderror" 
+                                           placeholder="mm/dd/yyyy" 
+                                           required 
+                                           value="{{ old('petitioner_date_of_birth') }}">
+                                    @error('petitioner_date_of_birth')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Gender <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="petitioner_gender" 
+                                            name="petitioner_gender" 
+                                            class="form-control form-control-lg @error('petitioner_gender') is-invalid @enderror" 
+                                            required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male" {{ old('petitioner_gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                        <option value="Female" {{ old('petitioner_gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                                        <option value="Other" {{ old('petitioner_gender') == 'Other' ? 'selected' : '' }}>Other</option>
+                                    </select>
+                                    @error('petitioner_gender')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Address
+                                    </label>
+                                    <input type="text" 
+                                           id="petitioner_address" 
+                                           name="petitioner_address" 
+                                           class="form-control form-control-lg @error('petitioner_address') is-invalid @enderror" 
+                                           placeholder="Enter address" 
+                                           value="{{ old('petitioner_address') }}">
+                                    @error('petitioner_address')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Additional Information Section -->
                         <div class="row mb-4">
                             <div class="col-12">
@@ -493,6 +617,109 @@ $(document).ready(function() {
     } else if ('{{ old("court_id") }}') {
         $('#court_id').val('{{ old("court_id") }}').trigger('change');
     }
+    
+    // ID Number validation (CNIC format: XXXXX-XXXXXXX-X)
+    $('#petitioner_id_number').on('input', function() {
+        var value = $(this).val();
+        var pattern = /^\d{5}-\d{7}-\d{1}$/;
+        var errorMsg = $('#id_number_error');
+        
+        if (value && !pattern.test(value)) {
+            $(this).addClass('is-invalid');
+            errorMsg.show();
+        } else {
+            $(this).removeClass('is-invalid');
+            errorMsg.hide();
+        }
+    });
+    
+    // Auto-format ID Number as user types
+    $('#petitioner_id_number').on('keyup', function(e) {
+        var value = $(this).val().replace(/[^\d]/g, ''); // Remove non-digits
+        var formatted = '';
+        
+        if (value.length > 0) {
+            formatted = value.substring(0, 5);
+            if (value.length > 5) {
+                formatted += '-' + value.substring(5, 12);
+            }
+            if (value.length > 12) {
+                formatted += '-' + value.substring(12, 13);
+            }
+        }
+        
+        if (formatted !== $(this).val()) {
+            $(this).val(formatted);
+        }
+    });
+    
+    // Contact Number validation (Pakistani format: +92XXXXXXXXXX)
+    $('#petitioner_contact_number').on('input', function() {
+        var value = $(this).val();
+        var pattern = /^\+92\d{10}$/;
+        var errorMsg = $('#contact_number_error');
+        
+        if (value && !pattern.test(value)) {
+            $(this).addClass('is-invalid');
+            errorMsg.show();
+        } else {
+            $(this).removeClass('is-invalid');
+            errorMsg.hide();
+        }
+    });
+    
+    // Auto-format Contact Number as user types
+    $('#petitioner_contact_number').on('keyup', function(e) {
+        var value = $(this).val().replace(/[^\d+]/g, ''); // Keep only digits and +
+        
+        // Ensure it starts with +92
+        if (!value.startsWith('+92')) {
+            if (value.startsWith('92')) {
+                value = '+' + value;
+            } else if (value.startsWith('0')) {
+                value = '+92' + value.substring(1);
+            } else if (!value.startsWith('+')) {
+                value = '+92' + value;
+            }
+        }
+        
+        // Limit to +92 followed by 10 digits
+        if (value.startsWith('+92')) {
+            var digits = value.substring(3).replace(/\D/g, '').substring(0, 10);
+            value = '+92' + digits;
+        }
+        
+        if (value !== $(this).val()) {
+            $(this).val(value);
+        }
+    });
+    
+    // Form submission validation
+    $('#caseForm').on('submit', function(e) {
+        var idNumber = $('#petitioner_id_number').val();
+        var contactNumber = $('#petitioner_contact_number').val();
+        var idPattern = /^\d{5}-\d{7}-\d{1}$/;
+        var contactPattern = /^\+92\d{10}$/;
+        var isValid = true;
+        
+        if (!idPattern.test(idNumber)) {
+            $('#petitioner_id_number').addClass('is-invalid');
+            $('#id_number_error').show();
+            isValid = false;
+        }
+        
+        if (!contactPattern.test(contactNumber)) {
+            $('#petitioner_contact_number').addClass('is-invalid');
+            $('#contact_number_error').show();
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please correct the validation errors before submitting.');
+            return false;
+        }
+    });
 });
 </script>
 @endsection
