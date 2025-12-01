@@ -1,5 +1,5 @@
 @extends('layouts.main')
-@section('title', 'Manage Departments')
+@section('title', 'Manage Entities')
 
 @section('content')
 <div class="container-fluid">
@@ -8,10 +8,10 @@
             <div class="card shadow-sm">
                 <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #00349C;">
                     <h4 class="mb-0">
-                        <i class="fa fa-building mr-2"></i>Manage Departments
+                        <i class="fa fa-building mr-2"></i>Manage Entities
                     </h4>
-                    <a href="{{ route('departments.create') }}" class="btn btn-light btn-sm">
-                        <i class="fa fa-plus mr-1"></i>Add Department
+                    <a href="{{ route('entities.create') }}" class="btn btn-light btn-sm">
+                        <i class="fa fa-plus mr-1"></i>Add Entity
                     </a>
                 </div>
                 <div class="card-body p-4">
@@ -27,7 +27,7 @@
                                             <i class="fa fa-search text-muted"></i>
                                         </span>
                                     </div>
-                                    <input type="text" id="searchInput" class="form-control border-left-0" placeholder="Search departments by name...">
+                                    <input type="text" id="searchInput" class="form-control border-left-0" placeholder="Search entities by name...">
                                     <div class="input-group-append">
                                         <button class="btn btn-outline-secondary border-left-0" type="button" id="clearSearchBtn" title="Clear Search">
                                             <i class="fa fa-times"></i>
@@ -49,30 +49,30 @@
                     </div>
                     
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered" id="departmentsTable">
+                        <table class="table table-striped table-bordered" id="entitiesTable">
                             <thead class="thead-dark">
                                 <tr>
                                     <th width="10%">#</th>
-                                    <th width="40%">Department Name</th>
+                                    <th width="40%">Entity Name</th>
                                     <th width="40%">Description</th>
                                     <th width="10%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($departments as $index => $department)
+                                @forelse($entities as $index => $entity)
                                 <tr>
-                                    <td>{{ ($departments->currentPage() - 1) * $departments->perPage() + $index + 1 }}</td>
-                                    <td>{{ $department->name }}</td>
-                                    <td>{{ $department->description ?? 'N/A' }}</td>
+                                    <td>{{ ($entities->currentPage() - 1) * $entities->perPage() + $index + 1 }}</td>
+                                    <td>{{ $entity->name }}</td>
+                                    <td>{{ $entity->description ?? 'N/A' }}</td>
                                     <td>
                                         <div class="d-flex gap-1">
-                                            <a href="{{ route('departments.edit', $department->id) }}" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
+                                            <a href="{{ route('entities.edit', $entity->id) }}" class="btn d-flex align-items-center justify-content-center" style="width: 80px; background-color: #00349C; color: white;" title="Edit">
                                                 <i class="fa fa-edit mr-1"></i>Edit
                                             </a>
                                             <button class="btn btn-danger d-flex align-items-center justify-content-center delete-btn" 
                                                     style="width: 80px; background-color: #dc3545; color: white;"
-                                                    data-id="{{ $department->id }}" 
-                                                    data-name="{{ $department->name }}"
+                                                    data-id="{{ $entity->id }}" 
+                                                    data-name="{{ $entity->name }}"
                                                     data-toggle="modal" 
                                                     data-target="#deleteModal" 
                                                     title="Delete">
@@ -83,7 +83,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center">No departments found</td>
+                                    <td colspan="4" class="text-center">No entities found</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -92,7 +92,7 @@
                     
                     <!-- Pagination -->
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $departments->links() }}
+                        {{ $entities->links() }}
                     </div>
                 </div>
             </div>
@@ -113,7 +113,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete department: <strong id="deleteDepartmentName"></strong>?</p>
+                <p>Are you sure you want to delete entity: <strong id="deleteEntityName"></strong>?</p>
                 <p class="text-muted small">This action cannot be undone.</p>
             </div>
             <div class="modal-footer">
@@ -318,10 +318,10 @@ $(document).ready(function() {
     // Handle delete button click
     $('.delete-btn').on('click', function () {
         var id = $(this).data('id');
-        var name = $(this).data('name') || 'this department';
-        var url = "{{ route('departments.delete', ':id') }}".replace(':id', id);
+        var name = $(this).data('name') || 'this entity';
+        var url = "{{ route('entities.delete', ':id') }}".replace(':id', id);
         
-        $('#deleteDepartmentName').text(name);
+        $('#deleteEntityName').text(name);
         $('#deleteForm').attr('action', url);
     });
 
@@ -336,10 +336,10 @@ $(document).ready(function() {
     });
     
     function filterTable(searchTerm) {
-        $('#departmentsTable tbody tr').each(function() {
-            var departmentName = $(this).find('td:eq(1)').text().toLowerCase();
+        $('#entitiesTable tbody tr').each(function() {
+            var entityName = $(this).find('td:eq(1)').text().toLowerCase();
             var description = $(this).find('td:eq(2)').text().toLowerCase();
-            if (departmentName.indexOf(searchTerm) > -1 || description.indexOf(searchTerm) > -1) {
+            if (entityName.indexOf(searchTerm) > -1 || description.indexOf(searchTerm) > -1) {
                 $(this).show();
             } else {
                 $(this).hide();
@@ -353,12 +353,12 @@ $(document).ready(function() {
     });
     
     function exportToExcel() {
-        var table = document.getElementById('departmentsTable');
+        var table = document.getElementById('entitiesTable');
         var html = table.outerHTML;
         
         // Create a temporary link element
         var link = document.createElement('a');
-        link.download = 'departments_export.xls';
+        link.download = 'entities_export.xls';
         link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
         document.body.appendChild(link);
         link.click();
@@ -373,12 +373,12 @@ $(document).ready(function() {
     function exportToPDF() {
         // Get all data from table
         var data = [];
-        $('#departmentsTable tbody tr:visible').each(function(index) {
-            var departmentName = $(this).find('td:eq(1)').text();
+        $('#entitiesTable tbody tr:visible').each(function(index) {
+            var entityName = $(this).find('td:eq(1)').text();
             var description = $(this).find('td:eq(2)').text();
             data.push([
                 index + 1,
-                departmentName,
+                entityName,
                 description || 'N/A'
             ]);
         });
@@ -390,7 +390,7 @@ $(document).ready(function() {
         // Add title
         doc.setFontSize(20);
         doc.setTextColor(0, 52, 156); // #00349C
-        doc.text('Departments Report', 105, 20, { align: 'center' });
+        doc.text('Entities Report', 105, 20, { align: 'center' });
         
         // Add date
         doc.setFontSize(12);
@@ -398,7 +398,7 @@ $(document).ready(function() {
         doc.text('Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(), 105, 30, { align: 'center' });
         
         // Define table headers
-        var headers = ['#', 'Department Name', 'Description'];
+        var headers = ['#', 'Entity Name', 'Description'];
         
         // Add table
         doc.autoTable({
@@ -421,19 +421,19 @@ $(document).ready(function() {
             },
             columnStyles: {
                 0: { cellWidth: 20 }, // #
-                1: { cellWidth: 60 }, // Department Name
+                1: { cellWidth: 60 }, // Entity Name
                 2: { cellWidth: 110 }, // Description
             },
             didDrawPage: function(data) {
                 // Add footer
                 doc.setFontSize(10);
                 doc.setTextColor(100, 100, 100);
-                doc.text('Total Departments: ' + data.length, 105, doc.internal.pageSize.height - 10, { align: 'center' });
+                doc.text('Total Entities: ' + data.length, 105, doc.internal.pageSize.height - 10, { align: 'center' });
             }
         });
         
         // Save the PDF
-        doc.save('departments_report.pdf');
+        doc.save('entities_report.pdf');
     }
 });
 </script>

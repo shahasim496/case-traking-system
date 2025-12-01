@@ -35,7 +35,7 @@ class DeactivateExpiredJobs extends Command
         // Get all active job postings that have passed their deadline
         $expiredJobs = JobPosting::where('status', 'active')
             ->where('deadline', '<', Carbon::today())
-            ->with(['department', 'createdBy'])
+            ->with(['entity', 'createdBy'])
             ->get();
 
         if ($expiredJobs->count() === 0) {
@@ -56,7 +56,7 @@ class DeactivateExpiredJobs extends Command
                 $deactivatedJobs[] = [
                     'id' => $job->id,
                     'title' => $job->title,
-                    'department' => $job->department->name ?? 'N/A',
+                    'entity' => $job->entity->name ?? 'N/A',
                     'deadline' => $job->deadline->format('Y-m-d'),
                     'created_by' => $job->createdBy->name ?? 'Unknown'
                 ];

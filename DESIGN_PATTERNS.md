@@ -178,14 +178,14 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
 ## 7. Database Patterns
 
 ### Model Relationships:
-- **User** belongs to **Department**
+- **User** belongs to **Entity**
 - **User** belongs to **Designation**
 - **User** has many **Roles** (many-to-many)
 - **User** has many **Notifications**
 
 ### Key Fields:
 - `name`, `email`, `password`, `cnic`, `phone`
-- `department_id`, `designation_id`
+- `entity_id`, `designation_id`
 - `is_blocked` (status flag)
 - `deleted_by` (audit trail)
 
@@ -217,7 +217,7 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
 - Email
 - CNIC
 - Phone
-- Department
+- Entity
 - Designation
 
 ## 10. Reusable Components

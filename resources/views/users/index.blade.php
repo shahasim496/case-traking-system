@@ -59,7 +59,7 @@
                                     <th width="12%">CNIC</th>
                                     <th width="18%">Email</th>
                                     <th width="12%">Phone</th>
-                                    <th width="12%">Department</th>
+                                        <th width="12%">Entity</th>
                                     <th width="12%">Designation</th>
                                     <th width="8%">Status</th>
                                     <th width="6%">Actions</th>
@@ -73,7 +73,7 @@
                                         <td>{{ $user->cnic ?? '-' }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->phone ?? '-' }}</td>
-                                        <td>{{ $user->department->name ?? '-' }}</td>
+                                        <td>{{ $user->entity->name ?? '-' }}</td>
                                         <td>{{ $user->designation->name ?? '-' }}</td>
                                         <td>
                                             @if($user->is_blocked == 0)
@@ -478,7 +478,7 @@ $(document).ready(function() {
         doc.text('Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(), 105, 30, { align: 'center' });
         
         // Define table headers
-        var headers = ['#', 'Name', 'CNIC', 'Email', 'Phone', 'Department', 'Designation', 'Status'];
+        var headers = ['#', 'Name', 'CNIC', 'Email', 'Phone', 'Entity', 'Designation', 'Status'];
         
         // Add table
         doc.autoTable({
@@ -505,7 +505,7 @@ $(document).ready(function() {
                 2: { cellWidth: 25 }, // CNIC
                 3: { cellWidth: 40 }, // Email
                 4: { cellWidth: 25 }, // Phone
-                5: { cellWidth: 25 }, // Department
+                5: { cellWidth: 25 }, // Entity
                 6: { cellWidth: 25 }, // Designation
                 7: { cellWidth: 20 }, // Status
             },

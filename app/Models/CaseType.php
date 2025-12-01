@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Department extends Model
+class CaseType extends Model
 {
     use HasFactory;
-
+   
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'departments';
+    protected $table = 'case_types';
 
     /**
      * The attributes that are mass assignable.
@@ -22,5 +22,5 @@ class Department extends Model
      * @var array
      */
     protected $fillable = ['name', 'description'];
-
 }
+

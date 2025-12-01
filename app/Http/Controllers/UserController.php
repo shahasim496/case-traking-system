@@ -10,7 +10,7 @@ use Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
-use App\Models\Department;
+use App\Models\Entity;
 use App\Models\Designation;
 
 use Illuminate\Support\Str;
@@ -67,7 +67,7 @@ class UserController extends Controller
     {
 
         $data = $request->all();
-        $departments = Department::all();
+        $entities = Entity::all();
 
         // Fetch all designations
         $designations = Designation::all();
@@ -78,7 +78,7 @@ class UserController extends Controller
 
 
 
-        return view('users.add_user', compact('departments', 'designations', 'roles'));
+        return view('users.add_user', compact('entities', 'designations', 'roles'));
     } //end of function
 
 
@@ -93,7 +93,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'cnic' => ['required', 'string', 'regex:/^\d{5}-\d{7}-\d{1}$/', 'unique:users,cnic'],
             'phone' => ['required', 'string', 'regex:/^\+92\d{10}$/'],
-            'department_id' => 'required|integer',
+            'entity_id' => 'required|integer',
             'designation_id' => 'required|integer',
             'roles' => 'required|array', // Validate roles as an array
             'roles.*' => 'string|exists:roles,name', // Validate each role
@@ -119,7 +119,7 @@ class UserController extends Controller
                 'password' => $password,
                 'cnic' => $request->cnic,
                 'phone' => $request->phone,
-                'department_id' => $request->department_id,
+                'entity_id' => $request->entity_id,
                 'designation_id' => $request->designation_id,
 
             ]);
@@ -347,7 +347,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        $departments = Department::all();
+        $entities = Entity::all();
         $designations = Designation::all();
 
         $roles = Role::where('name', '!=', 'SuperAdmin')->get();
@@ -358,7 +358,7 @@ class UserController extends Controller
 
         return view('users.edit_user', compact(
             'user',
-            'departments',
+            'entities',
             'designations',
             'roles',
             'userRoles'
@@ -373,7 +373,7 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'cnic' => ['required', 'string', 'regex:/^\d{5}-\d{7}-\d{1}$/', 'unique:users,cnic,' . $id],
             'phone' => ['required', 'string', 'regex:/^\+92\d{10}$/'],
-            'department_id' => 'required',
+            'entity_id' => 'required',
             'designation_id' => 'required',
 
             'roles' => 'required|array', // Validate roles as an array
@@ -396,7 +396,7 @@ class UserController extends Controller
                 'password' => $password,
                 'cnic' => $request->cnic,
                 'phone' => $request->phone,
-                'department_id' => $request->department_id,
+                'entity_id' => $request->entity_id,
                 'designation_id' => $request->designation_id,
 
             ]);

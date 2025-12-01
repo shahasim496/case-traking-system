@@ -3,13 +3,13 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Department;
+use App\Models\Entity;
 
-class DepartmentSeeder extends Seeder
+class EntitySeeder extends Seeder
 {
     public function run()
     {
-        $departments = [
+        $entities = [
             [
                 'name' => 'Criminal Investigation',
                 'description' => 'Handles investigations related to criminal activities.',
@@ -52,8 +52,9 @@ class DepartmentSeeder extends Seeder
             ],
         ];
 
-        foreach ($departments as $department) {
-            Department::create($department);
+        foreach ($entities as $entity) {
+            Entity::create($entity);
         }
     }
 }
+

@@ -84,14 +84,21 @@
                   
                     <ul class="sub-menu">
                         <li class="nav-item">
-                            <a href="{{ route('departments') }}" class="nav-link">
-                                <span class="title">Manage Departments</span>
+                            <a href="{{ route('entities') }}" class="nav-link">
+                                <span class="title">Manage Entities</span>
                             </a>
                         </li>
                        
                         <li class="nav-item">
                             <a href="{{ route('designations') }}" class="nav-link">
                                 <span class="title">Manage Designations</span>
+
+                            </a>
+                        </li>
+                       
+                        <li class="nav-item">
+                            <a href="{{ route('case_types') }}" class="nav-link">
+                                <span class="title">Manage Case Types</span>
 
                             </a>
                         </li>

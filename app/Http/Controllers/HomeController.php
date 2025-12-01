@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Models\CourtCase;
 use App\Models\Notice;
 use App\Models\Hearing;
-use App\Models\Department;
+use App\Models\Entity;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Group_Service;
@@ -51,22 +51,22 @@ class HomeController extends Controller
         $hearingQuery = Hearing::query();
         $noticeQuery = Notice::query();
 
-        // Filter by department - users can only see their department cases, SuperAdmin sees all
+        // Filter by entity - users can only see their entity cases, SuperAdmin sees all
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only see cases from their department
-            if ($user->department_id) {
-                $query->where('department_id', $user->department_id);
+            // Regular users can only see cases from their entity
+            if ($user->entity_id) {
+                $query->where('entity_id', $user->entity_id);
                 
-                // Filter hearings and notices by case department
+                // Filter hearings and notices by case entity
                 $hearingQuery->whereHas('courtCase', function($q) use ($user) {
-                    $q->where('department_id', $user->department_id);
+                    $q->where('entity_id', $user->entity_id);
                 });
                 
                 $noticeQuery->whereHas('courtCase', function($q) use ($user) {
-                    $q->where('department_id', $user->department_id);
+                    $q->where('entity_id', $user->entity_id);
                 });
             } else {
-                // If user has no department, show no data
+                // If user has no entity, show no data
                 $query->whereRaw('1 = 0');
                 $hearingQuery->whereRaw('1 = 0');
                 $noticeQuery->whereRaw('1 = 0');
@@ -82,7 +82,7 @@ class HomeController extends Controller
         $totalHearings = $hearingQuery->count();
         
         // Recent Cases (max 5)
-        $recentCases = (clone $query)->with('department')->orderBy('created_at', 'DESC')->limit(5)->get();
+        $recentCases = (clone $query)->with('entity')->orderBy('created_at', 'DESC')->limit(5)->get();
         
         // Upcoming Hearings (next 7 days, max 5)
         $upcomingHearings = (clone $hearingQuery)->with('courtCase')
@@ -116,29 +116,29 @@ class HomeController extends Controller
             ->pluck('total', 'court_type')
             ->toArray();
         
-        // Department-wise Cases (only show if SuperAdmin, otherwise show only user's department)
+        // Entity-wise Cases (only show if SuperAdmin, otherwise show only user's entity)
         if ($user->hasRole('SuperAdmin')) {
-            $departmentCases = CourtCase::select('department_id', DB::raw('count(*) as total'))
-                ->whereNotNull('department_id')
-                ->with('department')
-                ->groupBy('department_id')
+            $entityCases = CourtCase::select('entity_id', DB::raw('count(*) as total'))
+                ->whereNotNull('entity_id')
+                ->with('entity')
+                ->groupBy('entity_id')
                 ->get()
                 ->map(function($item) {
                     return [
-                        'name' => $item->department->name ?? 'Unknown',
+                        'name' => $item->entity->name ?? 'Unknown',
                         'total' => $item->total
                     ];
                 });
         } else {
-            // For regular users, show only their department
-            if ($user->department_id) {
-                $deptTotal = (clone $query)->count();
-                $departmentCases = collect([[
-                    'name' => $user->department->name ?? 'Unknown',
-                    'total' => $deptTotal
+            // For regular users, show only their entity
+            if ($user->entity_id) {
+                $entityTotal = (clone $query)->count();
+                $entityCases = collect([[
+                    'name' => $user->entity->name ?? 'Unknown',
+                    'total' => $entityTotal
                 ]]);
             } else {
-                $departmentCases = collect([]);
+                $entityCases = collect([]);
             }
         }
         
@@ -187,7 +187,7 @@ class HomeController extends Controller
             'recentNotices',
             'statusDistribution',
             'courtTypeDistribution',
-            'departmentCases',
+            'entityCases',
             'monthlyTrends',
             'casesByStatus',
             'casesThisMonth',

@@ -24,11 +24,11 @@ class CreateUsersTable extends Migration
             // Additional fields
             $table->string('cnic', 15)->unique()->nullable();
             $table->string('phone', 15)->nullable();
-            $table->unsignedBigInteger('department_id')->nullable();
+            $table->unsignedBigInteger('entity_id')->nullable();
             $table->unsignedBigInteger('designation_id')->nullable();
 
             // Foreign key constraints
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
+            $table->foreign('entity_id')->references('id')->on('entities')->onDelete('set null');
             $table->foreign('designation_id')->references('id')->on('designations')->onDelete('set null');
 
             $table->rememberToken();

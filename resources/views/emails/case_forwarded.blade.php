@@ -19,8 +19,8 @@
             <p><strong>Case Number:</strong> {{ $data['case']->case_number }}</p>
             <p><strong>Case Title:</strong> {{ $data['case']->case_title }}</p>
             <p><strong>Court Type:</strong> {{ $data['case']->court_type }}</p>
-            @if($data['case']->department)
-                <p><strong>Department:</strong> {{ $data['case']->department->name }}</p>
+            @if($data['case']->entity)
+                <p><strong>Entity:</strong> {{ $data['case']->entity->name }}</p>
             @endif
         </div>
         

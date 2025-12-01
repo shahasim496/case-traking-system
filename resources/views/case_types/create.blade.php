@@ -1,5 +1,5 @@
 @extends('layouts.main')
-@section('title', 'Create Department')
+@section('title', 'Create Case Type')
 
 @section('content')
 <div class="container-fluid">
@@ -8,33 +8,33 @@
             <div class="card shadow-sm">
                 <div class="card-header text-white" style="background-color: #00349C;">
                     <h4 class="mb-0">
-                        <i class="fa fa-building mr-2"></i>Create New Department  
+                        <i class="fa fa-gavel mr-2"></i>Create New Case Type  
                     </h4>
                 </div>
                 <div class="card-body p-4">
                     @include('components.toaster')
                     
-                    <form method="POST" action="{{ route('departments.store') }}" id="departmentForm">
+                    <form method="POST" action="{{ route('case_types.store') }}" id="caseTypeForm">
                         @csrf
                         
-                        <!-- Department Information Section -->
+                        <!-- Case Type Information Section -->
                         <div class="row mb-4">
                             <div class="col-12">
                                 <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
-                                    <i class="fa fa-info-circle mr-2"></i>Department Information
+                                    <i class="fa fa-info-circle mr-2"></i>Case Type Information
                                 </h5>
                             </div>
                             
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
-                                        Department Name <span class="text-danger">*</span>
+                                        Case Type Name <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" 
                                            id="name" 
                                            name="name" 
                                            class="form-control form-control-lg @error('name') is-invalid @enderror" 
-                                           placeholder="Enter department name" 
+                                           placeholder="Enter case type name" 
                                            required 
                                            value="{{ old('name') }}">
                                     @error('name')
@@ -55,13 +55,13 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
-                                        Department Description
+                                        Case Type Description
                                     </label>
                                     <textarea name="description" 
                                               id="description" 
                                               class="form-control form-control-lg @error('description') is-invalid @enderror" 
                                               rows="4" 
-                                              placeholder="Enter department description">{{ old('description') }}</textarea>
+                                              placeholder="Enter case type description">{{ old('description') }}</textarea>
                                     @error('description')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -74,12 +74,12 @@
                             <div class="col-12">
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <a href="{{ route('departments') }}" class="btn btn-outline-secondary btn-lg mr-2">
+                                        <a href="{{ route('case_types') }}" class="btn btn-outline-secondary btn-lg mr-2">
                                             <i class="fa fa-times mr-1"></i>Cancel
                                         </a>
                                        
                                         <button type="submit" class="btn btn-lg" style="background-color: #00349C; color: white;">
-                                            <i class="fa fa-save mr-1"></i>Create Department
+                                            <i class="fa fa-save mr-1"></i>Create Case Type
                                         </button>
                                     </div>
                                 </div>
@@ -169,7 +169,7 @@
 <script>
 $(document).ready(function() {
     // Form validation
-    $('#departmentForm').on('submit', function(e) {
+    $('#caseTypeForm').on('submit', function(e) {
         // Basic form validation - check if required fields are filled
         var requiredFields = ['name'];
         var isValid = true;

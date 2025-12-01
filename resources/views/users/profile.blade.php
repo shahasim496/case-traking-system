@@ -122,18 +122,18 @@
                                 </h5>
                                 <div class="alert alert-info">
                                     <i class="fa fa-info-circle mr-2"></i>
-                                    <strong>Note:</strong> Department and Designation cannot be changed from here. Please contact your administrator for any changes.
+                                    <strong>Note:</strong> Entity and Designation cannot be changed from here. Please contact your administrator for any changes.
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
-                                        Department
+                                        Entity
                                     </label>
                                     <input type="text" 
                                            class="form-control form-control-lg bg-light" 
-                                           value="{{ $user->department ? $user->department->name : 'N/A' }}" 
+                                           value="{{ $user->entity ? $user->entity->name : 'N/A' }}" 
                                            readonly>
                                 </div>
                             </div>

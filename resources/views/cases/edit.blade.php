@@ -171,19 +171,19 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
-                                        Department
+                                        Entity
                                     </label>
-                                    <select id="department_id" 
-                                            name="department_id" 
-                                            class="form-control form-control-lg @error('department_id') is-invalid @enderror">
-                                        <option value="">Select Department</option>
-                                        @foreach($departments as $department)
-                                            <option value="{{ $department->id }}" {{ old('department_id', $case->department_id) == $department->id ? 'selected' : '' }}>
-                                                {{ $department->name }}
+                                    <select id="entity_id" 
+                                            name="entity_id" 
+                                            class="form-control form-control-lg @error('entity_id') is-invalid @enderror">
+                                        <option value="">Select Entity</option>
+                                        @foreach($entities as $entity)
+                                            <option value="{{ $entity->id }}" {{ old('entity_id', $case->entity_id) == $entity->id ? 'selected' : '' }}>
+                                                {{ $entity->name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('department_id')
+                                    @error('entity_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>

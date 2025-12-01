@@ -125,20 +125,20 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
-                                        Department <span class="text-danger">*</span>
+                                        Entity <span class="text-danger">*</span>
                                     </label>
-                                    <select name="department_id" 
-                                            id="department_id" 
-                                            class="form-control form-control-lg @error('department_id') is-invalid @enderror" 
+                                    <select name="entity_id" 
+                                            id="entity_id" 
+                                            class="form-control form-control-lg @error('entity_id') is-invalid @enderror" 
                                             required>
-                                        <option value="">Select Department</option>
-                                        @foreach($departments as $department)
-                                            <option value="{{ $department->id }}" {{ old('department_id', $user->department_id) == $department->id ? 'selected' : '' }}>
-                                                {{ $department->name }}
+                                        <option value="">Select Entity</option>
+                                        @foreach($entities as $entity)
+                                            <option value="{{ $entity->id }}" {{ old('entity_id', $user->entity_id) == $entity->id ? 'selected' : '' }}>
+                                                {{ $entity->name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('department_id')
+                                    @error('entity_id')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -378,7 +378,7 @@ $(document).ready(function() {
         }
         
         // Check required fields
-        var requiredFields = ['name', 'email', 'department_id', 'designation_id'];
+        var requiredFields = ['name', 'email', 'entity_id', 'designation_id'];
         requiredFields.forEach(function(field) {
             var value = $('#' + field).val();
             if (!value || value.trim() === '') {

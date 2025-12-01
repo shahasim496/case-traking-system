@@ -62,8 +62,8 @@
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <strong>Department:</strong>
-                            <p class="mb-0">{{ $case->department->name ?? '-' }}</p>
+                            <strong>Entity:</strong>
+                            <p class="mb-0">{{ $case->entity->name ?? '-' }}</p>
                         </div>
                         <div class="col-md-6">
                             <strong>Status:</strong>
@@ -286,8 +286,8 @@
                                         @if($forwardableUser->roles && $forwardableUser->roles->count() > 0)
                                             ({{ $forwardableUser->roles->pluck('name')->implode(', ') }})
                                         @endif
-                                        @if($forwardableUser->department)
-                                            - {{ $forwardableUser->department->name }}
+                                        @if($forwardableUser->entity)
+                                            - {{ $forwardableUser->entity->name }}
                                         @endif
                                     </option>
                                 @endforeach
@@ -322,11 +322,11 @@
                 <div class="card-body">
                     <p class="text-muted text-center mb-0">
                         @if(auth()->user()->hasPermissionTo('forward to any role'))
-                            No users available to forward in this case's department.
+                            No users available to forward in this case's entity.
                         @elseif(auth()->user()->hasPermissionTo('forward to joint secretary'))
-                            No Joint Secretary users found in this case's department.
+                            No Joint Secretary users found in this case's entity.
                         @elseif(auth()->user()->hasAnyPermission(['forward to permanent secretary', 'forward to secretary']))
-                            No Permanent Secretary or Secretary users found in this case's department.
+                            No Permanent Secretary or Secretary users found in this case's entity.
                         @else
                             You do not have permission to forward cases.
                         @endif
@@ -336,7 +336,7 @@
             @endif
             
             <!-- Comments Section -->
-            @if($case->department_id && (auth()->user()->department_id == $case->department_id || auth()->user()->hasRole('SuperAdmin')))
+            @if($case->entity_id && (auth()->user()->entity_id == $case->entity_id || auth()->user()->hasRole('SuperAdmin')))
             <div class="card shadow-sm mt-4">
                 <div class="card-header text-white" style="background-color: #00349C;">
                     <h5 class="mb-0">

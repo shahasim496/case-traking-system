@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DepartmentRequest extends FormRequest
+class EntityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +26,13 @@ class DepartmentRequest extends FormRequest
 
         if($this->method() == 'POST'){
             return [
-                'name' => 'required|string|max:50|unique:departments',
+                'name' => 'required|string|max:50|unique:entities',
                 'organization_type_id' => 'required',
             ];
 
         }else{
             return [
-                'name' => 'required|string|max:50|unique:departments,id,'.$this->id,
+                'name' => 'required|string|max:50|unique:entities,id,'.$this->id,
                 'organization_type_id' => 'required',
             ];
         }
@@ -53,3 +53,4 @@ class DepartmentRequest extends FormRequest
         ];
     }
 }
+

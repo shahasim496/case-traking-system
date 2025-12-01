@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    <!-- Monthly Trends and Department Cases -->
+    <!-- Monthly Trends and Entity Cases -->
     <div class="row mb-4">
         <!-- Monthly Case Trends (Line Chart) -->
         <div class="col-lg-8 mb-4">
@@ -129,16 +129,16 @@
             </div>
         </div>
 
-        <!-- Department-wise Cases (Bar Chart) -->
+        <!-- Entity-wise Cases (Bar Chart) -->
         <div class="col-lg-4 mb-4">
             <div class="card shadow-sm">
                     <div class="card-header text-white" style="background-color: #00349C;">
                     <h5 class="mb-0">
-                        <i class="fa fa-bar-chart mr-2"></i>Cases by Department
+                        <i class="fa fa-bar-chart mr-2"></i>Cases by Entity
                     </h5>
                 </div>
                 <div class="card-body">
-                    <canvas id="departmentChart" height="250"></canvas>
+                    <canvas id="entityChart" height="250"></canvas>
                 </div>
             </div>
         </div>
@@ -397,7 +397,7 @@
     #statusChart,
     #courtTypeChart,
     #monthlyTrendChart,
-    #departmentChart {
+    #entityChart {
         max-height: 250px !important;
     }
 }
@@ -406,7 +406,7 @@
     #statusChart,
     #courtTypeChart,
     #monthlyTrendChart,
-    #departmentChart {
+    #entityChart {
         max-height: 200px !important;
     }
 }
@@ -620,16 +620,16 @@ const monthlyChart = new Chart(monthlyCtx, {
     }
 });
 
-// Department-wise Cases (Bar Chart)
-const deptCtx = document.getElementById('departmentChart').getContext('2d');
-const deptData = {!! json_encode($departmentCases) !!};
-const departmentChart = new Chart(deptCtx, {
+// Entity-wise Cases (Bar Chart)
+const entityCtx = document.getElementById('entityChart').getContext('2d');
+const entityData = {!! json_encode($entityCases) !!};
+const entityChart = new Chart(entityCtx, {
     type: 'bar',
     data: {
-        labels: deptData.map(item => item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name),
+        labels: entityData.map(item => item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name),
         datasets: [{
             label: 'Cases',
-            data: deptData.map(item => item.total),
+            data: entityData.map(item => item.total),
             backgroundColor: '#ffc107',
             borderColor: '#ff9800',
             borderWidth: 2

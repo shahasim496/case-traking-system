@@ -12,7 +12,7 @@ use App\Models\CourtCase;
 use App\Models\Notice;
 use App\Models\Hearing;
 use App\Models\Party;
-use App\Models\Department;
+use App\Models\Entity;
 use App\Models\CaseForward;
 use App\Models\CaseComment;
 use App\Models\User;
@@ -36,14 +36,14 @@ class CourtCaseController extends Controller
     {
         $query = CourtCase::query();
 
-        // Filter by department - users can only see their department cases, SuperAdmin sees all
+        // Filter by entity - users can only see their entity cases, SuperAdmin sees all
         $user = Auth::user();
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only see cases from their department
-            if ($user->department_id) {
-                $query->where('department_id', $user->department_id);
+            // Regular users can only see cases from their entity
+            if ($user->entity_id) {
+                $query->where('entity_id', $user->entity_id);
             } else {
-                // If user has no department, show no cases
+                // If user has no entity, show no cases
                 $query->whereRaw('1 = 0');
             }
         }
@@ -72,12 +72,12 @@ class CourtCaseController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Filter by department (only for SuperAdmin or if they want to filter further)
-        if ($request->has('department_id') && $request->department_id) {
-            $query->where('department_id', $request->department_id);
+        // Filter by entity (only for SuperAdmin or if they want to filter further)
+        if ($request->has('entity_id') && $request->entity_id) {
+            $query->where('entity_id', $request->entity_id);
         }
 
-        $cases = $query->with(['department', 'notices', 'parties'])->orderBy('created_at', 'DESC')->paginate(10);
+        $cases = $query->with(['entity', 'notices', 'parties'])->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('cases.index', compact('cases'));
     }
@@ -87,8 +87,8 @@ class CourtCaseController extends Controller
      */
     public function create()
     {
-        $departments = Department::all();
-        return view('cases.create', compact('departments'));
+        $entities = Entity::all();
+        return view('cases.create', compact('entities'));
     }
 
     /**
@@ -100,7 +100,7 @@ class CourtCaseController extends Controller
             'case_number' => 'required|string|max:100|unique:cases,case_number',
             'court_type' => 'required|in:High Court,Supreme Court,Session Court',
             'case_title' => 'required|string|max:255',
-            'department_id' => 'nullable|exists:departments,id',
+            'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
             'parties' => 'required|array|min:1',
             'parties.*.party_name' => 'required|string|max:255',
@@ -156,15 +156,15 @@ class CourtCaseController extends Controller
      */
     public function show($id)
     {
-        $case = CourtCase::with(['notices', 'hearings', 'department', 'parties', 'comments.user'])->findOrFail($id);
+        $case = CourtCase::with(['notices', 'hearings', 'entity', 'parties', 'comments.user'])->findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only view cases from their department
-            if ($user->department_id && $case->department_id != $user->department_id) {
+            // Regular users can only view cases from their entity
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
                 abort(403, 'You do not have permission to view this case.');
-            } elseif (!$user->department_id) {
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to view this case.');
             }
         }
@@ -191,7 +191,7 @@ class CourtCaseController extends Controller
         Log::info('Forwardable users count: ' . $forwardableUsers->count(), [
             'user_id' => $user->id,
             'user_roles' => $user->roles->pluck('name')->toArray(),
-            'case_department_id' => $case->department_id
+            'case_entity_id' => $case->entity_id
         ]);
 
         // Get task logs for forwarding (last 5)
@@ -214,8 +214,8 @@ class CourtCaseController extends Controller
     }
 
     /**
-     * Get forwardable users based on user's permissions and case department.
-     * Users can only forward to roles they have permission for, and must be in the same department as the case.
+     * Get forwardable users based on user's permissions and case entity.
+     * Users can only forward to roles they have permission for, and must be in the same entity as the case.
      */
     private function getForwardableUsers($user, $case)
     {
@@ -224,13 +224,13 @@ class CourtCaseController extends Controller
         // Load user roles and permissions
         $user->load('roles', 'permissions');
 
-        // Check if user's department matches case's department (required for non-SuperAdmin)
+        // Check if user's entity matches case's entity (required for non-SuperAdmin)
         if (!$user->hasPermissionTo('forward to any role')) {
-            if (!$case->department_id || $user->department_id != $case->department_id) {
-                // User's department must match case's department
-                Log::info('User department does not match case department', [
-                    'user_department_id' => $user->department_id,
-                    'case_department_id' => $case->department_id
+            if (!$case->entity_id || $user->entity_id != $case->entity_id) {
+                // User's entity must match case's entity
+                Log::info('User entity does not match case entity', [
+                    'user_entity_id' => $user->entity_id,
+                    'case_entity_id' => $case->entity_id
                 ]);
                 return $forwardableUsers; // Return empty collection
             }
@@ -249,7 +249,7 @@ class CourtCaseController extends Controller
         $targetRoleNames = [];
 
         if ($user->hasPermissionTo('forward to any role')) {
-            // SuperAdmin can forward to any role of case department user
+            // SuperAdmin can forward to any role of case entity user
             $targetRoleNames = $allowedRoles;
         } else {
             // Check specific forwarding permissions
@@ -293,25 +293,25 @@ class CourtCaseController extends Controller
                   ->where('roles.guard_name', 'web');
             });
 
-        // If user has "forward to any role" permission (SuperAdmin), they can forward to any department
-        // Otherwise, must match case's department
+        // If user has "forward to any role" permission (SuperAdmin), they can forward to any entity
+        // Otherwise, must match case's entity
         if (!$user->hasPermissionTo('forward to any role')) {
-            if ($case->department_id) {
-                $query->where('department_id', $case->department_id);
+            if ($case->entity_id) {
+                $query->where('entity_id', $case->entity_id);
             } else {
-                // If case has no department and user doesn't have "forward to any role", return empty
+                // If case has no entity and user doesn't have "forward to any role", return empty
                 return $forwardableUsers;
             }
         } else {
-            // SuperAdmin can forward to case department if case has department
-            if ($case->department_id) {
-                $query->where('department_id', $case->department_id);
+            // SuperAdmin can forward to case entity if case has entity
+            if ($case->entity_id) {
+                $query->where('entity_id', $case->entity_id);
             }
         }
 
         $forwardableUsers = $query->with(['roles' => function($query) {
             $query->where('guard_name', 'web');
-        }, 'department'])
+        }, 'entity'])
         ->get();
 
         Log::info('Forwardable users found', [
@@ -319,8 +319,8 @@ class CourtCaseController extends Controller
             'user_ids' => $forwardableUsers->pluck('id')->toArray(),
             'user_permissions' => $user->permissions->pluck('name')->toArray(),
             'target_roles' => $targetRoleNames,
-            'case_department_id' => $case->department_id,
-            'user_department_id' => $user->department_id
+            'case_entity_id' => $case->entity_id,
+            'user_entity_id' => $user->entity_id
         ]);
 
         return $forwardableUsers;
@@ -339,11 +339,11 @@ class CourtCaseController extends Controller
             abort(403, 'You do not have permission to forward cases.');
         }
 
-        // Check if user's department matches case's department (required for non-SuperAdmin)
+        // Check if user's entity matches case's entity (required for non-SuperAdmin)
         if (!$user->hasPermissionTo('forward to any role')) {
-            if ($user->department_id && $case->department_id != $user->department_id) {
-                abort(403, 'You can only forward cases from your department.');
-            } elseif (!$user->department_id) {
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
+                abort(403, 'You can only forward cases from your entity.');
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to forward this case.');
             }
         }
@@ -495,11 +495,11 @@ class CourtCaseController extends Controller
         $case = CourtCase::findOrFail($caseId);
         $user = Auth::user();
 
-        // Check if user has access to this case (must be from same department or SuperAdmin)
+        // Check if user has access to this case (must be from same entity or SuperAdmin)
         if (!$user->hasRole('SuperAdmin')) {
-            if ($user->department_id && $case->department_id != $user->department_id) {
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
                 abort(403, 'You do not have permission to comment on this case.');
-            } elseif (!$user->department_id) {
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to comment on this case.');
             }
         }
@@ -556,9 +556,9 @@ class CourtCaseController extends Controller
 
         // Check if user has access to this case
         if (!$user->hasRole('SuperAdmin')) {
-            if ($user->department_id && $case->department_id != $user->department_id) {
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
                 abort(403, 'You do not have permission to edit comments on this case.');
-            } elseif (!$user->department_id) {
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to edit comments on this case.');
             }
         }
@@ -635,16 +635,16 @@ class CourtCaseController extends Controller
         // Check if user has access to this case
         $user = Auth::user();
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only edit cases from their department
-            if ($user->department_id && $case->department_id != $user->department_id) {
+            // Regular users can only edit cases from their entity
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
                 abort(403, 'You do not have permission to edit this case.');
-            } elseif (!$user->department_id) {
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to edit this case.');
             }
         }
         
-        $departments = Department::all();
-        return view('cases.edit', compact('case', 'departments'));
+        $entities = Entity::all();
+        return view('cases.edit', compact('case', 'entities'));
     }
 
     /**
@@ -657,10 +657,10 @@ class CourtCaseController extends Controller
         // Check if user has access to this case
         $user = Auth::user();
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only update cases from their department
-            if ($user->department_id && $case->department_id != $user->department_id) {
+            // Regular users can only update cases from their entity
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
                 abort(403, 'You do not have permission to update this case.');
-            } elseif (!$user->department_id) {
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to update this case.');
             }
         }
@@ -669,7 +669,7 @@ class CourtCaseController extends Controller
             'case_number' => 'required|string|max:100|unique:cases,case_number,' . $id,
             'court_type' => 'required|in:High Court,Supreme Court,Session Court',
             'case_title' => 'required|string|max:255',
-            'department_id' => 'nullable|exists:departments,id',
+            'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
             'parties' => 'required|array|min:1',
             'parties.*.party_name' => 'required|string|max:255',
@@ -733,10 +733,10 @@ class CourtCaseController extends Controller
         // Check if user has access to this case
         $user = Auth::user();
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only delete cases from their department
-            if ($user->department_id && $case->department_id != $user->department_id) {
+            // Regular users can only delete cases from their entity
+            if ($user->entity_id && $case->entity_id != $user->entity_id) {
                 abort(403, 'You do not have permission to delete this case.');
-            } elseif (!$user->department_id) {
+            } elseif (!$user->entity_id) {
                 abort(403, 'You do not have permission to delete this case.');
             }
         }

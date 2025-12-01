@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Database\Seeders\DepartmentSeeder;
+use Database\Seeders\EntitySeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,9 +20,10 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
-            DepartmentSeeder::class,
+            EntitySeeder::class,
        
             DesignationSeeder::class,
+            CaseTypeSeeder::class,
         
             UserSeeder::class,
         ]);

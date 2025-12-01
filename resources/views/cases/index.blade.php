@@ -54,11 +54,11 @@
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
-                            <select class="form-control filter-select" id="departmentFilter" name="department_id">
-                                <option value="">All Departments</option>
-                                @foreach(\App\Models\Department::all() as $dept)
-                                    <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>
-                                        {{ $dept->name }}
+                            <select class="form-control filter-select" id="entityFilter" name="entity_id">
+                                <option value="">All Entities</option>
+                                @foreach(\App\Models\Entity::all() as $ent)
+                                    <option value="{{ $ent->id }}" {{ request('entity_id') == $ent->id ? 'selected' : '' }}>
+                                        {{ $ent->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -82,7 +82,7 @@
                                     <th width="5%">#</th>
                                     <th width="15%">Case Number</th>
                                     <th width="15%">Court Type</th>
-                                    <th width="15%">Department</th>
+                                    <th width="15%">Entity</th>
                                     <th width="10%">Status</th>
                                     <th width="10%">Notices</th>
                                     <th width="30%">Actions</th>
@@ -94,7 +94,7 @@
                                         <td>{{ $index + 1 + ($cases->currentPage() - 1) * $cases->perPage() }}</td>
                                         <td><strong>{{ $case->case_number }}</strong></td>
                                         <td>{{ $case->court_type }}</td>
-                                        <td>{{ $case->department->name ?? '-' }}</td>
+                                        <td>{{ $case->entity->name ?? '-' }}</td>
                                         <td>
                                             @if($case->status == 'Open')
                                                 <span class="badge badge-success">Open</span>
@@ -321,7 +321,7 @@ $(document).ready(function() {
         var search = $('#searchInput').val();
         var courtType = $('#courtTypeFilter').val();
         var status = $('#statusFilter').val();
-        var department = $('#departmentFilter').val();
+        var entity = $('#entityFilter').val();
         
         var url = "{{ route('cases.index') }}?";
         var params = [];
@@ -329,7 +329,7 @@ $(document).ready(function() {
         if (search) params.push('search=' + encodeURIComponent(search));
         if (courtType) params.push('court_type=' + encodeURIComponent(courtType));
         if (status) params.push('status=' + encodeURIComponent(status));
-        if (department) params.push('department_id=' + encodeURIComponent(department));
+        if (entity) params.push('entity_id=' + encodeURIComponent(entity));
         
         if (params.length > 0) {
             url += params.join('&');
@@ -401,7 +401,7 @@ $(document).ready(function() {
             
             // Get text content from each cell (excluding actions column)
             row.find('td').each(function(index) {
-                if (index < 6) { // Exclude actions column (6 data columns: #, Case Number, Court Type, Department, Status, Notices)
+                if (index < 6) { // Exclude actions column (6 data columns: #, Case Number, Court Type, Entity, Status, Notices)
                     var cellText = $(this).text().trim();
                     rowData.push(cellText);
                 }
@@ -427,7 +427,7 @@ $(document).ready(function() {
         doc.text('Generated on: ' + new Date().toLocaleDateString() + ' at ' + new Date().toLocaleTimeString(), 105, 30, { align: 'center' });
         
         // Define table headers
-        var headers = ['#', 'Case Number', 'Court Type', 'Department', 'Status', 'Notices'];
+        var headers = ['#', 'Case Number', 'Court Type', 'Entity', 'Status', 'Notices'];
         
         // Add table
         doc.autoTable({
@@ -452,7 +452,7 @@ $(document).ready(function() {
                 0: { cellWidth: 10 }, // #
                 1: { cellWidth: 30 }, // Case Number
                 2: { cellWidth: 30 }, // Court Type
-                3: { cellWidth: 30 }, // Department
+                3: { cellWidth: 30 }, // Entity
                 4: { cellWidth: 20 }, // Status
                 5: { cellWidth: 20 }, // Notices
             },

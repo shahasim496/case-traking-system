@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;

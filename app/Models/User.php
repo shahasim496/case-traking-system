@@ -28,7 +28,7 @@ class User extends Authenticatable
         'deleted_by', 
         'cnic',
         'phone',
-        'department_id',
+        'entity_id',
         'designation_id',
         'administrative_unit_id',
         'subdivision_id',
@@ -58,9 +58,9 @@ class User extends Authenticatable
 
     
     //
-    public function department()
+    public function entity()
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Entity::class);
     }
     
     public function designation()

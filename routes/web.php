@@ -91,13 +91,13 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
 
 
 
-Route::group(['prefix' => 'departments', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
-    Route::get('/', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
-    Route::get('/create', [App\Http\Controllers\DepartmentController::class, 'create'])->name('departments.create');
-    Route::post('/store', [App\Http\Controllers\DepartmentController::class, 'store'])->name('departments.store');
-    Route::get('/edit/{id}', [App\Http\Controllers\DepartmentController::class, 'edit'])->name('departments.edit');
-    Route::put('/update/{id}', [App\Http\Controllers\DepartmentController::class, 'update'])->name('departments.update');
-    Route::delete('/delete/{id}', [App\Http\Controllers\DepartmentController::class, 'delete'])->name('departments.delete');
+Route::group(['prefix' => 'entities', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
+    Route::get('/', [App\Http\Controllers\EntityController::class, 'index'])->name('entities');
+    Route::get('/create', [App\Http\Controllers\EntityController::class, 'create'])->name('entities.create');
+    Route::post('/store', [App\Http\Controllers\EntityController::class, 'store'])->name('entities.store');
+    Route::get('/edit/{id}', [App\Http\Controllers\EntityController::class, 'edit'])->name('entities.edit');
+    Route::put('/update/{id}', [App\Http\Controllers\EntityController::class, 'update'])->name('entities.update');
+    Route::delete('/delete/{id}', [App\Http\Controllers\EntityController::class, 'delete'])->name('entities.delete');
 });
 
 Route::group(['prefix' => 'designations', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
@@ -107,6 +107,15 @@ Route::group(['prefix' => 'designations', 'middleware' => ['auth', 'banned', 'pe
     Route::get('/edit/{id}', [App\Http\Controllers\DesignationController::class, 'edit'])->name('designations.edit');
     Route::put('/update/{id}', [App\Http\Controllers\DesignationController::class, 'update'])->name('designations.update');
     Route::delete('/delete/{id}', [App\Http\Controllers\DesignationController::class, 'delete'])->name('designations.delete');
+});
+
+Route::group(['prefix' => 'case-types', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
+    Route::get('/', [App\Http\Controllers\CaseTypeController::class, 'index'])->name('case_types');
+    Route::get('/create', [App\Http\Controllers\CaseTypeController::class, 'create'])->name('case_types.create');
+    Route::post('/store', [App\Http\Controllers\CaseTypeController::class, 'store'])->name('case_types.store');
+    Route::get('/edit/{id}', [App\Http\Controllers\CaseTypeController::class, 'edit'])->name('case_types.edit');
+    Route::put('/update/{id}', [App\Http\Controllers\CaseTypeController::class, 'update'])->name('case_types.update');
+    Route::delete('/delete/{id}', [App\Http\Controllers\CaseTypeController::class, 'delete'])->name('case_types.delete');
 });
 
 

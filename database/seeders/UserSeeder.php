@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // Get first department and designation (they should exist from DepartmentSeeder and DesignationSeeder)
-        $departmentId = \App\Models\Department::first()->id ?? 1;
+        // Get first entity and designation (they should exist from EntitySeeder and DesignationSeeder)
+        $entityId = \App\Models\Entity::first()->id ?? 1;
         $designationId = \App\Models\Designation::first()->id ?? 1;
 
         // Create SuperAdmin user (if not exists)
@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
                 'password' => '1234567890',
                 'cnic' => '12345-1234567-1',
                 'phone' => '+923001234567',
-                'department_id' => $departmentId,
+                'entity_id' => $entityId,
                 'designation_id' => $designationId,
             ]
         );
@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
                 'password' => '1234567890',
                 'cnic' => '12345-1234567-2',
                 'phone' => '+923001234568',
-                'department_id' => $departmentId,
+                'entity_id' => $entityId,
                 'designation_id' => $designationId,
             ]
         );
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
                 'password' => '1234567890',
                 'cnic' => '12345-1234567-3',
                 'phone' => '+923001234569',
-                'department_id' => $departmentId,
+                'entity_id' => $entityId,
                 'designation_id' => $designationId,
             ]
         );
@@ -76,7 +76,7 @@ class UserSeeder extends Seeder
                 'password' => '1234567890',
                 'cnic' => '12345-1234567-4',
                 'phone' => '+923001234570',
-                'department_id' => $departmentId,
+                'entity_id' => $entityId,
                 'designation_id' => $designationId,
             ]
         );
@@ -92,7 +92,7 @@ class UserSeeder extends Seeder
                 'password' => '1234567890',
                 'cnic' => '12345-1234567-5',
                 'phone' => '+923001234571',
-                'department_id' => $departmentId,
+                'entity_id' => $entityId,
                 'designation_id' => $designationId,
             ]
         );

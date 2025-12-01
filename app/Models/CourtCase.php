@@ -15,7 +15,7 @@ class CourtCase extends Model
         'case_number',
         'court_type',
         'case_title',
-        'department_id',
+        'entity_id',
         'status',
         'created_by',
         'updated_by',
@@ -62,11 +62,11 @@ class CourtCase extends Model
     }
 
     /**
-     * Get the department for the case.
+     * Get the entity for the case.
      */
-    public function department()
+    public function entity()
     {
-        return $this->belongsTo(Department::class, 'department_id');
+        return $this->belongsTo(Entity::class, 'entity_id');
     }
 
     /**

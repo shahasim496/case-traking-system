@@ -10,7 +10,7 @@ use App\Models\Domicile;
 use App\Models\District;
 use App\Models\Ministry;
 use App\Models\Division;
-use App\Models\Department;
+use App\Models\Entity;
 use App\Models\Qualification;
 use App\Models\Degree;
 use App\Models\Post_Type;
@@ -26,7 +26,7 @@ class AppController extends Controller
 {
     public function getModelData(Request $request){
 
-        $departments = Department::take(10)->get(['id','name']);
+        $entities = Entity::take(10)->get(['id','name']);
         $divisions = Division::where('name','Capital Development Authority')->get(['id','name']);
         $posts = Post::take(10)->get(['id','name']);
         $qualifications = Degree::take(10)->get(['id','name']);
@@ -39,9 +39,9 @@ class AppController extends Controller
         //     $search = $request->q;
         // }
 
-        if($request->has('department')){
-            $search = $request->department;
-            $departments =Department::select("id","name")
+        if($request->has('entity')){
+            $search = $request->entity;
+            $entities =Entity::select("id","name")
             		->where('name','LIKE',"%$search%")
             		->get(['id','name']);
         }
@@ -81,8 +81,8 @@ class AppController extends Controller
             ->get(['id','name']);
         }
 
-        if($request->type == 'department'){
-            $records = $departments;
+        if($request->type == 'entity'){
+            $records = $entities;
         }else if($request->type == 'division'){
             $records = $divisions;
         }else if($request->type == 'qualification'){
