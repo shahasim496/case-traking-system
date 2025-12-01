@@ -6,41 +6,19 @@ use DB;
 
 use Auth;
 
-use Excel;
+
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
-
-use App\Models\Grade;
-use App\Models\Tehsil;
-use App\Models\District;
-use App\Models\Province;
 use App\Models\Department;
-use App\Models\Application;
 use App\Models\Designation;
 
-use App\Models\OfficerUser;
-use App\Models\Subdivision;
 use Illuminate\Support\Str;
-use App\Models\User_Profile;
 use Illuminate\Http\Request;
-use App\Models\Group_Service;
-use App\Models\PoliceStation;
-use App\Exports\OfficerExport;
 use App\Models\Forget_Password;
-use App\Models\Officer_Profile;
-use App\Models\AdministrativeUnit;
 use Spatie\Permission\Models\Role;
-
-use App\Notifications\UserNotification;
-use App\Http\Requests\GenOfficerRequest;
-use App\Http\Requests\UpdateUserRequest;
-use Spatie\Permission\Models\Permission;
-use App\Http\Requests\OfficerUserRequest;
-use App\Http\Requests\UserProfileRequest;
-use App\Http\Requests\UserRegisterRequest;
 use App\Http\Requests\UpdatePasswordRequest;
-use App\Http\Requests\UpdateUserProfileRequest;
+
 
 class UserController extends Controller
 {
@@ -508,10 +486,7 @@ class UserController extends Controller
         User::find(auth()->user()->id)
             ->update(['password' => $request->password]);
 
-        if (Auth::User()->hasRole('Officer')) {
-            OfficerUser::where('user_id', auth()->user()->id)
-                ->update(['pass_code' => $request->password]);
-        }
+        
 
         return redirect()->route('user.changePassword')->with('success', 'Password changed successfully.');
     } //end of function
