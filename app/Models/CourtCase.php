@@ -28,6 +28,7 @@ class CourtCase extends Model
         'remarks',
         'judge_name',
         'entity_id',
+        'assigned_officer_id',
         'status',
         'created_by',
         'updated_by',
@@ -135,6 +136,14 @@ class CourtCase extends Model
     public function caseFiles()
     {
         return $this->hasMany(CaseFile::class, 'case_id');
+    }
+
+    /**
+     * Get the assigned officer for the case.
+     */
+    public function assignedOfficer()
+    {
+        return $this->belongsTo(User::class, 'assigned_officer_id');
     }
 }
 

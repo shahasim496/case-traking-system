@@ -66,6 +66,30 @@
                             </div>
                         </div>
                         
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Assigned Officer
+                                    </label>
+                                    <select id="assigned_officer_id" 
+                                            name="assigned_officer_id" 
+                                            class="form-control form-control-lg @error('assigned_officer_id') is-invalid @enderror">
+                                        <option value="">Select Legal Officer</option>
+                                        @foreach($legalOfficers as $officer)
+                                            <option value="{{ $officer->id }}" {{ old('assigned_officer_id') == $officer->id ? 'selected' : '' }}>
+                                                {{ $officer->name }} 
+                                             
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('assigned_officer_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Court Section -->
                         <div class="row mb-4">
                             <div class="col-12">

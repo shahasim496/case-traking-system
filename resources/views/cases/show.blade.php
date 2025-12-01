@@ -38,6 +38,15 @@
                             </div>
                         </div>
                         
+                        @if($case->assignedOfficer)
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Assigned Officer:</strong>
+                                <p class="mb-0">{{ $case->assignedOfficer->name }}</p>
+                            </div>
+                        </div>
+                        @endif
+                        
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <strong>Case Title:</strong>

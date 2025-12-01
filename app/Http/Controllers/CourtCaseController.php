@@ -42,12 +42,20 @@ class CourtCaseController extends Controller
         // Filter by entity - users can only see their entity cases, SuperAdmin sees all
         $user = Auth::user();
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only see cases from their entity
-            if ($user->entity_id) {
-                $query->where('entity_id', $user->entity_id);
+            // Legal Officers can only see cases they created or are assigned to
+            if ($user->hasRole('Legal Officer')) {
+                $query->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhere('assigned_officer_id', $user->id);
+                });
             } else {
-                // If user has no entity, show no cases
-                $query->whereRaw('1 = 0');
+                // Regular users can only see cases from their entity
+                if ($user->entity_id) {
+                    $query->where('entity_id', $user->entity_id);
+                } else {
+                    // If user has no entity, show no cases
+                    $query->whereRaw('1 = 0');
+                }
             }
         }
         // SuperAdmin can see all cases, so no filter applied
@@ -76,7 +84,7 @@ class CourtCaseController extends Controller
             $query->where('entity_id', $request->entity_id);
         }
 
-        $cases = $query->with(['entity', 'notices'])->orderBy('created_at', 'DESC')->paginate(10);
+        $cases = $query->with(['entity', 'notices', 'assignedOfficer'])->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('cases.index', compact('cases'));
     }
@@ -89,7 +97,13 @@ class CourtCaseController extends Controller
         $entities = Entity::all();
         $caseTypes = CaseType::all();
         $courts = Court::all();
-        return view('cases.create', compact('entities', 'caseTypes', 'courts'));
+        
+        // Get Legal Officers for assigned officer dropdown
+        $legalOfficers = \App\Models\User::whereHas('roles', function($q) {
+            $q->where('name', 'Legal Officer');
+        })->orderBy('name', 'ASC')->get();
+        
+        return view('cases.create', compact('entities', 'caseTypes', 'courts', 'legalOfficers'));
     }
 
     /**
@@ -115,6 +129,7 @@ class CourtCaseController extends Controller
             'petitioner_date_of_birth' => 'required|date',
             'petitioner_address' => 'nullable|string',
             'entity_id' => 'nullable|exists:entities,id',
+            'assigned_officer_id' => 'nullable|exists:users,id',
             'status' => 'required|in:Open,Closed',
             'files' => 'nullable|array',
             'files.*.file_name' => 'nullable|string|max:255',
@@ -235,7 +250,7 @@ class CourtCaseController extends Controller
      */
     public function show($id)
     {
-        $case = CourtCase::with(['notices', 'hearings', 'entity', 'comments.user', 'caseType', 'court', 'workBench', 'caseFiles'])->findOrFail($id);
+        $case = CourtCase::with(['notices', 'hearings', 'entity', 'comments.user', 'caseType', 'court', 'workBench', 'caseFiles', 'assignedOfficer'])->findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
@@ -725,7 +740,13 @@ class CourtCaseController extends Controller
         $entities = Entity::all();
         $caseTypes = CaseType::all();
         $courts = Court::all();
-        return view('cases.edit', compact('case', 'entities', 'caseTypes', 'courts'));
+        
+        // Get Legal Officers for assigned officer dropdown
+        $legalOfficers = \App\Models\User::whereHas('roles', function($q) {
+            $q->where('name', 'Legal Officer');
+        })->orderBy('name', 'ASC')->get();
+        
+        return view('cases.edit', compact('case', 'entities', 'caseTypes', 'courts', 'legalOfficers'));
     }
 
     /**
@@ -764,6 +785,7 @@ class CourtCaseController extends Controller
             'petitioner_date_of_birth' => 'required|date',
             'petitioner_address' => 'nullable|string',
             'entity_id' => 'nullable|exists:entities,id',
+            'assigned_officer_id' => 'nullable|exists:users,id',
             'status' => 'required|in:Open,Closed',
             'files' => 'nullable|array',
             'files.*.file_name' => 'nullable|string|max:255',
