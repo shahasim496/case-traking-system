@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
 
         // Create Legal Officer user
         $legalOfficer = User::firstOrCreate(
-            ['email' => 'legal.officer@yopmail.com'],
+            ['email' => 'the_legal.officer@yopmail.com'],
             [
                 'name' => 'Legal Officer',
                 'password' => '1234567890',
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
 
         // Create Joint Secretary user
         $jointSecretary = User::firstOrCreate(
-            ['email' => 'joint.secretary@yopmail.com'],
+            ['email' => 'the_joint.secretary@yopmail.com'],
             [
                 'name' => 'Joint Secretary',
                 'password' => '1234567890',
@@ -70,7 +70,7 @@ class UserSeeder extends Seeder
 
         // Create Permanent Secretary user
         $permanentSecretary = User::firstOrCreate(
-            ['email' => 'permanent.secretary@yopmail.com'],
+            ['email' => 'the_permanent.secretary@yopmail.com'],
             [
                 'name' => 'Permanent Secretary',
                 'password' => '1234567890',
@@ -86,7 +86,7 @@ class UserSeeder extends Seeder
 
         // Create Secretary user
         $secretary = User::firstOrCreate(
-            ['email' => 'secretary@yopmail.com'],
+            ['email' => 'the_secretary@yopmail.com'],
             [
                 'name' => 'Secretary',
                 'password' => '1234567890',
