@@ -2,19 +2,16 @@
 <html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <title>Case Tracking System</title>
+  <title>Case tracking System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-full overflow-hidden bg-black bg-cover " style="background-image: url('/assets/img/login/1.jpg');">
 
   <!-- Logo Watermark Overlay -->
-  <div class="absolute inset-0 flex items-center  z-0">
-    <!-- <img src="/assets/img/login/logo1.png" alt="MOHA Logo" class="w-3/6 opacity-80" /> -->
-  </div>
 
   <!-- Login Card -->
-  <div class="absolute inset-0 flex items-center  p-10 z-10">
+  <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
     <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
       <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Forgot Password</h2>
   
@@ -42,7 +39,7 @@
         
 
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200">Send Reset Link</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200">Send Reset Code</button>
       </form>
     </div>
   </div>

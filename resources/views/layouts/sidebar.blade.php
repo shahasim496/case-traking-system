@@ -8,9 +8,9 @@
 
             
 
-                <!-- <li class="nav-item text-center mb-4">
-                <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="sidebar-logo" style="margin-top: 40px; width: 120px; height: auto; max-width: 100%;">
-                </li> -->
+                <li class="nav-item text-center mb-4">
+                <!-- <img src="/assets/img/login/Ministry-Logo.png" alt="Logo" class="sidebar-logo" style="margin-top: 40px; width: 120px; height: auto; max-width: 100%;"> -->
+                </li>
 
 
                 <li class="nav-item">
@@ -35,6 +35,9 @@
                     </a>
                    
                 @endif
+
+             
+
                 
             
  @if(auth()->user()->can('create role') || auth()->user()->can('edit role') || auth()->user()->can('delete role') || auth()->user()->can('view role') || auth()->user()->can('manage permission assignment'))
