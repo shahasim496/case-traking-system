@@ -98,14 +98,14 @@
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
                         data-close-others="true">
                         <img alt="" class="img-circle img-2" src="/images/profile.jpg" />
-                        <span class="username username-hide-on-mobile img-text"> <b>{{Auth::user()->name}} </b>  <br>Police Officer<i class="fa fa-angle-down" aria-hidden="true"></i> </span>
+                        <span class="username username-hide-on-mobile img-text"> <b>{{Auth::user()->name}} </b>  <br> Officer<i class="fa fa-angle-down" aria-hidden="true"></i> </span>
 
 
                         </a>
                         <ul class="dropdown-menu dropdown-menu-default animated jello">
                         <li>
-                            <a href="#">
-                            <i class="fa fa-cog" aria-hidden="true"></i> Settings </a>
+                            <a href="{{ route('user.profile') }}">
+                            <i class="fa fa-user" aria-hidden="true"></i> Profile </a>
                         </li>
                             <li>
 

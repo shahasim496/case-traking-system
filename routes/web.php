@@ -83,6 +83,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function 
 Route::group(['prefix' => 'user', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/change/password', [App\Http\Controllers\UserController::class, 'changePassword'])->name('user.changePassword');
     Route::post('/change-password', [App\Http\Controllers\UserController::class, 'savePassword'])->name('user.savePassword');
+    Route::get('/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('user.profile');
+    Route::put('/profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('user.updateProfile');
 });
 
 

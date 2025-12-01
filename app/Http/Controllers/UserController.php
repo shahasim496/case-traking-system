@@ -150,7 +150,7 @@ class UserController extends Controller
             $user->assignRole($request->roles);
 
             // Send email to the created user
-            // \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $password));
+             \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $password));
 
             DB::commit();
 
@@ -429,7 +429,7 @@ class UserController extends Controller
             $user->syncRoles($request->roles);
 
             // Send email to the updated user
-            // \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user, $password));
+         \Mail::to($user->email)->send(new \App\Mail\UserUpdated($user, $password));
 
             DB::commit();
 
@@ -514,5 +514,44 @@ class UserController extends Controller
         }
 
         return redirect()->route('user.changePassword')->with('success', 'Password changed successfully.');
+    } //end of function
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('users.profile', compact('user'));
+    } //end of function
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'cnic' => ['required', 'string', 'regex:/^\d{5}-\d{7}-\d{1}$/', 'unique:users,cnic,' . $user->id],
+            'phone' => ['required', 'string', 'regex:/^\+92\d{10}$/'],
+        ], [
+            'cnic.regex' => 'National ID must be in format: XXXXX-XXXXXXX-X (e.g., 38302-6327920-5)',
+            'phone.regex' => 'Phone number must be in format: +92XXXXXXXXXX (e.g., +923049972964)',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'cnic' => $request->cnic,
+                'phone' => $request->phone,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('user.profile')->with('success', 'Profile updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
+        }
     } //end of function
 }

@@ -1,0 +1,47 @@
+[33mcommit 026deed78a7e58561ae1732ec66d6add74c1a23d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Your Name <shahasim496@gmail.com>
+Date:   Mon Dec 1 11:52:57 2025 +0500
+
+    Fix password reset email functionality and improve UI/UX
+    
+    - Fixed send_mail method in Controller.php:
+      * Added proper mail configuration validation
+      * Added email format validation
+      * Implemented comprehensive error handling and logging
+      * Fixed Mail facade import
+      * Returns structured response with success/error status
+      * Added MAIL_FROM_NAME support
+    
+    - Updated SendCodeController.php:
+      * Added proper email send result checking
+      * Implemented error handling with user-friendly messages
+      * Added detailed error logging for debugging
+      * Fixed session message keys (success/error)
+      * Improved error messages displayed to users
+    
+    - Updated UserController.php:
+      * Applied same fixes as SendCodeController for consistency
+      * Fixed password reset redirect messages
+      * Added proper error handling for password reset flow
+    
+    - Redesigned reset_password.blade.php:
+      * Updated to match login page design with Tailwind CSS
+      * Added password visibility toggle for both fields
+      * Improved error and success message styling
+      * Consistent UI with rest of authentication flow
+      * Removed old layout system, now standalone page
+    
+    - Updated welcome.blade.php:
+      * Fixed error message display to match success message style
+      * Improved message styling consistency
+      * Better user feedback for password reset success
+    
+    All changes improve the password reset functionality with better error handling,
+    logging, and user experience.
+
+ app/Http/Controllers/Controller.php                |  67 [32m++++++++[m[31m---[m
+ app/Http/Controllers/SendCodeController.php        |  52 [32m+++++++[m[31m-[m
+ app/Http/Controllers/UserController.php            |  51 [32m+++++++[m[31m-[m
+ .../views/auth/passwords/reset_password.blade.php  | 133 [32m++++++++++++++[m[31m-------[m
+ resources/views/welcome.blade.php                  |  29 [32m+++[m[31m--[m
+ 5 files changed, 250 insertions(+), 82 deletions(-)
