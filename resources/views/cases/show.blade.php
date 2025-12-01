@@ -196,7 +196,7 @@
                                     <td>{{ number_format($file->file_size / 1024, 2) }} KB</td>
                                     <td>{{ $file->created_at->format('d M Y, h:i A') }}</td>
                                     <td>
-                                        <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm btn-info">
+                                        <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm" style="background-color: #00349C; color: white;">
                                             <i class="fa fa-download"></i> Download
                                         </a>
                                     </td>

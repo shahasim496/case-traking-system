@@ -114,6 +114,8 @@ class PermissionSeeder extends Seeder
                 'view hearing',
 
                 'view task logs',
+                'manage courts',
+                'manage work benches',
             ],
 
 
@@ -132,6 +134,8 @@ class PermissionSeeder extends Seeder
                 'add hearing',
                 'edit hearing',
                 'view hearing',
+                'manage courts',
+                'manage work benches',
             ],
             'Joint Secretary' => [
                 // Case Forwarding
