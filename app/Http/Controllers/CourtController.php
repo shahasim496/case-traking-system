@@ -24,6 +24,7 @@ class CourtController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:courts,name',
+            'court_type' => 'required|in:High Court,Supreme Court,Session Court',
             'description' => 'nullable|string',
         ]);
 
@@ -42,6 +43,7 @@ class CourtController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:courts,name,' . $id,
+            'court_type' => 'required|in:High Court,Supreme Court,Session Court',
             'description' => 'nullable|string',
         ]);
 

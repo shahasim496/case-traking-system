@@ -175,6 +175,25 @@ Route::group(['prefix' => 'roles', 'middleware' => ['auth', 'banned']], function
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
+// API Routes for AJAX
+Route::get('/api/get-benches', function(\Illuminate\Http\Request $request) {
+    $courtId = $request->get('court_id');
+    if (!$courtId) {
+        return response()->json(['benches' => [], 'court_type' => null]);
+    }
+    
+    $court = \App\Models\Court::find($courtId);
+    if (!$court) {
+        return response()->json(['benches' => [], 'court_type' => null]);
+    }
+    
+    $benches = \App\Models\WorkBench::where('court_id', $courtId)->get(['id', 'name']);
+    return response()->json([
+        'benches' => $benches, 
+        'court_type' => $court->court_type
+    ]);
+})->name('api.get-benches')->middleware('auth');
+
 // Case Tracking Routes
 Route::group(['prefix' => 'cases', 'middleware' => ['auth', 'banned']], function () {
     Route::get('/', [App\Http\Controllers\CourtCaseController::class, 'index'])->name('cases.index')->middleware('permission:view case');

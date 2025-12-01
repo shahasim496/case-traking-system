@@ -12,6 +12,10 @@ use App\Models\CourtCase;
 use App\Models\Notice;
 use App\Models\Hearing;
 use App\Models\Entity;
+use App\Models\CaseType;
+use App\Models\Court;
+use App\Models\WorkBench;
+use App\Models\CaseFile;
 use App\Models\CaseForward;
 use App\Models\CaseComment;
 use App\Models\User;
@@ -83,7 +87,9 @@ class CourtCaseController extends Controller
     public function create()
     {
         $entities = Entity::all();
-        return view('cases.create', compact('entities'));
+        $caseTypes = CaseType::all();
+        $courts = Court::all();
+        return view('cases.create', compact('entities', 'caseTypes', 'courts'));
     }
 
     /**
@@ -91,21 +97,106 @@ class CourtCaseController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        // Get the court to check its type
+        $court = Court::find($request->court_id);
+        
+        // Base validation rules
+        $rules = [
             'case_number' => 'required|string|max:100|unique:cases,case_number',
-            'court_type' => 'required|in:High Court,Supreme Court,Session Court',
+            'case_type_id' => 'required|exists:case_types,id',
+            'court_id' => 'required|exists:courts,id',
+            'remarks' => 'nullable|string',
             'case_title' => 'required|string|max:255',
+            'case_description' => 'nullable|string',
             'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
-        ]);
+            'files' => 'nullable|array',
+            'files.*.file_name' => 'nullable|string|max:255',
+            'files.*.file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+        ];
+        
+        // Conditional validation based on court type
+        if ($court) {
+            if (in_array($court->court_type, ['High Court', 'Supreme Court'])) {
+                // For High Court and Supreme Court, work_bench_id is required
+                $rules['work_bench_id'] = 'required|exists:work_benches,id';
+                $rules['judge_name'] = 'nullable|string|max:255';
+            } elseif ($court->court_type === 'Session Court') {
+                // For Session Court, judge_name is required
+                $rules['judge_name'] = 'required|string|max:255';
+                $rules['work_bench_id'] = 'nullable|exists:work_benches,id';
+            } else {
+                // For courts without type set, both are optional
+                $rules['work_bench_id'] = 'nullable|exists:work_benches,id';
+                $rules['judge_name'] = 'nullable|string|max:255';
+            }
+        } else {
+            // If court not found, both are optional
+            $rules['work_bench_id'] = 'nullable|exists:work_benches,id';
+            $rules['judge_name'] = 'nullable|string|max:255';
+        }
+        
+        $validatedData = $request->validate($rules);
 
         DB::beginTransaction();
 
         try {
             $validatedData['created_by'] = auth()->id();
             $validatedData['updated_by'] = auth()->id();
+            
+            // Clear opposite field based on court type
+            if ($court) {
+                if (in_array($court->court_type, ['High Court', 'Supreme Court'])) {
+                    // For High/Supreme Court, clear judge_name
+                    $validatedData['judge_name'] = null;
+                } elseif ($court->court_type === 'Session Court') {
+                    // For Session Court, clear work_bench_id
+                    $validatedData['work_bench_id'] = null;
+                }
+            }
+            
+            // Handle file uploads separately
+            unset($validatedData['files']);
 
             $case = CourtCase::create($validatedData);
+
+            // Handle file uploads - Laravel handles nested file arrays differently
+            $fileInputs = $request->input('files', []);
+            $allFiles = $request->allFiles();
+            
+            // Process file uploads
+            if (!empty($allFiles) && isset($allFiles['files'])) {
+                $uploadedFiles = $allFiles['files'];
+                
+                // Process each file input
+                foreach ($fileInputs as $index => $fileData) {
+                    // Check if file exists for this index
+                    if (isset($uploadedFiles[$index]) && is_array($uploadedFiles[$index]) && isset($uploadedFiles[$index]['file'])) {
+                        $file = $uploadedFiles[$index]['file'];
+                        
+                        if ($file && $file->isValid()) {
+                            $filename = time() . '_' . $index . '_' . $file->getClientOriginalName();
+                            $path = $file->storeAs('case_files', $filename, 'public');
+                            
+                            // Get file name from input or use original name
+                            $fileName = isset($fileData['file_name']) && !empty(trim($fileData['file_name'])) 
+                                ? trim($fileData['file_name']) 
+                                : $file->getClientOriginalName();
+                            
+                            CaseFile::create([
+                                'case_id' => $case->id,
+                                'file_name' => $fileName,
+                                'file_path' => $path,
+                                'original_name' => $file->getClientOriginalName(),
+                                'file_type' => $file->getClientMimeType(),
+                                'file_size' => $file->getSize(),
+                                'created_by' => auth()->id(),
+                                'updated_by' => auth()->id(),
+                            ]);
+                        }
+                    }
+                }
+            }
 
             // Log activity
             $this->logActivity(
@@ -133,7 +224,7 @@ class CourtCaseController extends Controller
      */
     public function show($id)
     {
-        $case = CourtCase::with(['notices', 'hearings', 'entity', 'comments.user'])->findOrFail($id);
+        $case = CourtCase::with(['notices', 'hearings', 'entity', 'comments.user', 'caseType', 'court', 'workBench', 'caseFiles'])->findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
@@ -607,7 +698,7 @@ class CourtCaseController extends Controller
      */
     public function edit($id)
     {
-        $case = CourtCase::findOrFail($id);
+        $case = CourtCase::with(['caseFiles', 'caseType', 'court.workBenches', 'workBench'])->findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
@@ -621,7 +712,9 @@ class CourtCaseController extends Controller
         }
         
         $entities = Entity::all();
-        return view('cases.edit', compact('case', 'entities'));
+        $caseTypes = CaseType::all();
+        $courts = Court::all();
+        return view('cases.edit', compact('case', 'entities', 'caseTypes', 'courts'));
     }
 
     /**
@@ -642,21 +735,106 @@ class CourtCaseController extends Controller
             }
         }
 
-        $validatedData = $request->validate([
+        // Get the court to check its type
+        $court = Court::find($request->court_id);
+        
+        // Base validation rules
+        $rules = [
             'case_number' => 'required|string|max:100|unique:cases,case_number,' . $id,
-            'court_type' => 'required|in:High Court,Supreme Court,Session Court',
+            'case_type_id' => 'required|exists:case_types,id',
+            'court_id' => 'required|exists:courts,id',
+            'remarks' => 'nullable|string',
             'case_title' => 'required|string|max:255',
+            'case_description' => 'nullable|string',
             'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
-        ]);
+            'files' => 'nullable|array',
+            'files.*.file_name' => 'nullable|string|max:255',
+            'files.*.file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+        ];
+        
+        // Conditional validation based on court type
+        if ($court) {
+            if (in_array($court->court_type, ['High Court', 'Supreme Court'])) {
+                // For High Court and Supreme Court, work_bench_id is required
+                $rules['work_bench_id'] = 'required|exists:work_benches,id';
+                $rules['judge_name'] = 'nullable|string|max:255';
+            } elseif ($court->court_type === 'Session Court') {
+                // For Session Court, judge_name is required
+                $rules['judge_name'] = 'required|string|max:255';
+                $rules['work_bench_id'] = 'nullable|exists:work_benches,id';
+            } else {
+                // For courts without type set, both are optional
+                $rules['work_bench_id'] = 'nullable|exists:work_benches,id';
+                $rules['judge_name'] = 'nullable|string|max:255';
+            }
+        } else {
+            // If court not found, both are optional
+            $rules['work_bench_id'] = 'nullable|exists:work_benches,id';
+            $rules['judge_name'] = 'nullable|string|max:255';
+        }
+        
+        $validatedData = $request->validate($rules);
 
         DB::beginTransaction();
 
         try {
             $oldData = $case->toArray();
             $validatedData['updated_by'] = auth()->id();
+            
+            // Clear opposite field based on court type
+            if ($court) {
+                if (in_array($court->court_type, ['High Court', 'Supreme Court'])) {
+                    // For High/Supreme Court, clear judge_name
+                    $validatedData['judge_name'] = null;
+                } elseif ($court->court_type === 'Session Court') {
+                    // For Session Court, clear work_bench_id
+                    $validatedData['work_bench_id'] = null;
+                }
+            }
+            
+            // Handle file uploads separately
+            unset($validatedData['files']);
 
             $case->update($validatedData);
+
+            // Handle file uploads - Laravel handles nested file arrays differently
+            $fileInputs = $request->input('files', []);
+            $allFiles = $request->allFiles();
+            
+            // Process file uploads
+            if (!empty($allFiles) && isset($allFiles['files'])) {
+                $uploadedFiles = $allFiles['files'];
+                
+                // Process each file input
+                foreach ($fileInputs as $index => $fileData) {
+                    // Check if file exists for this index
+                    if (isset($uploadedFiles[$index]) && is_array($uploadedFiles[$index]) && isset($uploadedFiles[$index]['file'])) {
+                        $file = $uploadedFiles[$index]['file'];
+                        
+                        if ($file && $file->isValid()) {
+                            $filename = time() . '_' . $index . '_' . $file->getClientOriginalName();
+                            $path = $file->storeAs('case_files', $filename, 'public');
+                            
+                            // Get file name from input or use original name
+                            $fileName = isset($fileData['file_name']) && !empty(trim($fileData['file_name'])) 
+                                ? trim($fileData['file_name']) 
+                                : $file->getClientOriginalName();
+                            
+                            CaseFile::create([
+                                'case_id' => $case->id,
+                                'file_name' => $fileName,
+                                'file_path' => $path,
+                                'original_name' => $file->getClientOriginalName(),
+                                'file_type' => $file->getClientMimeType(),
+                                'file_size' => $file->getSize(),
+                                'created_by' => auth()->id(),
+                                'updated_by' => auth()->id(),
+                            ]);
+                        }
+                    }
+                }
+            }
 
             // Log activity
             $this->logActivity(

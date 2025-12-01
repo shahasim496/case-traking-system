@@ -14,15 +14,37 @@
                 <div class="card-body p-4">
                     @include('components.toaster')
                     
-                    <form method="POST" action="{{ route('cases.store') }}" id="caseForm">
+                    <form method="POST" action="{{ route('cases.store') }}" id="caseForm" enctype="multipart/form-data">
                         @csrf
                         
-                        <!-- Case Information Section -->
+                        <!-- Case Section -->
                         <div class="row mb-4">
                             <div class="col-12">
                                 <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
                                     <i class="fa fa-gavel mr-2"></i>Case Information
                                 </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Case Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="case_type_id" 
+                                            name="case_type_id" 
+                                            class="form-control form-control-lg @error('case_type_id') is-invalid @enderror" 
+                                            required>
+                                        <option value="">Select Case Type</option>
+                                        @foreach($caseTypes as $caseType)
+                                            <option value="{{ $caseType->id }}" {{ old('case_type_id') == $caseType->id ? 'selected' : '' }}>
+                                                {{ $caseType->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('case_type_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
                             </div>
                             
                             <div class="col-md-6">
@@ -42,22 +64,78 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+                        
+                        <!-- Court Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                                    <i class="fa fa-balance-scale mr-2"></i>Court Information
+                                </h5>
+                            </div>
                             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
-                                        Court Type <span class="text-danger">*</span>
+                                        Court <span class="text-danger">*</span>
                                     </label>
-                                    <select id="court_type" 
-                                            name="court_type" 
-                                            class="form-control form-control-lg @error('court_type') is-invalid @enderror" 
+                                    <select id="court_id" 
+                                            name="court_id" 
+                                            class="form-control form-control-lg @error('court_id') is-invalid @enderror" 
                                             required>
-                                        <option value="">Select Court Type</option>
-                                        <option value="High Court" {{ old('court_type') == 'High Court' ? 'selected' : '' }}>High Court</option>
-                                        <option value="Supreme Court" {{ old('court_type') == 'Supreme Court' ? 'selected' : '' }}>Supreme Court</option>
-                                        <option value="Session Court" {{ old('court_type') == 'Session Court' ? 'selected' : '' }}>Session Court</option>
+                                        <option value="">Select Court</option>
+                                        @foreach($courts as $court)
+                                            <option value="{{ $court->id }}" {{ old('court_id') == $court->id ? 'selected' : '' }}>
+                                                {{ $court->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
-                                    @error('court_type')
+                                    @error('court_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6" id="benchField" style="display: none;">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Bench <span class="text-danger" id="benchRequired">*</span>
+                                    </label>
+                                    <select id="work_bench_id" 
+                                            name="work_bench_id" 
+                                            class="form-control form-control-lg @error('work_bench_id') is-invalid @enderror">
+                                        <option value="">Select Bench</option>
+                                        @if(old('court_id'))
+                                            @php
+                                                $selectedCourt = \App\Models\Court::find(old('court_id'));
+                                            @endphp
+                                            @if($selectedCourt && in_array($selectedCourt->court_type, ['High Court', 'Supreme Court']))
+                                                @foreach($selectedCourt->workBenches as $bench)
+                                                    <option value="{{ $bench->id }}" {{ old('work_bench_id') == $bench->id ? 'selected' : '' }}>
+                                                        {{ $bench->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        @endif
+                                    </select>
+                                    @error('work_bench_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6" id="judgeField" style="display: none;">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Judge Name <span class="text-danger" id="judgeRequired">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="judge_name" 
+                                           name="judge_name" 
+                                           class="form-control form-control-lg @error('judge_name') is-invalid @enderror" 
+                                           placeholder="Enter judge name" 
+                                           value="{{ old('judge_name') }}">
+                                    @error('judge_name')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -65,6 +143,31 @@
                         </div>
                         
                         <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Remarks
+                                    </label>
+                                    <textarea id="remarks" 
+                                              name="remarks" 
+                                              class="form-control form-control-lg @error('remarks') is-invalid @enderror" 
+                                              rows="3" 
+                                              placeholder="Enter remarks...">{{ old('remarks') }}</textarea>
+                                    @error('remarks')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Case Details Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                                    <i class="fa fa-info-circle mr-2"></i>Case Details
+                                </h5>
+                            </div>
+                            
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
@@ -82,13 +185,90 @@
                                     @enderror
                                 </div>
                             </div>
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Case Description
+                                    </label>
+                                    <textarea id="case_description" 
+                                              name="case_description" 
+                                              class="form-control form-control-lg @error('case_description') is-invalid @enderror" 
+                                              rows="4" 
+                                              placeholder="Enter case description...">{{ old('case_description') }}</textarea>
+                                    @error('case_description')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- File Upload Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="border-bottom pb-2 mb-0" style="color: #00349C;">
+                                        <i class="fa fa-file-upload mr-2"></i>Upload Files
+                                    </h5>
+                                    <button type="button" class="btn btn-sm btn-success" id="addFileBtn">
+                                        <i class="fa fa-plus mr-1"></i>Add File
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12" id="filesContainer">
+                                <div class="file-item mb-3 p-3 border rounded">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label class="font-weight-bold text-dark">
+                                                    File Name <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" 
+                                                       name="files[0][file_name]" 
+                                                       class="form-control form-control-lg @error('files.0.file_name') is-invalid @enderror" 
+                                                       placeholder="Enter file name" 
+                                                       value="{{ old('files.0.file_name') }}">
+                                                @error('files.0.file_name')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="font-weight-bold text-dark">
+                                                    File <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="file" 
+                                                       name="files[0][file]" 
+                                                       class="form-control form-control-lg @error('files.0.file') is-invalid @enderror" 
+                                                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                                <small class="text-muted">Accepted: PDF, DOC, DOCX, JPG, JPEG, PNG (Max: 10MB)</small>
+                                                @error('files.0.file')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <label class="font-weight-bold text-dark d-block">&nbsp;</label>
+                                                <button type="button" class="btn btn-danger btn-sm remove-file-btn" style="display: none;">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- Additional Information Section -->
                         <div class="row mb-4">
                             <div class="col-12">
                                 <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
-                                    <i class="fa fa-info-circle mr-2"></i>Additional Information
+                                    <i class="fa fa-cog mr-2"></i>Additional Information
                                 </h5>
                             </div>
                             
@@ -174,7 +354,145 @@
     font-weight: 500;
 }
 
+.file-item {
+    background-color: #f8f9fa;
+}
 </style>
 
+<script>
+$(document).ready(function() {
+    let fileIndex = {{ count(old('files', [['file_name' => '', 'file' => '']])) }};
+    
+    // Court selection handler
+    $('#court_id').on('change', function() {
+        var courtId = $(this).val();
+        var benchSelect = $('#work_bench_id');
+        var benchField = $('#benchField');
+        var judgeField = $('#judgeField');
+        var judgeInput = $('#judge_name');
+        
+        // Hide both fields initially
+        benchField.hide();
+        judgeField.hide();
+        benchSelect.html('<option value="">Select Bench</option>');
+        benchSelect.val('');
+        judgeInput.val('');
+        benchSelect.prop('required', false);
+        judgeInput.prop('required', false);
+        
+        if (courtId) {
+            $.ajax({
+                url: '{{ route("api.get-benches") }}',
+                type: 'GET',
+                data: { court_id: courtId },
+                dataType: 'json',
+                success: function(response) {
+                    var courtType = response.court_type;
+                    
+                    if (courtType === 'High Court' || courtType === 'Supreme Court') {
+                        // Show bench field
+                        benchField.show();
+                        judgeField.hide();
+                        judgeInput.val('');
+                        benchSelect.prop('required', true);
+                        judgeInput.prop('required', false);
+                        
+                        // Load benches
+                        benchSelect.html('<option value="">Select Bench</option>');
+                        if (response.benches && response.benches.length > 0) {
+                            $.each(response.benches, function(index, bench) {
+                                benchSelect.append('<option value="' + bench.id + '">' + bench.name + '</option>');
+                            });
+                        }
+                    } else if (courtType === 'Session Court') {
+                        // Show judge name field
+                        benchField.hide();
+                        judgeField.show();
+                        benchSelect.val('');
+                        benchSelect.prop('required', false);
+                        judgeInput.prop('required', true);
+                    }
+                },
+                error: function() {
+                    benchField.hide();
+                    judgeField.hide();
+                }
+            });
+        }
+    });
+    
+    // File upload handlers
+    $('#addFileBtn').click(function() {
+        const fileHtml = `
+            <div class="file-item mb-3 p-3 border rounded">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-dark">
+                                File Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="files[${fileIndex}][file_name]" 
+                                   class="form-control form-control-lg" 
+                                   placeholder="Enter file name">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-dark">
+                                File <span class="text-danger">*</span>
+                            </label>
+                            <input type="file" 
+                                   name="files[${fileIndex}][file]" 
+                                   class="form-control form-control-lg" 
+                                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            <small class="text-muted">Accepted: PDF, DOC, DOCX, JPG, JPEG, PNG (Max: 10MB)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label class="font-weight-bold text-dark d-block">&nbsp;</label>
+                            <button type="button" class="btn btn-danger btn-sm remove-file-btn">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('#filesContainer').append(fileHtml);
+        fileIndex++;
+        updateRemoveButtons();
+    });
+    
+    $(document).on('click', '.remove-file-btn', function() {
+        $(this).closest('.file-item').remove();
+        updateRemoveButtons();
+    });
+    
+    function updateRemoveButtons() {
+        const fileItems = $('.file-item');
+        if (fileItems.length > 1) {
+            fileItems.each(function() {
+                $(this).find('.remove-file-btn').show();
+            });
+            fileItems.first().find('.remove-file-btn').hide();
+        } else {
+            fileItems.find('.remove-file-btn').hide();
+        }
+    }
+    
+    updateRemoveButtons();
+    
+    // Trigger court change on page load if court is already selected
+    if ($('#court_id').val()) {
+        $('#court_id').trigger('change');
+    } else if ('{{ old("court_id") }}') {
+        $('#court_id').val('{{ old("court_id") }}').trigger('change');
+    }
+});
+</script>
 @endsection
-

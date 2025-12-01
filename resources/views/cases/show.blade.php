@@ -22,49 +22,142 @@
                 <div class="card-body">
                     @include('components.toaster')
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Case Number:</strong>
-                            <p class="mb-0">{{ $case->case_number }}</p>
+                    <!-- Case Information Section -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                            <i class="fa fa-info-circle mr-2"></i>Case Information
+                        </h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Case Type:</strong>
+                                <p class="mb-0">{{ $case->caseType->name ?? '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Case Number:</strong>
+                                <p class="mb-0">{{ $case->case_number }}</p>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <strong>Court Type:</strong>
-                            <p class="mb-0">{{ $case->court_type }}</p>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <strong>Case Title:</strong>
+                                <p class="mb-0">{{ $case->case_title }}</p>
+                            </div>
+                        </div>
+                        
+                        @if($case->case_description)
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <strong>Case Description:</strong>
+                                <p class="mb-0">{{ $case->case_description }}</p>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Entity:</strong>
+                                <p class="mb-0">{{ $case->entity->name ?? '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Status:</strong>
+                                <p class="mb-0">
+                                    @if($case->status == 'Open')
+                                        <span class="badge badge-success">Open</span>
+                                    @else
+                                        <span class="badge badge-danger">Closed</span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Created At:</strong>
+                                <p class="mb-0">{{ $case->created_at->format('d M Y, h:i A') }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Updated At:</strong>
+                                <p class="mb-0">{{ $case->updated_at->format('d M Y, h:i A') }}</p>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <strong>Case Title:</strong>
-                            <p class="mb-0">{{ $case->case_title }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Entity:</strong>
-                            <p class="mb-0">{{ $case->entity->name ?? '-' }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Status:</strong>
-                            <p class="mb-0">
-                                @if($case->status == 'Open')
-                                    <span class="badge badge-success">Open</span>
-                                @else
-                                    <span class="badge badge-danger">Closed</span>
+                    <!-- Court Information Section -->
+                    <div class="mb-4">
+                        <h5 class="border-bottom pb-2 mb-3" style="color: #00349C;">
+                            <i class="fa fa-balance-scale mr-2"></i>Court Information
+                        </h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Court:</strong>
+                                <p class="mb-0">{{ $case->court->name ?? '-' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                @if($case->court && in_array($case->court->court_type, ['High Court', 'Supreme Court']))
+                                    <strong>Bench:</strong>
+                                    <p class="mb-0">{{ $case->workBench->name ?? '-' }}</p>
+                                @elseif($case->court && $case->court->court_type == 'Session Court')
+                                    <strong>Judge Name:</strong>
+                                    <p class="mb-0">{{ $case->judge_name ?? '-' }}</p>
                                 @endif
-                            </p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <strong>Created At:</strong>
-                            <p class="mb-0">{{ $case->created_at->format('d M Y, h:i A') }}</p>
+                        
+                        @if($case->remarks)
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <strong>Remarks:</strong>
+                                <p class="mb-0">{{ $case->remarks }}</p>
+                            </div>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
+            
+            <!-- Case Files Section -->
+            @if($case->caseFiles->count() > 0)
+            <div class="card shadow-sm mb-4">
+                <div class="card-header text-white" style="background-color: #00349C;">
+                    <h5 class="mb-0">
+                        <i class="fa fa-file mr-2"></i>Case Files
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Original Name</th>
+                                    <th>File Type</th>
+                                    <th>Size</th>
+                                    <th>Uploaded At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($case->caseFiles as $file)
+                                <tr>
+                                    <td>{{ $file->file_name }}</td>
+                                    <td>{{ $file->original_name }}</td>
+                                    <td>{{ $file->file_type }}</td>
+                                    <td>{{ number_format($file->file_size / 1024, 2) }} KB</td>
+                                    <td>{{ $file->created_at->format('d M Y, h:i A') }}</td>
+                                    <td>
+                                        <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm btn-info">
+                                            <i class="fa fa-download"></i> Download
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
             
             <!-- Notices Section -->
             <div class="card shadow-sm mb-4">

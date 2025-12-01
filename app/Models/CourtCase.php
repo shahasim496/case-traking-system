@@ -13,8 +13,14 @@ class CourtCase extends Model
 
     protected $fillable = [
         'case_number',
+        'case_type_id',
+        'court_id',
+        'work_bench_id',
         'court_type',
         'case_title',
+        'case_description',
+        'remarks',
+        'judge_name',
         'entity_id',
         'status',
         'created_by',
@@ -83,6 +89,46 @@ class CourtCase extends Model
     public function taskLogs()
     {
         return $this->hasMany(TaskLog::class, 'case_id')->orderBy('created_at', 'DESC');
+    }
+
+    /**
+     * Get the case type for the case.
+     */
+    public function caseType()
+    {
+        return $this->belongsTo(CaseType::class, 'case_type_id');
+    }
+
+    /**
+     * Get the court for the case.
+     */
+    public function court()
+    {
+        return $this->belongsTo(Court::class, 'court_id');
+    }
+
+    /**
+     * Get the work bench for the case.
+     */
+    public function workBench()
+    {
+        return $this->belongsTo(WorkBench::class, 'work_bench_id');
+    }
+
+    /**
+     * Get the files for the case.
+     */
+    public function files()
+    {
+        return $this->hasMany(CaseFile::class, 'case_id');
+    }
+
+    /**
+     * Get the case files for the case.
+     */
+    public function caseFiles()
+    {
+        return $this->hasMany(CaseFile::class, 'case_id');
     }
 }
 

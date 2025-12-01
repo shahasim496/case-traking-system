@@ -21,7 +21,7 @@ class Court extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'court_type'];
 
     /**
      * Get the work benches for the court.

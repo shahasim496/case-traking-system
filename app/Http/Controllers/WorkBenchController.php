@@ -18,7 +18,16 @@ class WorkBenchController extends Controller
   
     public function create()
     {
-        $courts = Court::orderBy('name', 'ASC')->get();
+        $courts = Court::where(function($query) {
+                $query->whereIn('court_type', ['High Court', 'Supreme Court'])
+                      ->orWhereNull('court_type'); // Include courts without court_type set (for backward compatibility)
+            })
+            ->orderBy('name', 'ASC')
+            ->get()
+            ->filter(function($court) {
+                // Filter out Session Court if court_type is set
+                return $court->court_type === null || in_array($court->court_type, ['High Court', 'Supreme Court']);
+            });
         return view('work_benches.create', compact('courts'));
     }
 
@@ -38,7 +47,16 @@ class WorkBenchController extends Controller
     public function edit($id)
     {
         $workBench = WorkBench::findOrFail($id);
-        $courts = Court::orderBy('name', 'ASC')->get();
+        $courts = Court::where(function($query) {
+                $query->whereIn('court_type', ['High Court', 'Supreme Court'])
+                      ->orWhereNull('court_type'); // Include courts without court_type set (for backward compatibility)
+            })
+            ->orderBy('name', 'ASC')
+            ->get()
+            ->filter(function($court) {
+                // Filter out Session Court if court_type is set
+                return $court->court_type === null || in_array($court->court_type, ['High Court', 'Supreme Court']);
+            });
         return view('work_benches.edit', compact('workBench', 'courts'));
     }
 

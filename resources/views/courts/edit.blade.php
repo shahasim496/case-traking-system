@@ -26,7 +26,7 @@
                                 </h5>
                             </div>
                             
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold text-dark">
                                         Court Name <span class="text-danger">*</span>
@@ -39,6 +39,26 @@
                                            required 
                                            value="{{ old('name', $court->name) }}">
                                     @error('name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Court Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="court_type" 
+                                            name="court_type" 
+                                            class="form-control form-control-lg @error('court_type') is-invalid @enderror" 
+                                            required>
+                                        <option value="">Select Court Type</option>
+                                        <option value="High Court" {{ old('court_type', $court->court_type) == 'High Court' ? 'selected' : '' }}>High Court</option>
+                                        <option value="Supreme Court" {{ old('court_type', $court->court_type) == 'Supreme Court' ? 'selected' : '' }}>Supreme Court</option>
+                                        <option value="Session Court" {{ old('court_type', $court->court_type) == 'Session Court' ? 'selected' : '' }}>Session Court</option>
+                                    </select>
+                                    @error('court_type')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
