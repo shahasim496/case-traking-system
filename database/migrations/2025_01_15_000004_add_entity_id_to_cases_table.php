@@ -14,7 +14,7 @@ class AddEntityIdToCasesTable extends Migration
     public function up()
     {
         Schema::table('cases', function (Blueprint $table) {
-            $table->unsignedBigInteger('entity_id')->nullable()->after('lawyer_name');
+            $table->unsignedBigInteger('entity_id')->nullable()->after('case_title');
             $table->foreign('entity_id')->references('id')->on('entities')->onDelete('set null');
             $table->index('entity_id');
         });

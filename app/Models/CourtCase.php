@@ -38,14 +38,6 @@ class CourtCase extends Model
     }
 
     /**
-     * Get the parties for the case.
-     */
-    public function parties()
-    {
-        return $this->hasMany(Party::class, 'case_id');
-    }
-
-    /**
      * Get the user who created the case.
      */
     public function creator()

@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use App\Models\CourtCase;
 use App\Models\Notice;
 use App\Models\Hearing;
-use App\Models\Party;
 use App\Models\Entity;
 use App\Models\CaseForward;
 use App\Models\CaseComment;
@@ -54,11 +53,7 @@ class CourtCaseController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('case_number', 'like', "%{$search}%")
-                  ->orWhere('case_title', 'like', "%{$search}%")
-                  ->orWhereHas('parties', function($partyQuery) use ($search) {
-                      $partyQuery->where('party_name', 'like', "%{$search}%")
-                                 ->orWhere('party_details', 'like', "%{$search}%");
-                  });
+                  ->orWhere('case_title', 'like', "%{$search}%");
             });
         }
 
@@ -77,7 +72,7 @@ class CourtCaseController extends Controller
             $query->where('entity_id', $request->entity_id);
         }
 
-        $cases = $query->with(['entity', 'notices', 'parties'])->orderBy('created_at', 'DESC')->paginate(10);
+        $cases = $query->with(['entity', 'notices'])->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('cases.index', compact('cases'));
     }
@@ -102,9 +97,6 @@ class CourtCaseController extends Controller
             'case_title' => 'required|string|max:255',
             'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
-            'parties' => 'required|array|min:1',
-            'parties.*.party_name' => 'required|string|max:255',
-            'parties.*.party_details' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -112,23 +104,8 @@ class CourtCaseController extends Controller
         try {
             $validatedData['created_by'] = auth()->id();
             $validatedData['updated_by'] = auth()->id();
-            
-            // Remove parties from validated data before creating case
-            $parties = $validatedData['parties'];
-            unset($validatedData['parties']);
 
             $case = CourtCase::create($validatedData);
-
-            // Create parties
-            foreach ($parties as $partyData) {
-                Party::create([
-                    'case_id' => $case->id,
-                    'party_name' => $partyData['party_name'],
-                    'party_details' => $partyData['party_details'] ?? null,
-                    'created_by' => auth()->id(),
-                    'updated_by' => auth()->id(),
-                ]);
-            }
 
             // Log activity
             $this->logActivity(
@@ -156,7 +133,7 @@ class CourtCaseController extends Controller
      */
     public function show($id)
     {
-        $case = CourtCase::with(['notices', 'hearings', 'entity', 'parties', 'comments.user'])->findOrFail($id);
+        $case = CourtCase::with(['notices', 'hearings', 'entity', 'comments.user'])->findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
@@ -630,7 +607,7 @@ class CourtCaseController extends Controller
      */
     public function edit($id)
     {
-        $case = CourtCase::with('parties')->findOrFail($id);
+        $case = CourtCase::findOrFail($id);
         
         // Check if user has access to this case
         $user = Auth::user();
@@ -671,9 +648,6 @@ class CourtCaseController extends Controller
             'case_title' => 'required|string|max:255',
             'entity_id' => 'nullable|exists:entities,id',
             'status' => 'required|in:Open,Closed',
-            'parties' => 'required|array|min:1',
-            'parties.*.party_name' => 'required|string|max:255',
-            'parties.*.party_details' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -681,26 +655,8 @@ class CourtCaseController extends Controller
         try {
             $oldData = $case->toArray();
             $validatedData['updated_by'] = auth()->id();
-            
-            // Remove parties from validated data before updating case
-            $parties = $validatedData['parties'];
-            unset($validatedData['parties']);
 
             $case->update($validatedData);
-
-            // Delete existing parties
-            $case->parties()->delete();
-
-            // Create new parties
-            foreach ($parties as $partyData) {
-                Party::create([
-                    'case_id' => $case->id,
-                    'party_name' => $partyData['party_name'],
-                    'party_details' => $partyData['party_details'] ?? null,
-                    'created_by' => auth()->id(),
-                    'updated_by' => auth()->id(),
-                ]);
-            }
 
             // Log activity
             $this->logActivity(

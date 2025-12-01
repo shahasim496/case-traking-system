@@ -41,26 +41,6 @@
                     </div>
                     
                     <div class="row mb-3">
-                        <div class="col-md-12">
-                            <strong>Parties:</strong>
-                            @if($case->parties->count() > 0)
-                                <div class="mt-2">
-                                    @foreach($case->parties as $party)
-                                        <div class="mb-2 p-2 border rounded" style="background-color: #f8f9fa;">
-                                            <strong>{{ $party->party_name }}</strong>
-                                            @if($party->party_details)
-                                                <p class="mb-0 mt-1 small text-muted">{{ $party->party_details }}</p>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="mb-0">-</p>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
                         <div class="col-md-6">
                             <strong>Entity:</strong>
                             <p class="mb-0">{{ $case->entity->name ?? '-' }}</p>
