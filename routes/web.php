@@ -109,6 +109,15 @@ Route::group(['prefix' => 'designations', 'middleware' => ['auth', 'banned', 'pe
     Route::delete('/delete/{id}', [App\Http\Controllers\DesignationController::class, 'delete'])->name('designations.delete');
 });
 
+Route::group(['prefix' => 'courts', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
+    Route::get('/', [App\Http\Controllers\CourtController::class, 'index'])->name('courts');
+    Route::get('/create', [App\Http\Controllers\CourtController::class, 'create'])->name('courts.create');
+    Route::post('/store', [App\Http\Controllers\CourtController::class, 'store'])->name('courts.store');
+    Route::get('/edit/{id}', [App\Http\Controllers\CourtController::class, 'edit'])->name('courts.edit');
+    Route::put('/update/{id}', [App\Http\Controllers\CourtController::class, 'update'])->name('courts.update');
+    Route::delete('/delete/{id}', [App\Http\Controllers\CourtController::class, 'delete'])->name('courts.delete');
+});
+
 Route::group(['prefix' => 'case-types', 'middleware' => ['auth', 'banned', 'permission:manage settings']], function () {
     Route::get('/', [App\Http\Controllers\CaseTypeController::class, 'index'])->name('case_types');
     Route::get('/create', [App\Http\Controllers\CaseTypeController::class, 'create'])->name('case_types.create');

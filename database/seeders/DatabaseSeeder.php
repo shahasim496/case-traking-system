@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             EntitySeeder::class,
        
             DesignationSeeder::class,
+            CourtSeeder::class,
             CaseTypeSeeder::class,
         
             UserSeeder::class,

@@ -97,6 +97,13 @@
                         </li>
                        
                         <li class="nav-item">
+                            <a href="{{ route('courts') }}" class="nav-link">
+                                <span class="title">Manage Courts</span>
+
+                            </a>
+                        </li>
+                       
+                        <li class="nav-item">
                             <a href="{{ route('case_types') }}" class="nav-link">
                                 <span class="title">Manage Case Types</span>
 
