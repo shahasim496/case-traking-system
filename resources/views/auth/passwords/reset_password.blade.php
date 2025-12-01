@@ -1,47 +1,94 @@
-@extends('layouts.web')
-@section('title','Change Password')
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <title>Reset Password - Case Tracking System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full overflow-hidden bg-black bg-cover" style="background-image: url('/assets/img/login/1.jpg');">
 
-@section('content')
+  <!-- Reset Password Card -->
+  <div class="absolute inset-0 flex items-center justify-end p-10 z-10">
+    <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-sm">
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Reset Password</h2>
+      
+      <form class="form-signin" method="POST" action="{{ route('resetPassword') }}">
+        @csrf
 
-<div class="sign-in">
+        @if ($message = Session::get('error'))
+        <div class="mb-4 p-4 text-red-800 bg-red-100 border border-red-300 rounded relative">
+          <span>{{ $message }}</span>
+          <button type="button" onclick="this.parentElement.style.display='none'" 
+            class="absolute top-0 right-0 mt-2 mr-2 text-red-800 hover:text-red-600">
+            &times;
+          </button>
+        </div>
+        @endif
 
-            <div class="out-div">
-            <h1 class="heading">Change Password</h1>
-            </div>
-           <form class="form-signin"method="POST" action="{{ route('resetPassword') }}">
-                @csrf
-                <div class="single-input">
-                <label class="label-font">New Password</label>
-                <input type="hidden" id="email" name="email" value="{{$email}}">
+        @if (session('success'))
+        <div id="successMessage" class="mb-4 p-4 text-green-800 bg-green-100 border border-green-300 rounded relative">
+          {{ session('success') }}
+          <button type="button" onclick="document.getElementById('successMessage').style.display='none'" 
+            class="absolute top-0 right-0 mt-2 mr-2 text-green-800 hover:text-green-600">
+            &times;
+          </button>
+        </div>
+        @endif
 
-                <input id="password" type="password"
-                class="form-control mb-3 @error('password') is-invalid @enderror"
-                placeholder="Enter your new password"
-                name="password" required autocomplete="new-password">
+        <input type="hidden" id="email" name="email" value="{{$email}}">
 
-                @error('password')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-
-                </div>
-                <div class="single-input">
-                <label class="label-font">Confirm New Password</label>
-
-                <input id="password-confirm" type="password" class="form-control mb-3"
-                name="password_confirmation" required autocomplete="new-password">
-                </div>
-
-                <div class="mt-3 spacebox"></div>
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <button class="btn btn-sm btn-success" type="submit">Update</button>
-                    </div>
-                </div>
-            </form>
-
-
+        <div class="mb-4">
+          <label for="password" class="block text-gray-700 mb-1">New Password</label>
+          <div class="relative">
+            <input id="password" type="password" 
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 @error('password') border-red-500 @enderror" 
+              placeholder="Enter your new password"
+              name="password" required autocomplete="new-password">
+            <button type="button" onclick="togglePassword('password')" class="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
+          @error('password')
+          <span class="text-red-500 text-sm mt-1" role="alert">
+            <strong>{{ $message }}</strong>
+          </span>
+          @enderror
         </div>
 
-@endsection
+        <div class="mb-4">
+          <label for="password-confirm" class="block text-gray-700 mb-1">Confirm New Password</label>
+          <div class="relative">
+            <input id="password-confirm" type="password" 
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+              placeholder="Confirm your new password"
+              name="password_confirmation" required autocomplete="new-password">
+            <button type="button" onclick="togglePassword('password-confirm')" class="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200 font-medium">Update Password</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword(fieldId) {
+      const passwordInput = document.getElementById(fieldId);
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+      } else {
+        passwordInput.type = 'password';
+      }
+    }
+  </script>
+</body>
+</html>

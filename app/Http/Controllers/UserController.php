@@ -8,6 +8,7 @@ use Auth;
 
 use Excel;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
 use App\Models\Grade;
@@ -216,9 +217,28 @@ class UserController extends Controller
             session(['passwordEmail' => $passwordEmail, 'passwordCode' => $code]);
 
             $res = $this->send_mail($mail_data, 'emails.password_reset');
-            return redirect()->route('user.verifyCode')->with('success', 'Code send to your email.');
+            
+            // Check if email was sent successfully
+            if (is_array($res) && isset($res['success']) && $res['success'] === true) {
+                return redirect()->route('user.verifyCode')->with('success', 'Code sent to your email.');
+            } else {
+                // Get error message
+                $errorMsg = is_array($res) && isset($res['error']) 
+                    ? $res['error'] 
+                    : 'Failed to send email. Please check your mail configuration or try again later.';
+                
+                // Log the error for debugging
+                Log::error('Password reset email failed (UserController)', [
+                    'email' => $user->email,
+                    'error' => $errorMsg,
+                    'response' => $res
+                ]);
+                
+                return redirect()->back()
+                    ->with('error', $errorMsg);
+            }
         } else {
-            return redirect()->back()->with('User not found.');
+            return redirect()->back()->with('error', 'User not found.');
         }
     } //end of function
 
@@ -280,9 +300,9 @@ class UserController extends Controller
                 $forgetPassword->delete();
             }
 
-            return redirect('/home')->with('Password changed successfully.');
+            return redirect('/home')->with('success', 'Password changed successfully.');
         } else {
-            return redirect()->back()->with('User not found.');
+            return redirect()->back()->with('error', 'User not found.');
         }
     } //end of function
 
@@ -319,9 +339,28 @@ class UserController extends Controller
             }
 
             $res = $this->send_mail($mail_data, 'emails.password_reset');
-            return redirect()->back()->with('success', 'Code send to your email.');
+            
+            // Check if email was sent successfully
+            if (is_array($res) && isset($res['success']) && $res['success'] === true) {
+                return redirect()->back()->with('success', 'Code sent to your email.');
+            } else {
+                // Get error message
+                $errorMsg = is_array($res) && isset($res['error']) 
+                    ? $res['error'] 
+                    : 'Failed to send email. Please check your mail configuration or try again later.';
+                
+                // Log the error for debugging
+                Log::error('Resend password reset code email failed (UserController)', [
+                    'email' => $user->email,
+                    'error' => $errorMsg,
+                    'response' => $res
+                ]);
+                
+                return redirect()->back()
+                    ->with('error', $errorMsg);
+            }
         } else {
-            return redirect()->back()->with('User not found.');
+            return redirect()->back()->with('error', 'User not found.');
         }
     } //end of function
 

@@ -22,22 +22,25 @@
       <form class="form-signin" method="POST" action="{{ route('login') }}">
         @csrf
 
-        @if ($message = Session::get('error'))
-        <div class="alert alert-danger alert-block">
-          <button type="button" class="close" data-dismiss="alert">×</button>
-          <span>{{ $message }}</span>
+        @if (session('error'))
+        <div id="errorMessage" class="mb-4 p-4 text-red-800 bg-red-100 border border-red-300 rounded relative">
+          {{ session('error') }}
+          <button type="button" onclick="document.getElementById('errorMessage').style.display='none'" 
+            class="absolute top-0 right-0 mt-2 mr-2 text-red-800 hover:text-red-600">
+            &times;
+          </button>
         </div>
         @endif
 
-         @if (session('success'))
-  <div id="successMessage" class="mb-4 p-4 text-green-800 bg-green-100 border border-green-300 rounded relative">
-    {{ session('success') }}
-    <button type="button" onclick="document.getElementById('successMessage').style.display='none'" 
-      class="absolute top-0 right-0 mt-2 mr-2 text-green-800 hover:text-green-600">
-      &times;
-    </button>
-  </div>
-@endif
+        @if (session('success'))
+        <div id="successMessage" class="mb-4 p-4 text-green-800 bg-green-100 border border-green-300 rounded relative">
+          {{ session('success') }}
+          <button type="button" onclick="document.getElementById('successMessage').style.display='none'" 
+            class="absolute top-0 right-0 mt-2 mr-2 text-green-800 hover:text-green-600">
+            &times;
+          </button>
+        </div>
+        @endif
 
         <div class="mb-4">
           <label for="email" class="block text-gray-700 mb-1">Email</label>

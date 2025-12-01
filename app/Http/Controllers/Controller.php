@@ -6,10 +6,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-use Mail;
-
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 use App\Notifications\AppNotification;
 
@@ -31,26 +31,65 @@ class Controller extends BaseController
 
     function send_mail($data,$view){
 
-         $data['from_email'] = env('MAIL_FROM_ADDRESS');
+         // Get mail configuration with fallback to config values
+         $fromEmail = env('MAIL_FROM_ADDRESS', config('mail.from.address'));
+         $fromName = env('MAIL_FROM_NAME', config('mail.from.name', 'Court System'));
 
-         try{
+         // Validate required email configuration
+         if (empty($fromEmail) || $fromEmail === 'hello@example.com') {
+             $errorMsg = 'Mail configuration error: MAIL_FROM_ADDRESS is not set or is using default value. Please configure your .env file with proper mail settings.';
+             Log::error($errorMsg);
+             return ['success' => false, 'error' => $errorMsg];
+         }
 
-             Mail::send($view,array('data'=>$data), function($message) use ($data){
-             $message->from($data['from_email']);
-             $message->to($data['to_email']);
-             $message->subject($data['subject']);
+         // Validate required data
+         if (empty($data['to_email']) || empty($data['subject'])) {
+             $errorMsg = 'Mail data error: Missing required fields (to_email or subject)';
+             Log::error($errorMsg, ['data' => $data]);
+             return ['success' => false, 'error' => $errorMsg];
+         }
 
+         // Validate email address format
+         if (!filter_var($data['to_email'], FILTER_VALIDATE_EMAIL)) {
+             $errorMsg = 'Invalid email address: ' . $data['to_email'];
+             Log::error($errorMsg);
+             return ['success' => false, 'error' => $errorMsg];
+         }
+
+         $data['from_email'] = $fromEmail;
+         $data['from_name'] = $fromName;
+
+         try {
+             Mail::send($view, array('data'=>$data), function($message) use ($data, $fromEmail, $fromName) {
+                 $message->from($fromEmail, $fromName);
+                 $message->to($data['to_email']);
+                 $message->subject($data['subject']);
              });
 
              if (Mail::failures()) {
-                 return 0;
-             }else{
-                 return 1;
+                 $failures = Mail::failures();
+                 $errorMsg = 'Failed to send email to: ' . implode(', ', $failures);
+                 Log::error($errorMsg, [
+                     'to_email' => $data['to_email'],
+                     'subject' => $data['subject'],
+                     'failures' => $failures
+                 ]);
+                 return ['success' => false, 'error' => $errorMsg, 'failures' => $failures];
+             } else {
+                 Log::info('Email sent successfully', [
+                     'to_email' => $data['to_email'],
+                     'subject' => $data['subject']
+                 ]);
+                 return ['success' => true, 'message' => 'Email sent successfully'];
              }
          } catch (\Exception $e) {
-
-            return $e->getMessage();
-             return 0;
+             $errorMsg = 'Exception while sending email: ' . $e->getMessage();
+             Log::error($errorMsg, [
+                 'to_email' => $data['to_email'] ?? 'unknown',
+                 'subject' => $data['subject'] ?? 'unknown',
+                 'exception' => $e->getTraceAsString()
+             ]);
+             return ['success' => false, 'error' => $errorMsg, 'exception' => $e->getMessage()];
          }
 
     }//end of send_mail
