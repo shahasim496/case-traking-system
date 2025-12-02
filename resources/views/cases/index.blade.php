@@ -93,7 +93,7 @@
                                     <tr>
                                         <td>{{ $index + 1 + ($cases->currentPage() - 1) * $cases->perPage() }}</td>
                                         <td><strong>{{ $case->case_number }}</strong></td>
-                                        <td>{{ $case->court_type }}</td>
+                                        <td>{{ $case->court->name ?? $case->court_type ?? '-' }}</td>
                                         <td>{{ $case->entity->name ?? '-' }}</td>
                                         <td>
                                             @if($case->status == 'Open')

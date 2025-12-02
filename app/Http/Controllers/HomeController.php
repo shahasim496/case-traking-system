@@ -50,149 +50,176 @@ class HomeController extends Controller
         $query = CourtCase::query();
         $hearingQuery = Hearing::query();
         $noticeQuery = Notice::query();
+        $userQuery = User::query();
 
         // Filter by entity - users can only see their entity cases, SuperAdmin sees all
         if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only see cases from their entity
-            if ($user->entity_id) {
-                $query->where('entity_id', $user->entity_id);
-                
-                // Filter hearings and notices by case entity
-                $hearingQuery->whereHas('courtCase', function($q) use ($user) {
-                    $q->where('entity_id', $user->entity_id);
-                });
-                
-                $noticeQuery->whereHas('courtCase', function($q) use ($user) {
-                    $q->where('entity_id', $user->entity_id);
+            // Legal Officers can only see cases they created or are assigned to
+            if ($user->hasRole('Legal Officer')) {
+                $query->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhere('assigned_officer_id', $user->id);
                 });
             } else {
-                // If user has no entity, show no data
-                $query->whereRaw('1 = 0');
-                $hearingQuery->whereRaw('1 = 0');
-                $noticeQuery->whereRaw('1 = 0');
+                // Regular users can only see cases from their entity
+                if ($user->entity_id) {
+                    $query->where('entity_id', $user->entity_id);
+                    
+                    // Filter hearings and notices by case entity
+                    $hearingQuery->whereHas('courtCase', function($q) use ($user) {
+                        $q->where('entity_id', $user->entity_id);
+                    });
+                    
+                    $noticeQuery->whereHas('courtCase', function($q) use ($user) {
+                        $q->where('entity_id', $user->entity_id);
+                    });
+                    
+                    // Filter users by entity
+                    $userQuery->where('entity_id', $user->entity_id);
+                } else {
+                    // If user has no entity, show no data
+                    $query->whereRaw('1 = 0');
+                    $hearingQuery->whereRaw('1 = 0');
+                    $noticeQuery->whereRaw('1 = 0');
+                    $userQuery->whereRaw('1 = 0');
+                }
             }
         }
         // SuperAdmin can see all cases, so no filter applied
 
         // Total Statistics
+        $totalUsers = $userQuery->count();
         $totalCases = $query->count();
         $openCases = (clone $query)->where('status', 'Open')->count();
         $closedCases = (clone $query)->where('status', 'Closed')->count();
         $totalNotices = $noticeQuery->count();
         $totalHearings = $hearingQuery->count();
         
-        // Recent Cases (max 5)
-        $recentCases = (clone $query)->with('entity')->orderBy('created_at', 'DESC')->limit(5)->get();
+        // Calculate percentages
+        $pendingCases = $openCases; // Open cases are pending
+        $pendingPercentage = $totalCases > 0 ? round(($pendingCases / $totalCases) * 100, 1) : 0;
+        $resolvedCases = 0; // No resolved status in court system, using closed as resolved
+        $resolvedPercentage = $totalCases > 0 ? round(($closedCases / $totalCases) * 100, 1) : 0;
+        $case_to_court = $totalCases; // All cases are court cases
+        $case_to_court_percentage = 100;
+        $ClosedCases = $closedCases;
         
-        // Upcoming Hearings (next 7 days, max 5)
-        $upcomingHearings = (clone $hearingQuery)->with('courtCase')
-            ->where(function($q) {
-                $q->where('next_hearing_date', '>=', now())
-                  ->orWhere('hearing_date', '>=', now());
-            })
-            ->where(function($q) {
-                $q->where('next_hearing_date', '<=', now()->addDays(7))
-                  ->orWhere('hearing_date', '<=', now()->addDays(7));
-            })
-            ->orderBy('hearing_date', 'ASC')
-            ->limit(5)
-            ->get();
+        // Recent Cases for table (paginated, 10 per page)
+        $Cases = (clone $query)->with(['entity', 'caseType'])->orderBy('created_at', 'DESC')->paginate(10);
         
-        // Recent Notices (max 5)
-        $recentNotices = (clone $noticeQuery)->with('courtCase')
-            ->orderBy('notice_date', 'DESC')
-            ->limit(5)
-            ->get();
-        
-        // Case Status Distribution
-        $statusDistribution = [
-            'Open' => (clone $query)->where('status', 'Open')->count(),
-            'Closed' => (clone $query)->where('status', 'Closed')->count(),
-        ];
-        
-        // Court Type Distribution
-        $courtTypeDistribution = (clone $query)->select('court_type', DB::raw('count(*) as total'))
-            ->groupBy('court_type')
-            ->pluck('total', 'court_type')
-            ->toArray();
-        
-        // Entity-wise Cases (only show if SuperAdmin, otherwise show only user's entity)
+        // Cases by Entity/Department (for doughnut chart)
         if ($user->hasRole('SuperAdmin')) {
-            $entityCases = CourtCase::select('entity_id', DB::raw('count(*) as total'))
+            $casesByType = CourtCase::select('entity_id', DB::raw('count(*) as total'))
                 ->whereNotNull('entity_id')
                 ->with('entity')
                 ->groupBy('entity_id')
                 ->get()
-                ->map(function($item) {
-                    return [
-                        'name' => $item->entity->name ?? 'Unknown',
-                        'total' => $item->total
-                    ];
-                });
+                ->mapWithKeys(function($item) {
+                    return [$item->entity->name ?? 'Unknown' => $item->total];
+                })
+                ->toArray();
         } else {
-            // For regular users, show only their entity
             if ($user->entity_id) {
                 $entityTotal = (clone $query)->count();
-                $entityCases = collect([[
-                    'name' => $user->entity->name ?? 'Unknown',
-                    'total' => $entityTotal
-                ]]);
+                $casesByType = [$user->entity->name ?? 'Unknown' => $entityTotal];
             } else {
-                $entityCases = collect([]);
+                $casesByType = [];
             }
         }
         
-        // Monthly Case Trends (last 6 months)
-        $monthlyTrends = [];
+        // Cases by Court (for bar chart) - use the same filtered query
+        $casesByCourt = (clone $query)->select('court_id', DB::raw('count(*) as total'))
+            ->whereNotNull('court_id')
+            ->with('court')
+            ->groupBy('court_id')
+            ->get()
+            ->mapWithKeys(function($item) {
+                return [$item->court->name ?? 'Unknown' => $item->total];
+            })
+            ->toArray();
+        
+        // If no court data, provide empty array
+        if (empty($casesByCourt)) {
+            $casesByCourt = [];
+        }
+        
+        // All Courts with case counts for stat card - use court name from relationship
+        $casesByCourt = (clone $query)->select('court_id', DB::raw('count(*) as total'))
+            ->whereNotNull('court_id')
+            ->with('court')
+            ->groupBy('court_id')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'name' => $item->court->name ?? 'Unknown',
+                    'total' => $item->total
+                ];
+            })
+            ->toArray();
+        
+        // Get all courts to ensure all are shown even if 0 cases
+        $allCourts = \App\Models\Court::all()->keyBy('id');
+        $topCourts = [];
+        
+        // First, add courts that have cases
+        foreach ($casesByCourt as $court) {
+            $topCourts[$court['name']] = $court['total'];
+        }
+        
+        // Then, add courts with 0 cases
+        foreach ($allCourts as $court) {
+            if (!isset($topCourts[$court->name])) {
+                $topCourts[$court->name] = 0;
+            }
+        }
+        
+        // Convert to array format and sort by total descending
+        $topCourts = collect($topCourts)->map(function($total, $name) {
+            return ['name' => $name, 'total' => $total];
+        })->sortByDesc('total')->values()->toArray();
+        
+        // Monthly Case Trends (last 6 months) - formatted for chart
+        $monthlyCases = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $monthQuery = clone $query;
-            $monthlyTrends[] = [
-                'month' => $date->format('M Y'),
-                'count' => $monthQuery->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count()
+            $monthStart = $date->copy()->startOfMonth();
+            $monthEnd = $date->copy()->endOfMonth();
+            
+            $monthTotal = $monthQuery->whereBetween('created_at', [$monthStart, $monthEnd])->count();
+            $monthOpen = (clone $query)->where('status', 'Open')
+                ->whereBetween('created_at', [$monthStart, $monthEnd])->count();
+            $monthClosed = (clone $query)->where('status', 'Closed')
+                ->whereBetween('created_at', [$monthStart, $monthEnd])->count();
+            
+            $monthlyCases[] = [
+                'month' => $date->format('Y-m'),
+                'total_cases' => $monthTotal,
+                'pending_cases' => $monthOpen,
+                'resolved_cases' => $monthClosed,
+                'court_cases' => $monthTotal, // All are court cases
             ];
         }
-        
-        // Cases by Status (for pie chart)
-        $casesByStatus = [
-            'Open Cases' => $openCases,
-            'Closed Cases' => $closedCases,
-        ];
-        
-        // Cases added this month
-        $casesThisMonth = (clone $query)->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->count();
-        
-        // Cases added last month
-        $casesLastMonth = (clone $query)->whereMonth('created_at', now()->subMonth()->month)
-            ->whereYear('created_at', now()->subMonth()->year)
-            ->count();
-        
-        // Calculate percentage change
-        $monthlyChange = $casesLastMonth > 0 
-            ? round((($casesThisMonth - $casesLastMonth) / $casesLastMonth) * 100, 1)
-            : ($casesThisMonth > 0 ? 100 : 0);
 
         return view('dashboard.admin', compact(
+            'totalUsers',
             'totalCases',
             'openCases',
             'closedCases',
+            'pendingCases',
+            'pendingPercentage',
+            'resolvedCases',
+            'resolvedPercentage',
+            'case_to_court',
+            'case_to_court_percentage',
+            'ClosedCases',
             'totalNotices',
             'totalHearings',
-            'recentCases',
-            'upcomingHearings',
-            'recentNotices',
-            'statusDistribution',
-            'courtTypeDistribution',
-            'entityCases',
-            'monthlyTrends',
-            'casesByStatus',
-            'casesThisMonth',
-            'casesLastMonth',
-            'monthlyChange'
+            'Cases',
+            'casesByCourt',
+            'topCourts',
+            'casesByType',
+            'monthlyCases'
         ));
     }
 
@@ -209,3 +236,4 @@ class HomeController extends Controller
     }//end of function
 
 }
+

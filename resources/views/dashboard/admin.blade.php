@@ -2,665 +2,868 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="container-fluid">
-    @include('components.toaster')
+<style>
+    /* Dashboard specific styles - ensure proper spacing with sidebar */
+    /* Note: margin-left: 235px is set by layout CSS for sidebar spacing - don't override it */
+    .page-content-wrapper.homepage .page-content {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 15px !important;
+    }
     
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="mb-0">
-                <i class="fa fa-tachometer mr-2" style="color: #00349C;"></i>Dashboard
+    /* Ensure sidebar doesn't overlap content */
+    .sidemenu-container {
+        width: 235px !important;
+    }
+    
+    /* Modern Dashboard Styles */
+            .dashboard-header {
+                background: linear-gradient(135deg, #00349C 0%, #0056b3 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                margin-bottom: 30px;
+                box-shadow: 0 8px 25px rgba(0, 52, 156, 0.3);
+            }
+
+            .dashboard-header h1 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 10px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .dashboard-header p {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin: 0;
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px;
+                margin-bottom: 40px;
+            }
+
+            .stat-card {
+                background: #fff;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--card-color), var(--card-color-light));
+            }
+
+            .stat-card.blue { --card-color: #007bff; --card-color-light: #66b3ff; }
+            .stat-card.green { --card-color: #28a745; --card-color-light: #6bcf7f; }
+            .stat-card.yellow { --card-color: #ffc107; --card-color-light: #ffd43b; }
+            .stat-card.red { --card-color: #dc3545; --card-color-light: #ff6b7a; }
+            .stat-card.purple { --card-color: #6f42c1; --card-color-light: #9d71d9; }
+            .stat-card.orange { --card-color: #fd7e14; --card-color-light: #ffa94d; }
+
+            .stat-card-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                color: white;
+                background: linear-gradient(135deg, var(--card-color), var(--card-color-light));
+            }
+
+            .stat-trend {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            .stat-trend.up { color: #28a745; }
+            .stat-trend.down { color: #dc3545; }
+
+            .stat-value {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 5px;
+                line-height: 1;
+            }
+
+            .stat-label {
+                font-size: 1rem;
+                color: #6c757d;
+                font-weight: 500;
+                margin: 0;
+            }
+
+            .stat-description {
+                font-size: 0.875rem;
+                color: #adb5bd;
+                margin-top: 8px;
+            }
+
+            .charts-section {
+                background: #fff;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+                margin-bottom: 30px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 25px;
+                display: flex;
+                align-items: center;
+            }
+
+            .section-title i {
+                margin-right: 10px;
+                color: #00349C;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 400px;
+                margin-bottom: 30px;
+            }
+
+            .recent-cases-section {
+                background: #fff;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .table-modern {
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .table-modern thead {
+                background: linear-gradient(135deg, #00349C 0%, #0056b3 100%);
+                color: white;
+            }
+
+            .table-modern thead th {
+                border: none;
+                padding: 20px 15px;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.875rem;
+                letter-spacing: 0.5px;
+            }
+
+            .table-modern tbody td {
+                padding: 15px;
+                border-bottom: 1px solid #f8f9fa;
+                vertical-align: middle;
+            }
+
+            .table-modern tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            .badge-modern {
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .badge-pending { background: #fff3cd; color: #856404; }
+            .badge-resolved { background: #d4edda; color: #155724; }
+            .badge-closed { background: #f8d7da; color: #721c24; }
+            .badge-court { background: #d1ecf1; color: #0c5460; }
+
+            .pagination-modern {
+                display: flex;
+                justify-content: center;
+                margin-top: 25px;
+            }
+
+            .pagination-modern .page-link {
+                border: none;
+                color: #00349C;
+                padding: 10px 15px;
+                margin: 0 2px;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+
+            .pagination-modern .page-link:hover {
+                background: #00349C;
+                color: white;
+            }
+
+            .pagination-modern .page-item.active .page-link {
+                background: #00349C;
+                color: white;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 1200px) {
+                .stats-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 20px;
+                }
+            }
+
+            @media (max-width: 992px) {
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 20px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-header {
+                    padding: 20px;
+                    text-align: center;
+                }
+
+                .dashboard-header h1 {
+                    font-size: 2rem;
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .stat-card {
+                    padding: 20px;
+                }
+
+                .stat-value {
+                    font-size: 2rem;
+                }
+
+                .charts-section,
+                .recent-cases-section {
+                    padding: 20px;
+                }
+
+                .chart-container {
+                    height: 300px;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .stat-card-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                }
+
+                .stat-icon {
+                    width: 50px;
+                    height: 50px;
+                    font-size: 20px;
+                }
+
+                .stat-value {
+                    font-size: 1.75rem;
+                }
+
+                .table-modern {
+                    font-size: 0.875rem;
+                }
+
+                .table-modern thead th,
+                .table-modern tbody td {
+                    padding: 10px 8px;
+                }
+            }
+        </style>
+
+<div class="container-fluid" style="padding: 0 20px;">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h1>
+            <p>Welcome to the Case Management System - Monitor and track all case activities</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <!-- Total Users -->
+            <div class="stat-card blue">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <div class="stat-value">{{ $totalUsers }}</div>
+                <p class="stat-label">Total Users</p>
+                <p class="stat-description">Registered system users</p>
+            </div>
+
+            <!-- Total Cases -->
+            <div class="stat-card purple">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>{{ $totalCases > 0 ? '100%' : '0%' }}</span>
+                    </div>
+                </div>
+                <div class="stat-value">{{ $totalCases }}</div>
+                <p class="stat-label">Total Cases</p>
+                <p class="stat-description">All case records</p>
+            </div>
+
+            <!-- Pending Cases -->
+            <div class="stat-card yellow">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-percentage"></i>
+                        <span>{{ $pendingPercentage }}%</span>
+                    </div>
+                </div>
+                <div class="stat-value">{{ $pendingCases }}</div>
+                <p class="stat-label">Pending Cases</p>
+                <p class="stat-description">Awaiting verification</p>
+            </div>
+
+            <!-- Resolved Cases -->
+            <div class="stat-card green">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>{{ $resolvedPercentage }}%</span>
+                    </div>
+                </div>
+                <div class="stat-value">{{ $resolvedCases }}</div>
+                <p class="stat-label">Resolved Cases</p>
+                <p class="stat-description">Successfully resolved</p>
+            </div>
+
+            <!-- Court Cases -->
+            <div class="stat-card red">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-percentage"></i>
+                        <span>{{ $case_to_court_percentage }}%</span>
+                    </div>
+                </div>
+                <div class="stat-value">{{ $case_to_court }}</div>
+                <p class="stat-label">Court Cases</p>
+                <p class="stat-description">Approved for court</p>
+                
+                @if(!empty($topCourts))
+                <div class="mt-3 pt-3" style="border-top: 1px solid rgba(0,0,0,0.1);">
+                    @foreach($topCourts as $court)
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #6c757d;">{{ $court['name'] }}</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #2c3e50;">{{ $court['total'] }} cases</span>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+
+            <!-- Closed Cases -->
+            <div class="stat-card orange">
+                <div class="stat-card-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="fas fa-lock"></i>
+                        <span>Closed</span>
+                    </div>
+                </div>
+                <div class="stat-value">{{ $ClosedCases }}</div>
+                <p class="stat-label">Closed Cases</p>
+                <p class="stat-description">Archived cases</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                Case Analytics & Statistics
             </h2>
-            <p class="text-muted">Court Case Tracking System Overview</p>
-        </div>
-    </div>
+            
+            <div class="row">
+                <!-- Cases by Entity -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="chart-container">
+                        <h5 class="mb-3"><i class="fas fa-pie-chart"></i> Cases by Entity</h5>
+                        <canvas id="incidentsByType"></canvas>
+                    </div>
+                </div>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-sm border-left-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Total Cases</h6>
-                            <h3 class="mb-0" style="color: #00349C;">{{ $totalCases }}</h3>
-                        </div>
-                        <div class="icon-circle bg-primary text-white">
-                            <i class="fa fa-gavel fa-2x"></i>
-                        </div>
+                <!-- Cases by Court -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="chart-container">
+                        <h5 class="mb-3"><i class="fas fa-chart-column"></i> Cases by Court</h5>
+                        <canvas id="incidentsBySeverity"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Trends -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <h5 class="mb-3"><i class="fas fa-chart-line"></i> Monthly Case Trends</h5>
+                        <canvas id="monthlyCasesChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-sm border-left-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Open Cases</h6>
-                            <h3 class="mb-0" style="color: #28a745;">{{ $openCases }}</h3>
-                        </div>
-                        <div class="icon-circle bg-success text-white">
-                            <i class="fa fa-folder-open fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
+        <!-- Recent Cases Section -->
+        <div class="recent-cases-section">
+            <h2 class="section-title">
+                <i class="fas fa-list-alt"></i>
+                Recent Cases
+            </h2>
+            
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> Case Number</th>
+                            <th><i class="fas fa-building"></i> Entity</th>
+                            <th><i class="fas fa-info-circle"></i> Status</th>
+                            <th><i class="fas fa-calendar"></i> Created Date</th>
+                            <th><i class="fas fa-cog"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($Cases as $case)
+                        <tr>
+                            <td>
+                                <strong>#{{ $case->case_number }}</strong>
+                            </td>
+                            <td>
+                                <span class="badge-modern badge-pending">{{ $case->entity->name ?? 'N/A' }}</span>
+                            </td>
+                            <td>
+                                @php
+                                    $statusClass = $case->status == 'Open' ? 'badge-pending' : 'badge-closed';
+                                @endphp
+                                <span class="badge-modern {{ $statusClass }}">{{ $case->status }}</span>
+                            </td>
+                            <td>
+                                <i class="fas fa-clock text-muted"></i>
+                                {{ $case->created_at->format('M d, Y') }}
+                                <br>
+                                <small class="text-muted">{{ $case->created_at->format('h:i A') }}</small>
+                            </td>
+                            <td>
+                                @if(auth()->user()->can('view case'))
+                                <a href="{{ route('cases.show', $case->id) }}" 
+                                   class="btn btn-sm d-flex align-items-center justify-content-center" 
+                                   style="width: 80px; background-color: #17a2b8; color: white;"
+                                   title="View Case">
+                                    <i class="fa fa-eye mr-1"></i>View
+                                </a>
+                                @else
+                                <span class="text-muted">No Access</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No cases found</p>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-sm border-left-danger">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Closed Cases</h6>
-                            <h3 class="mb-0" style="color: #dc3545;">{{ $closedCases }}</h3>
-                        </div>
-                        <div class="icon-circle bg-danger text-white">
-                            <i class="fa fa-folder fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
+            
+            @if($Cases->hasPages())
+            <div class="pagination-modern">
+                {{ $Cases->links('pagination::bootstrap-4') }}
             </div>
+            @endif
         </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card shadow-sm border-left-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Total Notices</h6>
-                            <h3 class="mb-0" style="color: #17a2b8;">{{ $totalNotices }}</h3>
-                        </div>
-                        <div class="icon-circle bg-info text-white">
-                            <i class="fa fa-file-text fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Row -->
-    <div class="row mb-4">
-        <!-- Case Status Distribution (Pie Chart) -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-white" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-pie-chart mr-2"></i>Case Status Distribution
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="statusChart" height="250"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Court Type Distribution (Doughnut Chart) -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-white" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-chart-pie mr-2"></i>Court Type Distribution
-                    </h5>
-                </div>
-                <div class="card-body" >
-                    <canvas id="courtTypeChart" height="250"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Monthly Trends and Entity Cases -->
-    <div class="row mb-4">
-        <!-- Monthly Case Trends (Line Chart) -->
-        <div class="col-lg-8 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-white" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-line-chart mr-2"></i>Monthly Case Trends (Last 6 Months)
-                    </h5>
-                </div>
-                <div class="card-body" style="height: 300px;">
-                    <canvas id="monthlyTrendChart" height="100"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Entity-wise Cases (Bar Chart) -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm">
-                    <div class="card-header text-white" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-bar-chart mr-2"></i>Cases by Entity
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="entityChart" height="250"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Data Row -->
-    <div class="row">
-        <!-- Recent Cases -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-white d-flex justify-content-between align-items-center" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-list mr-2"></i>Recent Cases
-                    </h5>
-                    <a href="{{ route('cases.index') }}" class="btn btn-light btn-sm">
-                        <i class="fa fa-eye"></i> View All
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-hover mb-0">
-                            <thead class="thead-light" style="position: sticky; top: 0; z-index: 10;">
-                                <tr>
-                                    <th>Case #</th>
-                                    <th>Title</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentCases as $case)
-                                    <tr>
-                                        <td>
-                                            <a href="{{ route('cases.show', $case->id) }}" class="text-primary">
-                                                <strong>{{ $case->case_number }}</strong>
-                                            </a>
-                                        </td>
-                                        <td>{{ Str::limit($case->case_title, 25) }}</td>
-                                        <td>
-                                            @if($case->status == 'Open')
-                                                <span class="badge badge-success">Open</span>
-                                            @else
-                                                <span class="badge badge-danger">Closed</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted">No cases found</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upcoming Hearings -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-white" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-calendar-check-o mr-2"></i>Upcoming Hearings (Next 7 Days)
-                    </h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-hover mb-0">
-                            <thead class="thead-light" style="position: sticky; top: 0; z-index: 10;">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Case</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($upcomingHearings as $hearing)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $hearing->hearing_date->format('d M') }}</strong>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('cases.show', $hearing->case_id) }}" class="text-primary">
-                                                {{ Str::limit($hearing->courtCase->case_number, 15) }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('hearings.show', $hearing->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white;">
-                                                <i class="fa fa-eye mr-1"></i>View
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted">No upcoming hearings</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Notices -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-white" style="background-color: #00349C;">
-                    <h5 class="mb-0">
-                        <i class="fa fa-bell mr-2"></i>Recent Notices
-                    </h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-hover mb-0">
-                            <thead class="thead-light" style="position: sticky; top: 0; z-index: 10;">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Case</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($recentNotices as $notice)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $notice->notice_date->format('d M') }}</strong>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('cases.show', $notice->case_id) }}" class="text-primary">
-                                                {{ Str::limit($notice->courtCase->case_number, 15) }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('notices.show', $notice->id) }}" class="btn btn-sm" style="background-color: #17a2b8; color: white;">
-                                                <i class="fa fa-eye mr-1"></i>View
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center text-muted">No recent notices</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<style>
-/* Container Fluid - Only adjust padding, let existing CSS handle page-content margins */
-.container-fluid {
-    padding-left: 15px;
-    padding-right: 15px;
-}
+        <!-- Include Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Pass PHP data to JS
+            const casesByCourt = @json($casesByCourt);
+            const casesByType = @json($casesByType);
+            const monthlyCases = @json($monthlyCases);
 
-@media (max-width: 991px) {
-    .container-fluid {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
+            // Chart.js default configuration
+            Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            Chart.defaults.font.size = 12;
+            Chart.defaults.color = '#6c757d';
 
-@media (max-width: 576px) {
-    .container-fluid {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
+            // Modern color palette
+            const colors = {
+                primary: '#00349C',
+                secondary: '#0056b3',
+                success: '#28a745',
+                warning: '#ffc107',
+                danger: '#dc3545',
+                info: '#17a2b8',
+                purple: '#6f42c1',
+                orange: '#fd7e14'
+            };
 
-/* Card Styles */
-.border-left-primary {
-    border-left: 4px solid #00349C !important;
-}
-
-.border-left-success {
-    border-left: 4px solid #28a745 !important;
-}
-
-.border-left-danger {
-    border-left: 4px solid #dc3545 !important;
-}
-
-.border-left-info {
-    border-left: 4px solid #17a2b8 !important;
-}
-
-.icon-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-@media (max-width: 576px) {
-    .icon-circle {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .icon-circle i {
-        font-size: 1.5rem !important;
-    }
-}
-
-.card {
-    border: none;
-    border-radius: 10px;
-    transition: transform 0.2s;
-    margin-bottom: 1rem;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-}
-
-.card-body {
-    padding: 1.25rem;
-}
-
-@media (max-width: 576px) {
-    .card-body {
-        padding: 1rem;
-    }
-}
-
-.table thead th {
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-@media (max-width: 768px) {
-    .table {
-        font-size: 0.85rem;
-    }
-    
-    .table th,
-    .table td {
-        padding: 0.5rem;
-    }
-}
-
-/* Responsive Charts */
-@media (max-width: 768px) {
-    #statusChart,
-    #courtTypeChart,
-    #monthlyTrendChart,
-    #entityChart {
-        max-height: 250px !important;
-    }
-}
-
-@media (max-width: 576px) {
-    #statusChart,
-    #courtTypeChart,
-    #monthlyTrendChart,
-    #entityChart {
-        max-height: 200px !important;
-    }
-}
-
-/* Statistics Cards Responsive */
-@media (max-width: 768px) {
-    .col-lg-3.col-md-6 {
-        margin-bottom: 1rem;
-    }
-    
-    h3.mb-0 {
-        font-size: 1.75rem;
-    }
-}
-
-@media (max-width: 576px) {
-    h3.mb-0 {
-        font-size: 1.5rem;
-    }
-    
-    h6.text-muted {
-        font-size: 0.875rem;
-    }
-}
-
-/* Page Header Responsive */
-@media (max-width: 768px) {
-    h2.mb-0 {
-        font-size: 1.5rem;
-    }
-    
-    .text-muted {
-        font-size: 0.875rem;
-    }
-}
-
-/* Table Responsive */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 768px) {
-    .table-responsive {
-        max-height: 350px !important;
-    }
-}
-
-/* Chart Container Responsive */
-@media (max-width: 992px) {
-    .col-lg-6,
-    .col-lg-8,
-    .col-lg-4 {
-        margin-bottom: 1.5rem;
-    }
-}
-
-/* Ensure proper spacing on mobile */
-@media (max-width: 576px) {
-    .row {
-        margin-left: -5px;
-        margin-right: -5px;
-    }
-    
-    .row > [class*="col-"] {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
-    
-    .mb-4 {
-        margin-bottom: 1rem !important;
-    }
-    
-    .container-fluid {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
-
-/* Mobile Responsive - Let the existing CSS handle page-content margins */
-@media (max-width: 991px) {
-    .container-fluid {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
-</style>
-
-<!-- Chart.js Library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-
-<script>
-// Case Status Distribution (Pie Chart)
-const statusCtx = document.getElementById('statusChart').getContext('2d');
-const statusChart = new Chart(statusCtx, {
-    type: 'pie',
-    data: {
-        labels: ['Open Cases', 'Closed Cases'],
-        datasets: [{
-            data: [{{ $openCases }}, {{ $closedCases }}],
-            backgroundColor: ['#28a745', '#dc3545'],
-            borderWidth: 2,
-            borderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        let label = context.label || '';
-                        if (label) {
-                            label += ': ';
+            // Monthly Cases Chart
+            const monthlyCasesCtx = document.getElementById('monthlyCasesChart').getContext('2d');
+            
+            // Debug: Log the monthly cases data
+            console.log('Monthly Cases Data:', monthlyCases);
+            
+            // Ensure we have data, if not create empty structure
+            const chartData = monthlyCases && monthlyCases.length > 0 ? monthlyCases : [];
+            
+            // If no data, show a message
+            if (chartData.length === 0) {
+                console.log('No monthly data available');
+                // You could show a "No data available" message here
+            }
+            
+            new Chart(monthlyCasesCtx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(item => {
+                        const [year, month] = item.month.split('-');
+                        return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    }),
+                    datasets: [
+                        {
+                            label: 'Total Cases',
+                            data: chartData.map(item => item.total_cases || 0),
+                            borderColor: colors.primary,
+                            backgroundColor: `${colors.primary}15`,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.primary,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'Open Cases',
+                            data: chartData.map(item => item.pending_cases || 0),
+                            borderColor: colors.warning,
+                            backgroundColor: `${colors.warning}15`,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.warning,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'Under Investigation',
+                            data: chartData.map(item => item.resolved_cases || 0),
+                            borderColor: colors.success,
+                            backgroundColor: `${colors.success}15`,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.success,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: 'Pending Court',
+                            data: chartData.map(item => item.court_cases || 0),
+                            borderColor: colors.danger,
+                            backgroundColor: `${colors.danger}15`,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: colors.danger,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
                         }
-                        label += context.parsed + ' cases';
-                        return label;
-                    }
-                }
-            }
-        }
-    }
-});
-
-// Court Type Distribution (Doughnut Chart)
-const courtTypeCtx = document.getElementById('courtTypeChart').getContext('2d');
-const courtTypeData = {
-    labels: {!! json_encode(array_keys($courtTypeDistribution)) !!},
-    datasets: [{
-        data: {!! json_encode(array_values($courtTypeDistribution)) !!},
-        backgroundColor: ['#00349C', '#28a745', '#ffc107'],
-        borderWidth: 2,
-        borderColor: '#fff'
-    }]
-};
-const courtTypeChart = new Chart(courtTypeCtx, {
-    type: 'doughnut',
-    data: courtTypeData,
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        let label = context.label || '';
-                        if (label) {
-                            label += ': ';
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 13,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: colors.primary,
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' cases';
+                                }
+                            }
                         }
-                        label += context.parsed + ' cases';
-                        return label;
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Cases',
+                                color: '#495057',
+                                font: {
+                                    size: 13,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Month',
+                                color: '#495057',
+                                font: {
+                                    size: 13,
+                                    weight: '600'
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        }
-    }
-});
+            });
 
-// Monthly Trends (Line Chart)
-const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
-const monthlyChart = new Chart(monthlyCtx, {
-    type: 'line',
-    data: {
-        labels: {!! json_encode(array_column($monthlyTrends, 'month')) !!},
-        datasets: [{
-            label: 'Cases Added',
-            data: {!! json_encode(array_column($monthlyTrends, 'count')) !!},
-            borderColor: '#17a2b8',
-            backgroundColor: 'rgba(23, 162, 184, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: '#17a2b8',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return 'Cases: ' + context.parsed.y;
+            // Cases by Entity (Doughnut Chart)
+            const incidentsByTypeCtx = document.getElementById('incidentsByType').getContext('2d');
+            new Chart(incidentsByTypeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(casesByType),
+                    datasets: [{
+                        data: Object.values(casesByType),
+                        backgroundColor: [
+                            colors.primary,
+                            colors.secondary,
+                            colors.success,
+                            colors.warning,
+                            colors.danger,
+                            colors.info,
+                            colors.purple,
+                            colors.orange
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: colors.primary,
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + context.parsed + ' cases (' + percentage + '%)';
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1
-                }
-            }
-        }
-    }
-});
+            });
 
-// Entity-wise Cases (Bar Chart)
-const entityCtx = document.getElementById('entityChart').getContext('2d');
-const entityData = {!! json_encode($entityCases) !!};
-const entityChart = new Chart(entityCtx, {
-    type: 'bar',
-    data: {
-        labels: entityData.map(item => item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name),
-        datasets: [{
-            label: 'Cases',
-            data: entityData.map(item => item.total),
-            backgroundColor: '#ffc107',
-            borderColor: '#ff9800',
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y',
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return 'Cases: ' + context.parsed.x;
+            // Cases by Court (Bar Chart)
+            const incidentsBySeverityCtx = document.getElementById('incidentsBySeverity').getContext('2d');
+            new Chart(incidentsBySeverityCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(casesByCourt),
+                    datasets: [{
+                        data: Object.values(casesByCourt),
+                        backgroundColor: [
+                            colors.warning,
+                            colors.success,
+                            colors.danger,
+                            colors.info,
+                            colors.primary,
+                            colors.purple,
+                            colors.orange
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        maxBarThickness: 60
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: colors.primary,
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' cases';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: { 
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        },
-        scales: {
-            x: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1
-                }
-            }
-        }
-    }
-});
-</script>
+            });
+
+            // Add animation to stat cards on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const statCards = document.querySelectorAll('.stat-card');
+                statCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.6s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            });
+        </script>
 @endsection
-

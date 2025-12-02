@@ -84,7 +84,7 @@ class CourtCaseController extends Controller
             $query->where('entity_id', $request->entity_id);
         }
 
-        $cases = $query->with(['entity', 'notices', 'assignedOfficer'])->orderBy('created_at', 'DESC')->paginate(10);
+        $cases = $query->with(['entity', 'notices', 'assignedOfficer', 'court'])->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('cases.index', compact('cases'));
     }
