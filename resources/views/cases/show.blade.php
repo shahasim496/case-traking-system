@@ -357,8 +357,46 @@
                     @if($upcomingHearings->count() > 0)
                         @foreach($upcomingHearings as $hearing)
                             <div class="mb-3 pb-3 border-bottom">
-                                <strong>{{ $hearing->hearing_date->format('d M Y') }}</strong>
-                                <p class="mb-1 small">{{ Str::limit($hearing->purpose, 50) }}</p>
+                                @php
+                                    $hasFutureHearingDate = $hearing->hearing_date && $hearing->hearing_date->isAfter(now()->endOfDay());
+                                    $hasFutureNextDate = $hearing->next_hearing_date && $hearing->next_hearing_date->isAfter(now()->endOfDay());
+                                    $earliestDate = null;
+                                    
+                                    // Get the earliest upcoming date
+                                    if ($hasFutureNextDate && $hasFutureHearingDate) {
+                                        $earliestDate = $hearing->next_hearing_date->lt($hearing->hearing_date) 
+                                            ? $hearing->next_hearing_date 
+                                            : $hearing->hearing_date;
+                                    } elseif ($hasFutureNextDate) {
+                                        $earliestDate = $hearing->next_hearing_date;
+                                    } elseif ($hasFutureHearingDate) {
+                                        $earliestDate = $hearing->hearing_date;
+                                    }
+                                @endphp
+                                
+                                @if($earliestDate)
+                                    <strong>{{ $earliestDate->format('d M Y') }}</strong>
+                                    
+                                    @if($hasFutureHearingDate && $hasFutureNextDate)
+                                        <br><small class="text-muted">
+                                            <i class="fa fa-calendar mr-1"></i>
+                                            Hearing: {{ $hearing->hearing_date->format('d M Y') }} | 
+                                            Next: {{ $hearing->next_hearing_date->format('d M Y') }}
+                                        </small>
+                                    @elseif($hasFutureNextDate)
+                                        <br><small class="text-muted">
+                                            <i class="fa fa-calendar mr-1"></i>Next Hearing: {{ $hearing->next_hearing_date->format('d M Y') }}
+                                        </small>
+                                    @elseif($hasFutureHearingDate)
+                                        <br><small class="text-muted">
+                                            <i class="fa fa-calendar mr-1"></i>Hearing: {{ $hearing->hearing_date->format('d M Y') }}
+                                        </small>
+                                    @endif
+                                @endif
+                                
+                                @if($hearing->purpose)
+                                    <p class="mb-1 small mt-2">{{ Str::limit($hearing->purpose, 50) }}</p>
+                                @endif
                                 @if($hearing->person_appearing)
                                     <p class="mb-0 small text-muted">
                                         <i class="fa fa-user"></i> {{ $hearing->person_appearing }}

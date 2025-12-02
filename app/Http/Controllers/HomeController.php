@@ -92,7 +92,21 @@ class HomeController extends Controller
         $totalCases = $query->count();
         $openCases = (clone $query)->where('status', 'Open')->count();
         $resolvedCases = (clone $query)->where('status', 'Resolved')->count();
+        $favourCases = (clone $query)->where('status', 'Resolved')->where('resolution_outcome', 'Favour')->count();
+        $againstCases = (clone $query)->where('status', 'Resolved')->where('resolution_outcome', 'Against')->count();
         $closedCases = $resolvedCases; // For backward compatibility
+        
+        // Cases with hearings in next 7 days
+        $nextWeekStart = now()->startOfDay();
+        $nextWeekEnd = now()->addDays(7)->endOfDay();
+        
+        $nextWeekCases = (clone $query)->whereHas('hearings', function($q) use ($nextWeekStart, $nextWeekEnd) {
+            $q->where(function($query) use ($nextWeekStart, $nextWeekEnd) {
+                $query->whereBetween('hearing_date', [$nextWeekStart, $nextWeekEnd])
+                      ->orWhereBetween('next_hearing_date', [$nextWeekStart, $nextWeekEnd]);
+            });
+        })->distinct()->count();
+        
         $totalNotices = $noticeQuery->count();
         $totalHearings = $hearingQuery->count();
         
@@ -104,8 +118,8 @@ class HomeController extends Controller
         $case_to_court_percentage = 100;
         $ClosedCases = $resolvedCases;
         
-        // Recent Cases for table (paginated, 10 per page)
-        $Cases = (clone $query)->with(['entity', 'caseType'])->orderBy('created_at', 'DESC')->paginate(10);
+        // Recent Cases for table (paginated, 5 per page)
+        $Cases = (clone $query)->with(['entity', 'caseType'])->orderBy('created_at', 'DESC')->paginate(5);
         
         // Cases by Entity/Department (for doughnut chart)
         if ($user->hasRole('SuperAdmin')) {
@@ -127,8 +141,8 @@ class HomeController extends Controller
             }
         }
         
-        // Cases by Court (for bar chart) - use the same filtered query
-        $casesByCourt = (clone $query)->select('court_id', DB::raw('count(*) as total'))
+        // Cases by Court (for bar chart) - use court name from relationship
+        $casesByCourtForChart = (clone $query)->select('court_id', DB::raw('count(*) as total'))
             ->whereNotNull('court_id')
             ->with('court')
             ->groupBy('court_id')
@@ -139,12 +153,12 @@ class HomeController extends Controller
             ->toArray();
         
         // If no court data, provide empty array
-        if (empty($casesByCourt)) {
-            $casesByCourt = [];
+        if (empty($casesByCourtForChart)) {
+            $casesByCourtForChart = [];
         }
         
         // All Courts with case counts for stat card - use court name from relationship
-        $casesByCourt = (clone $query)->select('court_id', DB::raw('count(*) as total'))
+        $casesByCourtForStat = (clone $query)->select('court_id', DB::raw('count(*) as total'))
             ->whereNotNull('court_id')
             ->with('court')
             ->groupBy('court_id')
@@ -162,7 +176,7 @@ class HomeController extends Controller
         $topCourts = [];
         
         // First, add courts that have cases
-        foreach ($casesByCourt as $court) {
+        foreach ($casesByCourtForStat as $court) {
             $topCourts[$court['name']] = $court['total'];
         }
         
@@ -177,6 +191,12 @@ class HomeController extends Controller
         $topCourts = collect($topCourts)->map(function($total, $name) {
             return ['name' => $name, 'total' => $total];
         })->sortByDesc('total')->values()->toArray();
+        
+        // For chart, ensure all courts are included even with 0 cases
+        $casesByCourt = [];
+        foreach ($allCourts as $court) {
+            $casesByCourt[$court->name] = $casesByCourtForChart[$court->name] ?? 0;
+        }
         
         // Monthly Case Trends (last 6 months) - formatted for chart
         $monthlyCases = [];
@@ -216,9 +236,12 @@ class HomeController extends Controller
             'pendingPercentage',
             'resolvedCases',
             'resolvedPercentage',
+            'favourCases',
+            'againstCases',
             'case_to_court',
             'case_to_court_percentage',
             'ClosedCases',
+            'nextWeekCases',
             'totalNotices',
             'totalHearings',
             'Cases',

@@ -264,13 +264,19 @@ class CourtCaseController extends Controller
             }
         }
         
-        // Get upcoming hearings
+        // Get upcoming hearings (only future dates, excluding today - check both hearing_date and next_hearing_date)
         $upcomingHearings = Hearing::where('case_id', $id)
             ->where(function($query) {
-                $query->where('next_hearing_date', '>=', now())
-                      ->orWhere('hearing_date', '>=', now());
+                $query->where(function($q) {
+                    // Check if next_hearing_date exists and is in the future
+                    $q->whereNotNull('next_hearing_date')
+                      ->where('next_hearing_date', '>', now()->endOfDay());
+                })->orWhere(function($q) {
+                    // Check if hearing_date is in the future (when next_hearing_date is null or past)
+                    $q->where('hearing_date', '>', now()->endOfDay());
+                });
             })
-            ->orderBy('hearing_date', 'ASC')
+            ->orderByRaw('COALESCE(next_hearing_date, hearing_date) ASC')
             ->get();
 
         // Get recent notices

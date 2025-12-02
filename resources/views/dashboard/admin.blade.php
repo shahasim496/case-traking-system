@@ -381,6 +381,19 @@
                 <div class="stat-value">{{ $resolvedCases }}</div>
                 <p class="stat-label">Resolved Cases</p>
                 <p class="stat-description">Successfully resolved</p>
+                
+                @if($resolvedCases > 0)
+                <div class="mt-3 pt-3" style="border-top: 1px solid rgba(0,0,0,0.1);">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #6c757d;">Favour</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #2c3e50;">{{ $favourCases }} cases</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #6c757d;">Against</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #2c3e50;">{{ $againstCases }} cases</span>
+                    </div>
+                </div>
+                @endif
             </div>
 
             <!-- Court Cases -->
@@ -410,20 +423,20 @@
                 @endif
             </div>
 
-            <!-- Closed Cases -->
+            <!-- Next Week Cases -->
             <div class="stat-card orange">
                 <div class="stat-card-header">
                     <div class="stat-icon">
-                        <i class="fas fa-archive"></i>
+                        <i class="fas fa-calendar-week"></i>
                     </div>
                     <div class="stat-trend">
-                        <i class="fas fa-lock"></i>
-                        <span>Closed</span>
+                        <i class="fas fa-clock"></i>
+                        <span>Next 7 Days</span>
                     </div>
                 </div>
-                <div class="stat-value">{{ $ClosedCases }}</div>
-                <p class="stat-label">Closed Cases</p>
-                <p class="stat-description">Archived cases</p>
+                <div class="stat-value">{{ $nextWeekCases }}</div>
+                <p class="stat-label">Next Week Cases</p>
+                <p class="stat-description">Cases with hearings in next 7 days</p>
             </div>
         </div>
 
@@ -591,20 +604,6 @@
                     }),
                     datasets: [
                         {
-                            label: 'Total Cases',
-                            data: chartData.map(item => item.total_cases || 0),
-                            borderColor: colors.primary,
-                            backgroundColor: `${colors.primary}15`,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: colors.primary,
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointRadius: 6,
-                            pointHoverRadius: 8
-                        },
-                        {
                             label: 'Open Cases',
                             data: chartData.map(item => item.pending_cases || 0),
                             borderColor: colors.warning,
@@ -619,7 +618,7 @@
                             pointHoverRadius: 8
                         },
                         {
-                            label: 'Under Investigation',
+                            label: 'Resolved Cases',
                             data: chartData.map(item => item.resolved_cases || 0),
                             borderColor: colors.success,
                             backgroundColor: `${colors.success}15`,
@@ -627,20 +626,6 @@
                             fill: true,
                             tension: 0.4,
                             pointBackgroundColor: colors.success,
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointRadius: 6,
-                            pointHoverRadius: 8
-                        },
-                        {
-                            label: 'Pending Court',
-                            data: chartData.map(item => item.court_cases || 0),
-                            borderColor: colors.danger,
-                            backgroundColor: `${colors.danger}15`,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: colors.danger,
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointRadius: 6,
@@ -790,27 +775,48 @@
             });
 
             // Cases by Court (Bar Chart)
-            const incidentsBySeverityCtx = document.getElementById('incidentsBySeverity').getContext('2d');
-            new Chart(incidentsBySeverityCtx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(casesByCourt),
-                    datasets: [{
-                        data: Object.values(casesByCourt),
-                        backgroundColor: [
-                            colors.warning,
-                            colors.success,
-                            colors.danger,
-                            colors.info,
-                            colors.primary,
-                            colors.purple,
-                            colors.orange
-                        ],
-                        borderRadius: 8,
-                        borderSkipped: false,
-                        maxBarThickness: 60
-                    }]
-                },
+            console.log('Cases by Court Data:', casesByCourt);
+            
+            const incidentsBySeverityCtx = document.getElementById('incidentsBySeverity');
+            if (incidentsBySeverityCtx) {
+                const ctx = incidentsBySeverityCtx.getContext('2d');
+                
+                // Ensure casesByCourt is an object
+                const courtData = casesByCourt || {};
+                const courtLabels = Object.keys(courtData);
+                const courtValues = Object.values(courtData);
+                
+                console.log('Court Labels:', courtLabels);
+                console.log('Court Values:', courtValues);
+                
+                // If no data, show empty chart
+                if (courtLabels.length === 0) {
+                    courtLabels.push('No Data');
+                    courtValues.push(0);
+                }
+                
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: courtLabels,
+                        datasets: [{
+                            label: 'Cases',
+                            data: courtValues,
+                            backgroundColor: [
+                                colors.primary,
+                                colors.secondary,
+                                colors.success,
+                                colors.warning,
+                                colors.danger,
+                                colors.info,
+                                colors.purple,
+                                colors.orange
+                            ],
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            maxBarThickness: 60
+                        }]
+                    },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -857,7 +863,8 @@
                         }
                     }
                 }
-            });
+                });
+            }
 
             // Add animation to stat cards on page load
             document.addEventListener('DOMContentLoaded', function() {
