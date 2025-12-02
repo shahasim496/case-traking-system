@@ -73,8 +73,13 @@
                                 <p class="mb-0">
                                     @if($case->status == 'Open')
                                         <span class="badge badge-success">Open</span>
+                                    @elseif($case->status == 'Resolved')
+                                        <span class="badge badge-info">Resolved</span>
+                                        @if($case->resolution_outcome)
+                                            <br><small class="text-muted">Outcome: <strong>{{ $case->resolution_outcome }}</strong></small>
+                                        @endif
                                     @else
-                                        <span class="badge badge-danger">Closed</span>
+                                        <span class="badge badge-danger">{{ $case->status }}</span>
                                     @endif
                                 </p>
                             </div>

@@ -30,6 +30,7 @@ class CourtCase extends Model
         'entity_id',
         'assigned_officer_id',
         'status',
+        'resolution_outcome',
         'created_by',
         'updated_by',
     ];

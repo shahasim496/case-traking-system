@@ -451,7 +451,7 @@
                                             class="form-control form-control-lg @error('status') is-invalid @enderror" 
                                             required>
                                         <option value="Open" {{ old('status', 'Open') == 'Open' ? 'selected' : '' }}>Open</option>
-                                        <option value="Closed" {{ old('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
+                                      
                                     </select>
                                     @error('status')
                                         <small class="text-danger">{{ $message }}</small>

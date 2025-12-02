@@ -91,18 +91,18 @@ class HomeController extends Controller
         $totalUsers = $userQuery->count();
         $totalCases = $query->count();
         $openCases = (clone $query)->where('status', 'Open')->count();
-        $closedCases = (clone $query)->where('status', 'Closed')->count();
+        $resolvedCases = (clone $query)->where('status', 'Resolved')->count();
+        $closedCases = $resolvedCases; // For backward compatibility
         $totalNotices = $noticeQuery->count();
         $totalHearings = $hearingQuery->count();
         
         // Calculate percentages
         $pendingCases = $openCases; // Open cases are pending
         $pendingPercentage = $totalCases > 0 ? round(($pendingCases / $totalCases) * 100, 1) : 0;
-        $resolvedCases = 0; // No resolved status in court system, using closed as resolved
-        $resolvedPercentage = $totalCases > 0 ? round(($closedCases / $totalCases) * 100, 1) : 0;
+        $resolvedPercentage = $totalCases > 0 ? round(($resolvedCases / $totalCases) * 100, 1) : 0;
         $case_to_court = $totalCases; // All cases are court cases
         $case_to_court_percentage = 100;
-        $ClosedCases = $closedCases;
+        $ClosedCases = $resolvedCases;
         
         // Recent Cases for table (paginated, 10 per page)
         $Cases = (clone $query)->with(['entity', 'caseType'])->orderBy('created_at', 'DESC')->paginate(10);
@@ -189,18 +189,24 @@ class HomeController extends Controller
             $monthTotal = $monthQuery->whereBetween('created_at', [$monthStart, $monthEnd])->count();
             $monthOpen = (clone $query)->where('status', 'Open')
                 ->whereBetween('created_at', [$monthStart, $monthEnd])->count();
-            $monthClosed = (clone $query)->where('status', 'Closed')
+            $monthResolved = (clone $query)->where('status', 'Resolved')
                 ->whereBetween('created_at', [$monthStart, $monthEnd])->count();
             
             $monthlyCases[] = [
                 'month' => $date->format('Y-m'),
                 'total_cases' => $monthTotal,
                 'pending_cases' => $monthOpen,
-                'resolved_cases' => $monthClosed,
+                'resolved_cases' => $monthResolved,
                 'court_cases' => $monthTotal, // All are court cases
             ];
         }
 
+        // Cases by Status (for bar chart)
+        $casesByStatus = [
+            'Open' => $openCases,
+            'Resolved' => $resolvedCases,
+        ];
+        
         return view('dashboard.admin', compact(
             'totalUsers',
             'totalCases',
@@ -219,6 +225,7 @@ class HomeController extends Controller
             'casesByCourt',
             'topCourts',
             'casesByType',
+            'casesByStatus',
             'monthlyCases'
         ));
     }

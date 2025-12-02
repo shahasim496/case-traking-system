@@ -446,9 +446,27 @@
                                             class="form-control form-control-lg @error('status') is-invalid @enderror" 
                                             required>
                                         <option value="Open" {{ old('status', $case->status) == 'Open' ? 'selected' : '' }}>Open</option>
-                                        <option value="Closed" {{ old('status', $case->status) == 'Closed' ? 'selected' : '' }}>Closed</option>
+                                        <option value="Resolved" {{ old('status', $case->status) == 'Resolved' ? 'selected' : '' }}>Resolved</option>
                                     </select>
                                     @error('status')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6" id="resolutionOutcomeField" style="display: {{ old('status', $case->status) == 'Resolved' ? 'block' : 'none' }};">
+                                <div class="form-group">
+                                    <label class="font-weight-bold text-dark">
+                                        Resolution Outcome <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="resolution_outcome" 
+                                            name="resolution_outcome" 
+                                            class="form-control form-control-lg @error('resolution_outcome') is-invalid @enderror">
+                                        <option value="">Select Outcome</option>
+                                        <option value="Favour" {{ old('resolution_outcome', $case->resolution_outcome) == 'Favour' ? 'selected' : '' }}>Favour</option>
+                                        <option value="Against" {{ old('resolution_outcome', $case->resolution_outcome) == 'Against' ? 'selected' : '' }}>Against</option>
+                                    </select>
+                                    @error('resolution_outcome')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
@@ -752,10 +770,33 @@ $(document).ready(function() {
         }
     });
     
+    // Show/hide resolution outcome field based on status
+    $('#status').on('change', function() {
+        var status = $(this).val();
+        var resolutionField = $('#resolutionOutcomeField');
+        var resolutionSelect = $('#resolution_outcome');
+        
+        if (status === 'Resolved') {
+            resolutionField.show();
+            resolutionSelect.prop('required', true);
+        } else {
+            resolutionField.hide();
+            resolutionSelect.prop('required', false);
+            resolutionSelect.val('');
+        }
+    });
+    
+    // Trigger on page load if status is already Resolved
+    if ($('#status').val() === 'Resolved') {
+        $('#status').trigger('change');
+    }
+    
     // Form submission validation
     $('#caseForm').on('submit', function(e) {
         var idNumber = $('#petitioner_id_number').val();
         var contactNumber = $('#petitioner_contact_number').val();
+        var status = $('#status').val();
+        var resolutionOutcome = $('#resolution_outcome').val();
         var idPattern = /^\d{5}-\d{7}-\d{1}$/;
         var contactPattern = /^\+92\d{10}$/;
         var isValid = true;
@@ -769,6 +810,12 @@ $(document).ready(function() {
         if (!contactPattern.test(contactNumber)) {
             $('#petitioner_contact_number').addClass('is-invalid');
             $('#contact_number_error').show();
+            isValid = false;
+        }
+        
+        // Validate resolution outcome if status is Resolved
+        if (status === 'Resolved' && !resolutionOutcome) {
+            $('#resolution_outcome').addClass('is-invalid');
             isValid = false;
         }
         

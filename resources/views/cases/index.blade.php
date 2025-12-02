@@ -50,7 +50,7 @@
                             <select class="form-control filter-select" id="statusFilter" name="status">
                                 <option value="">All Status</option>
                                 <option value="Open" {{ request('status') == 'Open' ? 'selected' : '' }}>Open</option>
-                                <option value="Closed" {{ request('status') == 'Closed' ? 'selected' : '' }}>Closed</option>
+                                <option value="Resolved" {{ request('status') == 'Resolved' ? 'selected' : '' }}>Resolved</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-6 mb-3 mb-md-0">
@@ -98,8 +98,10 @@
                                         <td>
                                             @if($case->status == 'Open')
                                                 <span class="badge badge-success">Open</span>
+                                            @elseif($case->status == 'Resolved')
+                                                <span class="badge badge-info">Resolved</span>
                                             @else
-                                                <span class="badge badge-danger">Closed</span>
+                                                <span class="badge badge-danger">{{ $case->status }}</span>
                                             @endif
                                         </td>
                                         <td>

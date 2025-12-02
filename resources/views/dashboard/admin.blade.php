@@ -492,7 +492,14 @@
                             </td>
                             <td>
                                 @php
-                                    $statusClass = $case->status == 'Open' ? 'badge-pending' : 'badge-closed';
+                                    $statusClass = 'badge-pending';
+                                    if ($case->status == 'Open') {
+                                        $statusClass = 'badge-pending';
+                                    } elseif ($case->status == 'Resolved') {
+                                        $statusClass = 'badge-resolved';
+                                    } else {
+                                        $statusClass = 'badge-closed';
+                                    }
                                 @endphp
                                 <span class="badge-modern {{ $statusClass }}">{{ $case->status }}</span>
                             </td>
