@@ -363,8 +363,8 @@
                     </div>
                 </div>
                 <div class="stat-value">{{ $pendingCases }}</div>
-                <p class="stat-label">Pending Cases</p>
-                <p class="stat-description">Awaiting verification</p>
+                <p class="stat-label">Open Cases</p>
+                <p class="stat-description">Cases that are open</p>
             </div>
 
             <!-- Resolved Cases -->
