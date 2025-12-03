@@ -68,11 +68,11 @@ class UserSeeder extends Seeder
             $jointSecretary->assignRole('Joint Secretary');
         }
 
-        // Create Permanent Secretary user
-        $permanentSecretary = User::firstOrCreate(
-            ['email' => 'the_permanent.secretary@yopmail.com'],
+        // Create Additional Secretary user
+        $additionalSecretary = User::firstOrCreate(
+            ['email' => 'the_additional.secretary@yopmail.com'],
             [
-                'name' => 'Permanent Secretary',
+                'name' => 'Additional Secretary',
                 'password' => '1234567890',
                 'cnic' => '12345-1234567-4',
                 'phone' => '+923001234570',
@@ -80,8 +80,8 @@ class UserSeeder extends Seeder
                 'designation_id' => $designationId,
             ]
         );
-        if (!$permanentSecretary->hasRole('Permanent Secretary')) {
-            $permanentSecretary->assignRole('Permanent Secretary');
+        if (!$additionalSecretary->hasRole('Additional Secretary')) {
+            $additionalSecretary->assignRole('Additional Secretary');
         }
 
         // Create Secretary user

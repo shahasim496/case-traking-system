@@ -29,8 +29,8 @@ class RoleSeeder extends Seeder
                 'description' => 'Joint Secretary with administrative oversight and case management responsibilities.',
                 'guard_name' => 'web'
             ],
-            'Permanent Secretary' => [
-                'description' => 'Permanent Secretary with full administrative authority and case oversight capabilities.',
+            'Additional Secretary' => [
+                'description' => 'Additional Secretary with full administrative authority and case oversight capabilities.',
                 'guard_name' => 'web'
             ],
             'Secretary' => [

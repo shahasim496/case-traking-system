@@ -86,7 +86,7 @@
                                         'manage settings',
                                         // Case Forwarding
                                         'forward to joint secretary',
-                                        'forward to permanent secretary',
+                                        'forward to additional secretary',
                                         'forward to secretary',
                                         'forward to legal officer',
                                         'forward to any role',

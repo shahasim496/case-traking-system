@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\CourtCase;
 use App\Models\Notice;
@@ -123,20 +124,93 @@ class HomeController extends Controller
         
         // Cases by Entity/Department (for doughnut chart)
         if ($user->hasRole('SuperAdmin')) {
-            $casesByType = CourtCase::select('entity_id', DB::raw('count(*) as total'))
-                ->whereNotNull('entity_id')
-                ->with('entity')
-                ->groupBy('entity_id')
-                ->get()
-                ->mapWithKeys(function($item) {
-                    return [$item->entity->name ?? 'Unknown' => $item->total];
-                })
+            // First, get all distinct entity IDs from cases
+            $entityIdsInCases = CourtCase::whereNotNull('entity_id')
+                ->distinct()
+                ->pluck('entity_id')
                 ->toArray();
+            
+            // Use raw query to get accurate entity counts - ensure we get ALL entities with cases
+            $casesByTypeRaw = DB::table('cases')
+                ->select('entities.id as entity_id', 'entities.name as entity_name', DB::raw('count(cases.id) as total'))
+                ->join('entities', 'cases.entity_id', '=', 'entities.id')
+                ->whereNotNull('cases.entity_id')
+                ->groupBy('entities.id', 'entities.name')
+                ->orderBy('entities.name')
+                ->get();
+            
+            // Convert to array format - ensure we preserve all entities
+            $casesByType = [];
+            foreach ($casesByTypeRaw as $row) {
+                $entityName = trim($row->entity_name ?? 'Unknown');
+                // Use entity_id as key to prevent duplicates from same name
+                if (!isset($casesByType[$entityName])) {
+                    $casesByType[$entityName] = 0;
+                }
+                $casesByType[$entityName] += (int)$row->total;
+            }
+            
+            // Verify: Check if we're missing any entities
+            $allCases = CourtCase::with('entity')
+                ->whereNotNull('entity_id')
+                ->get();
+            
+            $entityBreakdown = $allCases->groupBy('entity_id')->map(function($cases) {
+                $firstCase = $cases->first();
+                return [
+                    'entity_id' => $firstCase->entity_id,
+                    'entity_name' => $firstCase->entity ? trim($firstCase->entity->name) : 'Unknown',
+                    'case_count' => $cases->count()
+                ];
+            })->values();
+            
+            // Debug: Log detailed results
+            Log::info('Cases by Entity - Detailed Debug', [
+                'raw_query_results' => $casesByTypeRaw->toArray(),
+                'final_cases_by_type' => $casesByType,
+                'entity_ids_found' => $entityIdsInCases,
+                'total_cases_in_db' => $allCases->count(),
+                'entity_breakdown' => $entityBreakdown->toArray(),
+                'entity_count_in_final_array' => count($casesByType)
+            ]);
+            
+            // Additional verification: if entity breakdown shows more entities than final array, log warning
+            if ($entityBreakdown->count() > count($casesByType)) {
+                Log::warning('Entity count mismatch detected', [
+                    'breakdown_count' => $entityBreakdown->count(),
+                    'final_array_count' => count($casesByType),
+                    'missing_entities' => $entityBreakdown->pluck('entity_name')->diff(array_keys($casesByType))->toArray()
+                ]);
+            }
         } else {
-            if ($user->entity_id) {
+            // For Legal Officers: show cases they created or are assigned to, grouped by entity
+            if ($user->hasRole('Legal Officer')) {
+                // Get cases the Legal Officer can see (already filtered in $query)
+                $legalOfficerCases = (clone $query)
+                    ->with('entity')
+                    ->whereNotNull('entity_id')
+                    ->get();
+                
+                // Group by entity and count
+                $casesByType = $legalOfficerCases->groupBy(function($case) {
+                    return $case->entity ? trim($case->entity->name) : 'Unknown';
+                })->map(function($cases) {
+                    return $cases->count();
+                })->toArray();
+                
+                // Debug: Log for Legal Officers
+                Log::info('Cases by Entity - Legal Officer', [
+                    'user_id' => $user->id,
+                    'total_cases' => $legalOfficerCases->count(),
+                    'cases_by_type' => $casesByType,
+                    'entity_ids' => $legalOfficerCases->pluck('entity_id')->unique()->values()->toArray()
+                ]);
+            } elseif ($user->entity_id) {
+                // For regular users: show cases from their entity only
                 $entityTotal = (clone $query)->count();
                 $casesByType = [$user->entity->name ?? 'Unknown' => $entityTotal];
             } else {
+                // User has no entity
                 $casesByType = [];
             }
         }

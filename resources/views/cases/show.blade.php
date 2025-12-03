@@ -491,8 +491,8 @@
                             No users available to forward in this case's entity.
                         @elseif(auth()->user()->hasPermissionTo('forward to joint secretary'))
                             No Joint Secretary users found in this case's entity.
-                        @elseif(auth()->user()->hasAnyPermission(['forward to permanent secretary', 'forward to secretary']))
-                            No Permanent Secretary or Secretary users found in this case's entity.
+                        @elseif(auth()->user()->hasAnyPermission(['forward to additional secretary', 'forward to secretary']))
+                            No Additional Secretary or Secretary users found in this case's entity.
                         @else
                             You do not have permission to forward cases.
                         @endif
@@ -502,7 +502,7 @@
             @endif
             
             <!-- Comments Section -->
-            @if($case->entity_id && (auth()->user()->entity_id == $case->entity_id || auth()->user()->hasRole('SuperAdmin')))
+           
             <div class="card shadow-sm mt-4">
                 <div class="card-header text-white" style="background-color: #00349C;">
                     <h5 class="mb-0">
@@ -582,7 +582,7 @@
                     </div>
                 </div>
             </div>
-            @endif
+      
             
         </div>
     </div>

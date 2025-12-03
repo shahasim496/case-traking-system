@@ -255,15 +255,7 @@ class CourtCaseController extends Controller
         
         // Check if user has access to this case
         $user = Auth::user();
-        if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only view cases from their entity
-            if ($user->entity_id && $case->entity_id != $user->entity_id) {
-                abort(403, 'You do not have permission to view this case.');
-            } elseif (!$user->entity_id) {
-                abort(403, 'You do not have permission to view this case.');
-            }
-        }
-        
+       
         // Get upcoming hearings (only future dates, excluding today - check both hearing_date and next_hearing_date)
         $upcomingHearings = Hearing::where('case_id', $id)
             ->where(function($query) {
@@ -338,7 +330,7 @@ class CourtCaseController extends Controller
         }
 
         // Define allowed roles from RoleSeeder
-        $allowedRoles = ['SuperAdmin', 'Legal Officer', 'Joint Secretary', 'Permanent Secretary', 'Secretary'];
+        $allowedRoles = ['SuperAdmin', 'Legal Officer', 'Joint Secretary', 'Additional Secretary', 'Secretary'];
         
         // Get role IDs for allowed roles
         $allowedRoleIds = \Spatie\Permission\Models\Role::whereIn('name', $allowedRoles)
@@ -357,8 +349,8 @@ class CourtCaseController extends Controller
             if ($user->hasPermissionTo('forward to joint secretary')) {
                 $targetRoleNames[] = 'Joint Secretary';
             }
-            if ($user->hasPermissionTo('forward to permanent secretary')) {
-                $targetRoleNames[] = 'Permanent Secretary';
+            if ($user->hasPermissionTo('forward to additional secretary')) {
+                $targetRoleNames[] = 'Additional Secretary';
             }
             if ($user->hasPermissionTo('forward to secretary')) {
                 $targetRoleNames[] = 'Secretary';
@@ -436,7 +428,7 @@ class CourtCaseController extends Controller
         $user = Auth::user();
 
         // Check if user has any forwarding permission
-        if (!$user->hasAnyPermission(['forward to any role', 'forward to joint secretary', 'forward to permanent secretary', 'forward to secretary', 'forward to legal officer'])) {
+        if (!$user->hasAnyPermission(['forward to any role', 'forward to joint secretary', 'forward to additional secretary', 'forward to secretary', 'forward to legal officer'])) {
             abort(403, 'You do not have permission to forward cases.');
         }
 
@@ -734,15 +726,7 @@ class CourtCaseController extends Controller
         $case = CourtCase::with(['caseFiles', 'caseType', 'court.workBenches', 'workBench'])->findOrFail($id);
         
         // Check if user has access to this case
-        $user = Auth::user();
-        if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only edit cases from their entity
-            if ($user->entity_id && $case->entity_id != $user->entity_id) {
-                abort(403, 'You do not have permission to edit this case.');
-            } elseif (!$user->entity_id) {
-                abort(403, 'You do not have permission to edit this case.');
-            }
-        }
+       
         
         $entities = Entity::all();
         $caseTypes = CaseType::all();
@@ -763,16 +747,7 @@ class CourtCaseController extends Controller
     {
         $case = CourtCase::findOrFail($id);
         
-        // Check if user has access to this case
-        $user = Auth::user();
-        if (!$user->hasRole('SuperAdmin')) {
-            // Regular users can only update cases from their entity
-            if ($user->entity_id && $case->entity_id != $user->entity_id) {
-                abort(403, 'You do not have permission to update this case.');
-            } elseif (!$user->entity_id) {
-                abort(403, 'You do not have permission to update this case.');
-            }
-        }
+    
 
         // Get the court to check its type
         $court = Court::find($request->court_id);

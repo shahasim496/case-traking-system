@@ -718,61 +718,99 @@
             });
 
             // Cases by Entity (Doughnut Chart)
-            const incidentsByTypeCtx = document.getElementById('incidentsByType').getContext('2d');
-            new Chart(incidentsByTypeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(casesByType),
-                    datasets: [{
-                        data: Object.values(casesByType),
-                        backgroundColor: [
-                            colors.primary,
-                            colors.secondary,
-                            colors.success,
-                            colors.warning,
-                            colors.danger,
-                            colors.info,
-                            colors.purple,
-                            colors.orange
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: {
-                        legend: { 
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 15,
-                                font: {
-                                    size: 12,
-                                    weight: '500'
+            console.log('Cases by Entity Data (Raw):', casesByType);
+            console.log('Cases by Entity Type:', typeof casesByType);
+            console.log('Cases by Entity Keys:', Object.keys(casesByType || {}));
+            console.log('Cases by Entity Values:', Object.values(casesByType || {}));
+            console.log('Cases by Entity Length:', Object.keys(casesByType || {}).length);
+            
+            const incidentsByTypeCtx = document.getElementById('incidentsByType');
+            if (incidentsByTypeCtx) {
+                const ctx = incidentsByTypeCtx.getContext('2d');
+                
+                // Ensure casesByType is an object
+                const entityData = casesByType || {};
+                const entityLabels = Object.keys(entityData);
+                const entityValues = Object.values(entityData);
+                
+                console.log('Entity Labels:', entityLabels);
+                console.log('Entity Values:', entityValues);
+                
+                // Generate dynamic colors array based on number of entities
+                const colorPalette = [
+                    colors.primary,
+                    colors.secondary,
+                    colors.success,
+                    colors.warning,
+                    colors.danger,
+                    colors.info,
+                    colors.purple,
+                    colors.orange
+                ];
+                
+                // Generate enough colors for all entities
+                const dynamicColors = [];
+                for (let i = 0; i < entityLabels.length; i++) {
+                    dynamicColors.push(colorPalette[i % colorPalette.length]);
+                }
+                
+                // If no data, show empty chart with message
+                if (entityLabels.length === 0) {
+                    entityLabels.push('No Data');
+                    entityValues.push(0);
+                    dynamicColors.push('#e9ecef');
+                }
+                
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: entityLabels,
+                        datasets: [{
+                            data: entityValues,
+                            backgroundColor: dynamicColors,
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: { 
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15,
+                                    font: {
+                                        size: 12,
+                                        weight: '500'
+                                    }
                                 }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: colors.primary,
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                    return context.label + ': ' + context.parsed + ' cases (' + percentage + '%)';
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: colors.primary,
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.parsed === 0) {
+                                            return 'No data available';
+                                        }
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        if (total === 0) return context.label + ': 0 cases';
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        return context.label + ': ' + context.parsed + ' cases (' + percentage + '%)';
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // Cases by Court (Bar Chart)
             console.log('Cases by Court Data:', casesByCourt);

@@ -39,7 +39,7 @@ class PermissionSeeder extends Seeder
 
             // Case forwarding permissions
             'forward to joint secretary' => 'Can forward cases to Joint Secretary',
-            'forward to permanent secretary' => 'Can forward cases to Permanent Secretary',
+            'forward to additional secretary' => 'Can forward cases to Additional Secretary',
             'forward to secretary' => 'Can forward cases to Secretary',
             'forward to legal officer' => 'Can forward cases to Legal Officer',
             'forward to any role' => 'Can forward cases to any role (SuperAdmin only)',
@@ -64,7 +64,11 @@ class PermissionSeeder extends Seeder
             //task logs permissions
             'view task logs' => 'Can view task logs',
 
+            //manage courts permissions
+            'manage courts' => 'Can manage courts',
+            'manage work benches' => 'Can manage work benches',
 
+   
         ];
 
         // Create permissions
@@ -139,8 +143,9 @@ class PermissionSeeder extends Seeder
             ],
             'Joint Secretary' => [
                 // Case Forwarding
-                'forward to permanent secretary',
+                'forward to additional secretary',
                 'forward to secretary',
+                'forward to legal officer',
               
                 'view case',
                 
@@ -148,7 +153,7 @@ class PermissionSeeder extends Seeder
               
                 'view hearing',
             ],
-            'Permanent Secretary' => [
+            'Additional Secretary' => [
                
                 'view case',
                 // Notice Management
@@ -157,6 +162,8 @@ class PermissionSeeder extends Seeder
                 // Hearing Management
                
                 'view hearing',
+                'forward to secretary',
+                'forward to joint secretary',
             ],
             'Secretary' => [
                 // Case Management
@@ -168,6 +175,8 @@ class PermissionSeeder extends Seeder
                 // Hearing Management
                
                 'view hearing',
+                'forward to additional secretary',
+               
             ],
         ];
 

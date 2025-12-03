@@ -41,6 +41,24 @@ class WorkBenchSeeder extends Seeder
                 'court_id' => $highCourt->id,
                 'description' => 'Third bench of the High Court handling commercial and corporate matters.'
             ],
+
+
+            //Supreme Court Work Benches
+            [
+                'name' => 'Supreme Court Bench 1',
+                'court_id' => $supremeCourt->id,
+                'description' => 'First bench of the Supreme Court handling constitutional matters.'
+            ],
+            [
+                'name' => 'Supreme Court Bench 2',
+                'court_id' => $supremeCourt->id,
+                'description' => 'Second bench of the Supreme Court handling commercial and corporate matters.'
+            ],
+            [
+                'name' => 'Supreme Court Bench 3',
+                'court_id' => $supremeCourt->id,
+                'description' => 'Third bench of the Supreme Court handling criminal matters.'
+            ],
         ];
         
         foreach ($workBenches as $workBench) {
